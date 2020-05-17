@@ -22,13 +22,14 @@ test_that("real_to_simplex and simplex_to_real are inverses", {
 })
 
 test_that("proballgeno and llike_geno give same results", {
+  par <- c(-1, 2, 4)
   ga <- c(1, 4, 1, 1)
   gb <- c(2, 4, 2, 5)
   K <- 6
 
   expect_equal(
-    llike_geno(par = inity, gA = ga, gB = gb, K = K),
-    proballgeno(gA = ga, gB = gb, K = K, prob = real_to_simplex(inity), log_p = TRUE)
+    llike_geno(par = par, gA = ga, gB = gb, K = K),
+    proballgeno(gA = ga, gB = gb, K = K, prob = real_to_simplex(par), log_p = TRUE)
   )
 
 })

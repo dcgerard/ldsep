@@ -10,13 +10,19 @@ ldest_geno(ga, gb, K)
 \item{ga}{A vector of counts, containing the genotypes for each individual
 at the first locus.}
 
-\item{K}{the ploidy of the species.}
-
-\item{A}{vector of counts, containing the genotypes for each individual
+\item{gb}{vector of counts, containing the genotypes for each individual
 at the second locus.}
+
+\item{K}{the ploidy of the species.}
 }
 \description{
 Estimate LD directly from the genotypes
+}
+\examples{
+ga <- c(1, 4, 1, 2)
+gb <- c(0, 3, 3, 0)
+K <- 4
+
 }
 \author{
 David Gerard

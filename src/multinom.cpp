@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 double log_sum_exp_2(double x, double y);
-NumericVector real_to_simplex(NumericVector y);
+NumericVector real_to_simplex(const NumericVector &y);
 const double TOL = std::sqrt(DOUBLE_EPS);
 
 //' Multinomial pdf
@@ -18,8 +18,8 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-double dmulti_double(IntegerVector x,
-                     NumericVector prob,
+double dmulti_double(const IntegerVector &x,
+                     const NumericVector &prob,
                      bool log_p = true) {
 
   if (x.length() != prob.length()) {
@@ -62,7 +62,11 @@ double dmulti_double(IntegerVector x,
 //'
 //' @noRd
 // [[Rcpp::export]]
-double probgeno(int gA, int gB, int K, NumericVector prob, bool log_p = true) {
+double probgeno(const int &gA,
+                const int &gB,
+                const int &K,
+                const NumericVector &prob,
+                bool log_p = true) {
 
   int minz = std::max(0, gA + gB - K);
   int maxz = std::min(gA, gB);
@@ -100,7 +104,11 @@ double probgeno(int gA, int gB, int K, NumericVector prob, bool log_p = true) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-double proballgeno(IntegerVector gA, IntegerVector gB, int K, NumericVector prob, bool log_p = true) {
+double proballgeno(const IntegerVector &gA,
+                   const IntegerVector &gB,
+                   const int &K,
+                   const NumericVector &prob,
+                   bool log_p = true) {
 
   if (gA.length() != gB.length()) {
     Rcpp::stop("gA and gB need to be the same length");
@@ -129,7 +137,10 @@ double proballgeno(IntegerVector gA, IntegerVector gB, int K, NumericVector prob
 //'
 //' @noRd
 // [[Rcpp::export]]
-double llike_geno(NumericVector par, IntegerVector gA, IntegerVector gB, int K) {
+double llike_geno(const NumericVector &par,
+                  const IntegerVector &gA,
+                  const IntegerVector &gB,
+                  const int &K) {
   if (par.length() != 3) {
     Rcpp::stop("par needs to be length 3");
   }
@@ -140,3 +151,34 @@ double llike_geno(NumericVector par, IntegerVector gA, IntegerVector gB, int K) 
 
   return llike;
 }
+
+
+//' Negative Likelihood function meant to be used in lbfgs package by pointer.
+//'
+//' @param xs This is \code{par} from \code{\link{llike_geno}()}.
+//' @param env This is an environtment containing \code{gA},
+//'     \code{gB}, and \code{K} from \code{\link{llike_geno}()}.
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+NumericVector nllike_geno_p(SEXP xs, SEXP env) {
+  NumericVector par(xs);
+  Environment e = as<Environment>(env);
+  IntegerVector gA = as<IntegerVector>(e["gA"]);
+  IntegerVector gB = as<IntegerVector>(e["gB"]);
+  int K = as<int>(e["K"]);
+
+  if (par.length() != 3) {
+    stop("par needs to be length 3");
+  }
+
+  NumericVector prob = real_to_simplex(par);
+
+  NumericVector llike = {-1.0 * proballgeno(gA, gB, K, prob, true)};
+
+  return llike;
+}
+
+

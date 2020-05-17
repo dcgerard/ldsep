@@ -6,11 +6,16 @@
 #'
 #' @param ga A vector of counts, containing the genotypes for each individual
 #'     at the first locus.
-#' @param A vector of counts, containing the genotypes for each individual
+#' @param gb vector of counts, containing the genotypes for each individual
 #'     at the second locus.
 #' @param K the ploidy of the species.
 #'
 #' @author David Gerard
+#'
+#' @examples
+#' ga <- c(1, 4, 1, 2)
+#' gb <- c(0, 3, 3, 0)
+#' K <- 4
 #'
 #' @export
 ldest_geno <- function(ga, gb, K) {
@@ -23,11 +28,23 @@ ldest_geno <- function(ga, gb, K) {
 
   oout <- stats::optim(par     = inity,
                        fn      = llike_geno,
+                       gr      = dllike_geno_dpar,
                        method  = "BFGS",
                        control = list(fnscale = -1),
                        gA      = ga,
                        gB      = gb,
                        K       = K)
+
+  # env <- new.env()
+  # env[["gA"]] <- ga
+  # env[["gB"]] <- gb
+  # env[["K"]] <- K
+  # oout <- lbfgs::lbfgs(call_eval = llike_geno,
+  #                      call_grad = dllike_geno_dpar,
+  #                      vars = inity,
+  #                      gA = ga,
+  #                      gB = gb,
+  #                      K = K)
 
   phat <- real_to_simplex(oout$par) # (ab, Ab, aB, AB)
 

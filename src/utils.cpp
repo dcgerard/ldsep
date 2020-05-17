@@ -14,7 +14,7 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-double log_sum_exp(NumericVector x) {
+double log_sum_exp(const NumericVector &x) {
   double max_x = Rcpp::max(x);
   double lse; // the log-sum-exp
   if (max_x == R_NegInf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
@@ -34,7 +34,7 @@ double log_sum_exp(NumericVector x) {
 //'
 //' @author David Gerard
 //'
-//' @export
+//' @noRd
 // [[Rcpp::export]]
 double log_sum_exp_2(double x, double y) {
   double z = std::max(x, y);
@@ -45,6 +45,35 @@ double log_sum_exp_2(double x, double y) {
     finalval = std::log(std::exp(x - z) + std::exp(y - z)) + z;
   }
   return finalval;
+}
+
+//' Pair-wise log-sum-exponential
+//'
+//' Does pair-wise log-sum-exponential on two vectors.
+//'
+//' @param x A numeric vector.
+//' @param y Another numeric vector.
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+NumericVector plog_sum_exp(const NumericVector &x,
+                           const NumericVector &y) {
+
+  if (x.length() != y.length()) {
+    Rcpp::stop("x and y must have the same length");
+  }
+
+  int n = x.length();
+
+  NumericVector z(n);
+
+  for (int i = 0; i < n; i++) {
+    z[i] = log_sum_exp_2(x[i], y[i]);
+  }
+
+  return z;
 }
 
 //' The logit function.
@@ -96,7 +125,7 @@ double expit(double x) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-NumericVector real_to_simplex(NumericVector y) {
+NumericVector real_to_simplex(const NumericVector &y) {
   int K = y.length() + 1;
   NumericVector x(K);
 
@@ -123,7 +152,7 @@ NumericVector real_to_simplex(NumericVector y) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-NumericVector simplex_to_real(NumericVector x) {
+NumericVector simplex_to_real(const NumericVector &x) {
   if (std::abs(Rcpp::sum(x) - 1.0) > TOL) {
     Rcpp::stop("x should sum to 1");
   }
