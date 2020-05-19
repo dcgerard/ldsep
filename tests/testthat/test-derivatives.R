@@ -2,7 +2,8 @@ context("derivatives")
 
 test_that("dmulti_dprob works", {
   x <- c(1, 2, 0, 5)
-  prob <- c(0.1, 0.2, 0.3, 0.4)
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
 
   derivvec <- dmulti_dprob(x = x, prob = prob, log_p = FALSE)
   myenv <- new.env()
@@ -12,7 +13,8 @@ test_that("dmulti_dprob works", {
 
   expect_equal(
     c(attr(nout, "gradient")),
-    c(derivvec)
+    c(derivvec),
+    tolerance = 10^-5
   )
 
   # microbenchmark::microbenchmark(
@@ -24,11 +26,15 @@ test_that("dmulti_dprob works", {
 
 test_that("dprobgeno_dprob works", {
 
-  gA <- 2
-  gB <- 0
+  gA <- 3
+  gB <- 1
   K <- 4
-  prob <- c(0.05, 0.25, 0.3, 0.4)
-  derivvec <- dprobgeno_dprob(gA = gA, gB = gB, K = K, prob = prob)
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
+  derivvec <- dprobgeno_dprob(gA = gA,
+                              gB = gB,
+                              K = K,
+                              prob = prob)
 
   myenv <- new.env()
   assign(x = "gA", value = gA, envir = myenv)
@@ -39,7 +45,8 @@ test_that("dprobgeno_dprob works", {
 
   expect_equal(
     c(attr(nout, "gradient")),
-    c(derivvec)
+    c(derivvec),
+    tolerance = 10^-5
   )
 
   # microbenchmark::microbenchmark(
@@ -54,7 +61,8 @@ test_that("dproballgeno_dprob works", {
   gA <- rep(0:4, each = 5)
   gB <- rep(0:4, 5)
   K <- 4
-  prob <- c(0.1, 0.2, 0.3, 0.4)
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
   derivvec <- dproballgeno_dprob(gA = gA, gB = gB, K = K, prob = prob)
 
   myenv <- new.env()
@@ -174,7 +182,8 @@ test_that("dD_dprob works", {
     p4 - (prob[[2]] + p4) * (prob[[3]] + p4)
   }
 
-  prob <- c(0.01, 0.29, 0.3, 0.4)
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
   deriv <- dD_dprob(prob)
   myenv <- new.env()
   assign(x = "prob", value = prob[1:3], envir = myenv)
@@ -197,7 +206,8 @@ test_that("dr2_dprob works", {
     D^2 / (pA * (1 - pA) * pB * (1 - pB))
   }
 
-  prob <- c(0.1, 0.2, 0.3, 0.4)
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
   deriv <- dr2_dprob(prob)
   myenv <- new.env()
   assign(x = "prob", value = prob[1:3], envir = myenv)
@@ -225,8 +235,7 @@ test_that("drDprime_dprob works", {
     return(Dprime)
   }
 
-  set.seed(1)
-  prob <- runif(4)
+  prob <- stats::runif(4)
   prob <- prob / sum(prob)
   deriv <- dDprime_dprob(prob)
   myenv <- new.env()
@@ -240,8 +249,66 @@ test_that("drDprime_dprob works", {
   )
 })
 
+test_that("dprobgenolike_dprob works OK", {
+  pgA <- log(c(0.1, 0.1, 0.3, 0.1, 0.05))
+  pgB <- log(c(0.01, 0.1, 0.3, 0.4, 0.1))
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
+  derivvec <- dprobgenolike_dprob(pgA = pgA, pgB = pgB, prob = prob)
+
+  myenv <- new.env()
+  assign(x = "pgA", value = pgA, envir = myenv)
+  assign(x = "pgB", value = pgB, envir = myenv)
+  assign(x = "prob", value = prob, envir = myenv)
+  nout <- stats::numericDeriv(quote(probgenolike(pgA = pgA, pgB = pgB, prob = prob)), "prob", myenv)
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(derivvec),
+    tolerance = 10^-5
+  )
+})
 
 
+test_that("dproballgenolike_dprob works OK", {
+  n <- 10
+  K <- 4
+  pgA <- matrix(log(stats::runif(n * K)), nrow = n)
+  pgB <- matrix(log(stats::runif(n * K)), nrow = n)
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
+  derivvec <- dproballgenolike_dprob(pgA = pgA, pgB = pgB, prob = prob)
+
+  myenv <- new.env()
+  assign(x = "pgA", value = pgA, envir = myenv)
+  assign(x = "pgB", value = pgB, envir = myenv)
+  assign(x = "prob", value = prob, envir = myenv)
+  nout <- stats::numericDeriv(quote(proballgenolike(pgA = pgA, pgB = pgB, prob = prob)), "prob", myenv)
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(derivvec),
+    tolerance = 10^-5
+  )
+})
+
+test_that("dllike_genolike_dpar works OK", {
+  n <- 10
+  K <- 4
+  pgA <- matrix(log(stats::runif(n * K)), nrow = n)
+  pgB <- matrix(log(stats::runif(n * K)), nrow = n)
+  par <- stats::rnorm(3)
+  derivvec <- dllike_genolike_dpar(par = par, pgA = pgA, pgB = pgB)
+
+  myenv <- new.env()
+  assign(x = "pgA", value = pgA, envir = myenv)
+  assign(x = "pgB", value = pgB, envir = myenv)
+  assign(x = "par", value = par, envir = myenv)
+  nout <- stats::numericDeriv(quote(llike_genolike(pgA = pgA, pgB = pgB, par = par)), "par", myenv)
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(derivvec),
+    tolerance = 10^-4
+  )
+})
 
 
 

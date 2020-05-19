@@ -5,9 +5,9 @@ using namespace Rcpp;
 
 double expit(double x);
 double log_sum_exp_2(double x, double y);
-double dmulti_double(const arma::vec &x, const arma::vec &prob, bool log_p);
-arma::vec plog_sum_exp(const arma::vec &x, const arma::vec &y);
-arma::vec real_to_simplex(const arma::vec &y);
+double dmulti_double(const arma::vec x, const arma::vec prob, bool log_p);
+arma::vec plog_sum_exp(const arma::vec x, const arma::vec y);
+arma::vec real_to_simplex(const arma::vec y);
 const double TOL = std::sqrt(DOUBLE_EPS);
 
 //' Derivative of multinomial pdf
@@ -21,8 +21,8 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::vec dmulti_dprob(const arma::vec &x,
-                       const arma::vec &prob,
+arma::vec dmulti_dprob(const arma::vec x,
+                       const arma::vec prob,
                        bool log_p = true) {
   if (x.n_elem != prob.n_elem) {
     Rcpp::stop("x and prob must have the same length");
@@ -51,9 +51,10 @@ arma::vec dmulti_dprob(const arma::vec &x,
   return deriv;
 }
 
-//' Derivative of \code{\link{probgeno}()} with respect to \code{prob}.
+//' Derivative of \code{\link{probgeno}(log = TRUE)} with respect to \code{prob}.
 //'
 //' @inheritParams probgeno
+//' @param log_d A logical. Should we return the log of the derivative or not?
 //'
 //' @author David Gerard
 //'
@@ -64,8 +65,8 @@ arma::vec dmulti_dprob(const arma::vec &x,
 // [[Rcpp::export]]
 arma::vec dprobgeno_dprob(const int &gA,
                           const int &gB,
-                          const int &K,
-                          const arma::vec &prob) {
+                          const int K,
+                          const arma::vec prob) {
   int minz = std::max(0, gA + gB - K);
   int maxz = std::min(gA, gB);
 
@@ -97,8 +98,8 @@ arma::vec dprobgeno_dprob(const int &gA,
 // [[Rcpp::export]]
 arma::vec dproballgeno_dprob(const arma::vec &gA,
                              const arma::vec &gB,
-                             const int &K,
-                             const arma::vec &prob) {
+                             const int K,
+                             const arma::vec prob) {
   if (gA.n_elem != gB.n_elem) {
     Rcpp::stop("gA and gB need to be the same length");
   }
@@ -121,7 +122,7 @@ arma::vec dproballgeno_dprob(const arma::vec &gA,
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::mat dreal_to_simplex_dy(const arma::vec &y) {
+arma::mat dreal_to_simplex_dy(const arma::vec y) {
   int K = y.n_elem + 1;
 
   arma::mat jacob(K, K - 1);
@@ -157,7 +158,7 @@ arma::mat dreal_to_simplex_dy(const arma::vec &y) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::mat dsimplex_to_real_dx(const arma::vec &x) {
+arma::mat dsimplex_to_real_dx(const arma::vec x) {
   int K = x.n_elem;
 
   arma::mat jacob(K - 1, K);
@@ -194,10 +195,10 @@ arma::mat dsimplex_to_real_dx(const arma::vec &x) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::vec dllike_geno_dpar(const arma::vec &par,
+arma::vec dllike_geno_dpar(const arma::vec par,
                            const arma::vec &gA,
                            const arma::vec &gB,
-                           const int &K) {
+                           const int K) {
   if (par.n_elem != 3) {
     Rcpp::stop("par needs to be length 3");
   }
@@ -230,7 +231,7 @@ arma::vec dllike_geno_dpar(const arma::vec &par,
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::vec dD_dprob(const arma::vec &prob) {
+arma::vec dD_dprob(const arma::vec prob) {
 
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
     Rcpp::stop("dD_dprob: prob must sum to 1.");
@@ -260,7 +261,7 @@ arma::vec dD_dprob(const arma::vec &prob) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::vec dr2_dprob(const arma::vec &prob) {
+arma::vec dr2_dprob(const arma::vec prob) {
 
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
     Rcpp::stop("dD_dprob: prob must sum to 1.");
@@ -305,7 +306,7 @@ arma::vec dr2_dprob(const arma::vec &prob) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::vec dDprime_dprob(const arma::vec &prob) {
+arma::vec dDprime_dprob(const arma::vec prob) {
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
     Rcpp::stop("dD_dprob: prob must sum to 1.");
   }

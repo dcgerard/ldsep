@@ -2,15 +2,15 @@
 #include <roptim.h>
 using namespace Rcpp;
 
-double llike_geno(const arma::vec &par,
+double llike_geno(const arma::vec par,
                   const arma::vec &gA,
                   const arma::vec &gB,
-                  const int &K);
+                  const int K);
 
-arma::vec dllike_geno_dpar(const arma::vec &par,
+arma::vec dllike_geno_dpar(const arma::vec par,
                            const arma::vec &gA,
                            const arma::vec &gB,
-                           const int &K);
+                           const int K);
 
 
 struct genoCor : public roptim::Functor {

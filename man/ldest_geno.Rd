@@ -90,7 +90,6 @@ ga <- sample(0:6, 100, TRUE)
 gb <- sample(0:6, 100, TRUE)
 K <- 6
 ldout <- ldest_geno(ga = ga, gb = gb, K = K)
-ldout
 
 }
 \author{

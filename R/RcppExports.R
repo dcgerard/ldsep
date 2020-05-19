@@ -15,9 +15,10 @@ dmulti_dprob <- function(x, prob, log_p = TRUE) {
     .Call(`_ldsep_dmulti_dprob`, x, prob, log_p)
 }
 
-#' Derivative of \code{\link{probgeno}()} with respect to \code{prob}.
+#' Derivative of \code{\link{probgeno}(log = TRUE)} with respect to \code{prob}.
 #'
 #' @inheritParams probgeno
+#' @param log_d A logical. Should we return the log of the derivative or not?
 #'
 #' @author David Gerard
 #'
@@ -121,6 +122,121 @@ dr2_dprob <- function(prob) {
 #' @noRd
 dDprime_dprob <- function(prob) {
     .Call(`_ldsep_dDprime_dprob`, prob)
+}
+
+#' Probability of genotype likelihoods given haplotype frequencies for a
+#' single individual.
+#'
+#' The ploidy of the species is assumed to be one less the length of
+#' \code{pgA} and \code{pgB} (which must be the same length).
+#'
+#' @param pgA The genotype log-likelihoods at locus 1. pgA[i] is the
+#'     log probability of the data given the genotype at locus 1 is i.
+#' @param pgB The genotype log-likelihoods at locus 2. pgA[i] is the
+#'     log probability of the data given the genotype at locus 2 is i.
+#' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
+#' @param log_p A logical. Should we return the log probability or not?
+#'
+#'
+#' @author David Gerard
+#'
+#' @noRd
+probgenolike <- function(pgA, pgB, prob, log_p = TRUE) {
+    .Call(`_ldsep_probgenolike`, pgA, pgB, prob, log_p)
+}
+
+#' Probability of genotype likelihoods given haplotype frequencies for all
+#' individuals.
+#'
+#' @param pgA The matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param pgA The matrix of genotype log-likelihoods for locus 2.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
+#' @param log_p A logical. Should we return the log probability or not?
+#'
+#'
+#' @author David Gerard
+#'
+#' @noRd
+proballgenolike <- function(pgA, pgB, prob, log_p = TRUE) {
+    .Call(`_ldsep_proballgenolike`, pgA, pgB, prob, log_p)
+}
+
+#' Likelihood function when estimating LD from genotype log-likelihoods
+#'
+#' @param par A vector of length 3 containing real numbers that are to
+#'     be transformed into the simplex of prob (ab, Ab, aB, AB).
+#' @inheritParams proballgenolike
+#'
+#' @author David Gerard
+#'
+#' @noRd
+llike_genolike <- function(par, pgA, pgB) {
+    .Call(`_ldsep_llike_genolike`, par, pgA, pgB)
+}
+
+#' Obtain a matrix of derivatives of p(geno) (NOT log(p(geno)))
+#' with respect to prob for all genotypes.
+#'
+#'
+#' @param K the ploidy
+#' @param prob Haplotype frequencies in order (ab, Ab, aB, AB).
+#'
+#' @return Element (i,j,k) is the derivative of \code{\link{probgeno}()}
+#'     when gA = i, gB = j with respect to prob[k]
+#'
+#' @author David Gerard
+#'
+#' @noRd
+get_dprobgeno_dprob_array <- function(K, prob) {
+    .Call(`_ldsep_get_dprobgeno_dprob_array`, K, prob)
+}
+
+#' Get a matrix of log probabilities
+#'
+#' @param K the ploidy
+#' @param prob Haplotype frequencies in order (ab, Ab, aB, AB).
+#'
+#' @author David Gerard
+#'
+#' @noRd
+get_prob_array <- function(K, prob) {
+    .Call(`_ldsep_get_prob_array`, K, prob)
+}
+
+#' Gradient of \code{\link{probgenolike}()} with respect to \code{prob}.
+#'
+#' @inheritParams probgenolike
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dprobgenolike_dprob <- function(pgA, pgB, prob) {
+    .Call(`_ldsep_dprobgenolike_dprob`, pgA, pgB, prob)
+}
+
+#' Gradient of \code{\link{proballgenolike}(,log = TRUE)} with respect to
+#' \code{prob}
+#'
+#' @inheritParams proballgenolike
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dproballgenolike_dprob <- function(pgA, pgB, prob) {
+    .Call(`_ldsep_dproballgenolike_dprob`, pgA, pgB, prob)
+}
+
+#' Derivative of \code{\link{llike_genolike}()} with respect to \code{par}.
+#'
+#' @inheritParams llike_genolike
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dllike_genolike_dpar <- function(par, pgA, pgB) {
+    .Call(`_ldsep_dllike_genolike_dpar`, par, pgA, pgB)
 }
 
 #' Multinomial pdf

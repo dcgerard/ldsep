@@ -25,15 +25,17 @@ able to use fewer. Ask your admins if you are unsure.}
 }
 \description{
 This function will run \code{\link{ldest_geno}()} iteratively over
-all possible pairs of SNPs provided. Support is included for parallelization.
+all possible pairs of SNPs provided. Support is provided for parallelization
+through the doParallel and foreach packages.
 }
 \examples{
 nloci <- 5
 nind  <- 100
 K <- 6
-nc <- 1
+nc <- 2
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
-res <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
+rdf <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
+
 
 }
 \author{

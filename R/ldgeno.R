@@ -82,7 +82,6 @@
 #' gb <- sample(0:6, 100, TRUE)
 #' K <- 6
 #' ldout <- ldest_geno(ga = ga, gb = gb, K = K)
-#' ldout
 #'
 #' @export
 ldest_geno <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
@@ -165,7 +164,8 @@ ldest_geno <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
 #' Estimate all pair-wise LD's in a collection of SNPs.
 #'
 #' This function will run \code{\link{ldest_geno}()} iteratively over
-#' all possible pairs of SNPs provided. Support is included for parallelization.
+#' all possible pairs of SNPs provided. Support is provided for parallelization
+#' through the doParallel and foreach packages.
 #'
 #' @param genomat A matrix of genotypes (allele dosages). The rows index the
 #'     SNPs and the columns index the individuals. That is, \code{genomat[i, j]}
@@ -186,9 +186,10 @@ ldest_geno <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
 #' nloci <- 5
 #' nind  <- 100
 #' K <- 6
-#' nc <- 1
+#' nc <- 2
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
-#' res <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
+#' rdf <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
+#'
 #'
 #' @export
 multi_ldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
@@ -213,17 +214,19 @@ multi_ldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
                              .combine = rbind,
                              .export = c("ldest_geno")) %dopar% {
 
-                               estmat <- matrix(NA_real_,
-                                                nrow = nloci - i,
-                                                ncol = 14)
-
                                for (j in (i + 1):nloci) {
-                                 estmat[j - i, 1] <- i
-                                 estmat[j - i, 2] <- j
                                  ldout <- ldest_geno(ga = genomat[i, ],
                                                      gb = genomat[j, ],
                                                      K = K,
-                                                     reltol = reltol)
+                                                     reltol = reltol,
+                                                     lang = "C++")
+                                 if (j == i + 1) {
+                                   estmat <- matrix(NA_real_,
+                                                    nrow = nloci - i,
+                                                    ncol = length(ldout) + 2)
+                                 }
+                                 estmat[j - i, 1] <- i
+                                 estmat[j - i, 2] <- j
                                  estmat[j - i, -c(1, 2)] <- ldout
 
                                }
@@ -294,6 +297,30 @@ format_lddf <- function(obj,
   cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
   cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
   return(cormat)
+}
+
+
+#' Estimate LD from genotype likelihoods.
+#'
+#' @param genlike1 A matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#'     The ploidy of the individuals is assumed to be the number of columns
+#'     minus 1.
+#' @param genlike2 A matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#'     The ploidy of the individuals is assumed to be the number of columns
+#'     minus 1.
+#'
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+ldest_genolike <- function(genlike1, genlike2) {
+  stopifnot(is.matrix(genlike1))
+  stopifnot(is.matrix(genlike2))
+  stopifnot(dim(genlike1) == dim(genlike2))
+
 }
 
 

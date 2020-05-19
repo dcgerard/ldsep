@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 double log_sum_exp_2(double x, double y);
-arma::vec real_to_simplex(const arma::vec &y);
+arma::vec real_to_simplex(const arma::vec y);
 const double TOL = std::sqrt(DOUBLE_EPS);
 
 //' Multinomial pdf
@@ -18,15 +18,15 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-double dmulti_double(const arma::vec &x,
-                     const arma::vec &prob,
+double dmulti_double(const arma::vec x,
+                     const arma::vec prob,
                      bool log_p = true) {
 
   if (x.n_elem != prob.n_elem) {
-    Rcpp::stop("x and prob must have the same length");
+    Rcpp::stop("dmulti_double: x and prob must have the same length");
   }
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
-    Rcpp::stop("prob must sum to 1");
+    Rcpp::stop("dmulti_double: prob must sum to 1");
   }
 
   double size = arma::sum(x);
@@ -64,15 +64,15 @@ double dmulti_double(const arma::vec &x,
 // [[Rcpp::export]]
 double probgeno(const int &gA,
                 const int &gB,
-                const int &K,
-                const arma::vec &prob,
+                const int K,
+                const arma::vec prob,
                 bool log_p = true) {
 
   int minz = std::max(0, gA + gB - K);
   int maxz = std::min(gA, gB);
 
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
-    Rcpp::stop("prob should sum to 1");
+    Rcpp::stop("probgeno: prob should sum to 1");
   }
 
   double lp = -arma::datum::inf;
@@ -106,12 +106,12 @@ double probgeno(const int &gA,
 // [[Rcpp::export]]
 double proballgeno(const arma::vec &gA,
                    const arma::vec &gB,
-                   const int &K,
-                   const arma::vec &prob,
+                   const int K,
+                   const arma::vec prob,
                    bool log_p = true) {
 
   if (gA.n_elem != gB.n_elem) {
-    Rcpp::stop("gA and gB need to be the same length");
+    Rcpp::stop("proballgeno: gA and gB need to be the same length");
   }
   int n = gA.n_elem;
 
@@ -137,12 +137,12 @@ double proballgeno(const arma::vec &gA,
 //'
 //' @noRd
 // [[Rcpp::export]]
-double llike_geno(const arma::vec &par,
+double llike_geno(const arma::vec par,
                   const arma::vec &gA,
                   const arma::vec &gB,
-                  const int &K) {
+                  const int K) {
   if (par.n_elem != 3) {
-    Rcpp::stop("par needs to be length 3");
+    Rcpp::stop("llike_geno: par needs to be length 3");
   }
 
   arma::vec prob = real_to_simplex(par);
