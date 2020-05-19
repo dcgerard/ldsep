@@ -16,7 +16,7 @@
 #' respectively, at locus 2. Let paa, pAb, paB, and pAB be the
 #' frequencies of haplotypes ab, Ab, aB, and AB, respectively.
 #' Let pA = pAb + pAB and let pB = paB + pAB
-#' The \code{ldest_geno} returns estimates of the following measures
+#' The \code{ldest} returns estimates of the following measures
 #' of LD.
 #' \itemize{
 #'   \item{D: pAB - pA pB}
@@ -78,37 +78,72 @@
 #'
 #' @examples
 #' set.seed(1)
-#' ga <- sample(0:6, 100, TRUE)
-#' gb <- sample(0:6, 100, TRUE)
+#' n <- 10
 #' K <- 6
-#' ldout <- ldest_geno(ga = ga, gb = gb, K = K)
+#'
+#' ## If you give ldest vectors, it assumes you are using genotypes
+#' ga <- sample(0:K, 100, TRUE)
+#' gb <- sample(0:K, 100, TRUE)
+#' head(ga)
+#' head(gb)
+#' ldout <- ldest(ga = ga, gb = gb, K = K)
+#' ldout
+#'
+#' ## if you give ldest matrices, it assumes you are using genotype likelihoods.
+#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
+#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
+#' head(gamat)
+#' head(gbmat)
+#' ldout <- ldest(ga = gamat, gb = gbmat, K = K)
+#' ldout
 #'
 #' @export
-ldest_geno <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
-  stopifnot(length(ga) == length(gb))
-  stopifnot(ga >= 0, ga <= K)
-  stopifnot(gb >= 0, gb <= K)
+ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
+
   stopifnot(length(K) == 1)
   lang <- match.arg(lang)
+  if (is.vector(ga) & is.vector(gb)) {
+    stopifnot(length(ga) == length(gb))
+    stopifnot(ga >= 0, ga <= K)
+    stopifnot(gb >= 0, gb <= K)
+    using = "genotypes"
+  } else if (is.matrix(ga) & is.matrix(gb)) {
+    stopifnot(dim(ga) == dim(gb))
+    stopifnot(K + 1 == ncol(ga))
+    using = "likelihoods"
+  } else {
+    stop("ldest: ga and gb must either both be vectors or both be matrices.")
+  }
+
 
   ## find MLE of proportions ---------
   inity <- rep(0, 3)
-  if (lang == "R") {
-  oout <- stats::optim(par     = inity,
-                       fn      = llike_geno,
-                       gr      = dllike_geno_dpar,
-                       method  = "BFGS",
-                       control = list(fnscale = -1, reltol = reltol),
-                       hessian = TRUE,
-                       gA      = ga,
-                       gB      = gb,
-                       K       = K)
-  } else {
+  if (lang == "R" & using == "genotypes") {
+    oout <- stats::optim(par     = inity,
+                         fn      = llike_geno,
+                         gr      = dllike_geno_dpar,
+                         method  = "BFGS",
+                         control = list(fnscale = -1, reltol = reltol),
+                         hessian = TRUE,
+                         gA      = ga,
+                         gB      = gb,
+                         K       = K)
+  } else if (using == "genotypes") {
     oout <- optimize_genocor(par    = inity,
                              gA     = ga,
                              gB     = gb,
                              K      = K,
                              reltol = reltol)
+  } else {
+    oout <- stats::optim(par     = inity,
+                         fn      = llike_genolike,
+                         gr      = dllike_genolike_dpar,
+                         method  = "BFGS",
+                         control = list(fnscale = -1, reltol = reltol),
+                         hessian = TRUE,
+                         pgA      = ga,
+                         pgB      = gb)
+
   }
 
   ## Get estimates -------------------
@@ -163,7 +198,7 @@ ldest_geno <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
 
 #' Estimate all pair-wise LD's in a collection of SNPs.
 #'
-#' This function will run \code{\link{ldest_geno}()} iteratively over
+#' This function will run \code{\link{ldest}()} iteratively over
 #' all possible pairs of SNPs provided. Support is provided for parallelization
 #' through the doParallel and foreach packages.
 #'
@@ -212,14 +247,14 @@ multi_ldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
   i <- 1
   outmat <- foreach::foreach(i = seq_len(nloci - 1),
                              .combine = rbind,
-                             .export = c("ldest_geno")) %dopar% {
+                             .export = c("ldest")) %dopar% {
 
                                for (j in (i + 1):nloci) {
-                                 ldout <- ldest_geno(ga = genomat[i, ],
-                                                     gb = genomat[j, ],
-                                                     K = K,
-                                                     reltol = reltol,
-                                                     lang = "C++")
+                                 ldout <- ldest(ga = genomat[i, ],
+                                                gb = genomat[j, ],
+                                                K = K,
+                                                reltol = reltol,
+                                                lang = "C++")
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,
@@ -297,30 +332,6 @@ format_lddf <- function(obj,
   cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
   cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
   return(cormat)
-}
-
-
-#' Estimate LD from genotype likelihoods.
-#'
-#' @param genlike1 A matrix of genotype log-likelihoods for locus 1.
-#'     The rows index the individuals and the columns index the genotypes.
-#'     The ploidy of the individuals is assumed to be the number of columns
-#'     minus 1.
-#' @param genlike2 A matrix of genotype log-likelihoods for locus 1.
-#'     The rows index the individuals and the columns index the genotypes.
-#'     The ploidy of the individuals is assumed to be the number of columns
-#'     minus 1.
-#'
-#'
-#' @author David Gerard
-#'
-#' @export
-#'
-ldest_genolike <- function(genlike1, genlike2) {
-  stopifnot(is.matrix(genlike1))
-  stopifnot(is.matrix(genlike2))
-  stopifnot(dim(genlike1) == dim(genlike2))
-
 }
 
 

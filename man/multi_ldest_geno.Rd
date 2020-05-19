@@ -24,7 +24,7 @@ able to use fewer. Ask your admins if you are unsure.}
 \item{reltol}{The relative tolerance for the stopping criterion.}
 }
 \description{
-This function will run \code{\link{ldest_geno}()} iteratively over
+This function will run \code{\link{ldest}()} iteratively over
 all possible pairs of SNPs provided. Support is provided for parallelization
 through the doParallel and foreach packages.
 }
