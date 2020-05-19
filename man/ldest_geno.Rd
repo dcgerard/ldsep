@@ -2,26 +2,95 @@
 % Please edit documentation in R/ldgeno.R
 \name{ldest_geno}
 \alias{ldest_geno}
-\title{Estimate LD directly from the genotypes}
+\title{Estimate pair-wise LD directly from the genotypes.}
 \usage{
-ldest_geno(ga, gb, K)
+ldest_geno(ga, gb, K, reltol = 10^-8, lang = c("C++", "R"))
 }
 \arguments{
 \item{ga}{A vector of counts, containing the genotypes for each individual
 at the first locus.}
 
-\item{gb}{vector of counts, containing the genotypes for each individual
+\item{gb}{A vector of counts, containing the genotypes for each individual
 at the second locus.}
 
-\item{K}{the ploidy of the species.}
+\item{K}{The ploidy of the species. Assumed the same for all individuals.}
+
+\item{reltol}{The relative tolerance for the stopping criterion.}
+
+\item{lang}{Should we use the R interface for optim (\code{"R"}) or the
+C++ interface for optim through the roptim package (\code{"C++"})?}
+}
+\value{
+A vector with the following elements:
+\describe{
+\item{\code{D}}{The MLE of D.}
+\item{\code{D_se}}{The standard error of the estimate of D.}
+\item{\code{Dprime}}{The MLE of D'.}
+\item{\code{Dprime_se}}{The standard error of the estimate of D'.}
+\item{\code{r2}}{The MLE of the squared Pearson correlation.}
+\item{\code{r2_se}}{The standard error of the estimate of the
+squared Pearson correlation.}
+\item{\code{r}}{he MLE of the Pearson correlation.}
+\item{\code{r_se}}{The standard error of the estimate of the
+Pearson correlation.}
+\item{\code{p_ab}}{The estimated haplotype frequency of ab.}
+\item{\code{p_Ab}}{The estimated haplotype frequency of Ab.}
+\item{\code{p_aB}}{The estimated haplotype frequency of aB.}
+\item{\code{p_AB}}{The estimated haplotype frequency of AB.}
+}
 }
 \description{
-Estimate LD directly from the genotypes
+Given genotype (allele dosage) data for each individual at a pair of
+loci, this function will calculate the maximum likelihood estimates
+and their corresponding asymptotic standard errors of a variety of
+measures of linkage disequilibrium (LD): D, D', and the
+squared correlation. This function can be used for both
+diploids and polyploids.
+}
+\details{
+Let A and a be the reference and alternative alleles, respectively, at
+locus 1. Let B and b be the reference and alternative alleles,
+respectively, at locus 2. Let paa, pAb, paB, and pAB be the
+frequencies of haplotypes ab, Ab, aB, and AB, respectively.
+Let pA = pAb + pAB and let pB = paB + pAB
+The \code{ldest_geno} returns estimates of the following measures
+of LD.
+\itemize{
+\item{D: pAB - pA pB}
+\item{D': D / Dmax, where Dmax = min(pA pB, (1 - pA) (1 - pB)) if
+D < 0 and Dmax = min(pA (1 - pB), pA (1 - pB)) if D > 0}
+\item{r-squared: The squared Pearson correlation,
+r^2 = D^2 / (pA (1 - pA) pB (1 - pB))}
+\item{r: The Pearson correlation,
+r = D / sqrt(pA (1 - pA) pB (1 - pB))}
+}
+
+Estimates are obtained via maximum likelihood under the assumption
+of Hardy-Weinberg equilibrium. The likelihood is calculated by
+integrating over the possible haplotypes for each pair of genotypes.
+
+The resulting standard errors are the square roots of the inverse of the
+negative Fisher-information. This is from standard maximum likelihood
+theory. The Fisher-information is known to be biased low, so the actual
+standard errors are probably a little bigger for small n (n < 100).
+
+The standard error estimate of the squared Pearson correlation is not
+valid when r^2 = 0.
+
+The standard error estimate of D' is not valid when
+\itemize{
+\item{D' = 0,}
+\item{D' < 0 and pA pB = (1 - pA) (1 - pB), or}
+\item{D' > 0 and pA (1 - pB) = pA (1 - pB).}
+}
 }
 \examples{
-ga <- c(1, 4, 1, 2)
-gb <- c(0, 3, 3, 0)
-K <- 4
+set.seed(1)
+ga <- sample(0:6, 100, TRUE)
+gb <- sample(0:6, 100, TRUE)
+K <- 6
+ldout <- ldest_geno(ga = ga, gb = gb, K = K)
+ldout
 
 }
 \author{

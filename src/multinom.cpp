@@ -1,10 +1,10 @@
 // vectorized functions for multinomial distribution
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 using namespace Rcpp;
 
 double log_sum_exp_2(double x, double y);
-NumericVector real_to_simplex(const NumericVector &y);
+arma::vec real_to_simplex(const arma::vec &y);
 const double TOL = std::sqrt(DOUBLE_EPS);
 
 //' Multinomial pdf
@@ -18,22 +18,22 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-double dmulti_double(const IntegerVector &x,
-                     const NumericVector &prob,
+double dmulti_double(const arma::vec &x,
+                     const arma::vec &prob,
                      bool log_p = true) {
 
-  if (x.length() != prob.length()) {
+  if (x.n_elem != prob.n_elem) {
     Rcpp::stop("x and prob must have the same length");
   }
-  if (std::abs(Rcpp::sum(prob) - 1.0) > TOL) {
+  if (std::abs(arma::sum(prob) - 1.0) > TOL) {
     Rcpp::stop("prob must sum to 1");
   }
 
-  double size = Rcpp::sum(x);
+  double size = arma::sum(x);
 
-  int n = x.length();
+  int n = x.n_elem;
 
-  double lval = R::lgammafn(size + 1.0) - Rcpp::sum(Rcpp::lgamma(x + 1.0));
+  double lval = R::lgammafn(size + 1.0) - arma::sum(arma::lgamma(x + 1.0));
 
   for (int i = 0; i < n; i++) {
     if (x[i] > 0) {
@@ -65,19 +65,19 @@ double dmulti_double(const IntegerVector &x,
 double probgeno(const int &gA,
                 const int &gB,
                 const int &K,
-                const NumericVector &prob,
+                const arma::vec &prob,
                 bool log_p = true) {
 
   int minz = std::max(0, gA + gB - K);
   int maxz = std::min(gA, gB);
 
-  if (std::abs(Rcpp::sum(prob) - 1.0) > TOL) {
+  if (std::abs(arma::sum(prob) - 1.0) > TOL) {
     Rcpp::stop("prob should sum to 1");
   }
 
-  double lp = R_NegInf;
+  double lp = -arma::datum::inf;
 
-  IntegerVector x(4);
+  arma::vec x(4);
   for (int z = minz; z <= maxz; z++) {
     x[0] = K + z - gA - gB; // number ab
     x[1] = gA - z; // number Ab
@@ -104,16 +104,16 @@ double probgeno(const int &gA,
 //'
 //' @noRd
 // [[Rcpp::export]]
-double proballgeno(const IntegerVector &gA,
-                   const IntegerVector &gB,
+double proballgeno(const arma::vec &gA,
+                   const arma::vec &gB,
                    const int &K,
-                   const NumericVector &prob,
+                   const arma::vec &prob,
                    bool log_p = true) {
 
-  if (gA.length() != gB.length()) {
+  if (gA.n_elem != gB.n_elem) {
     Rcpp::stop("gA and gB need to be the same length");
   }
-  int n = gA.length();
+  int n = gA.n_elem;
 
   double lp = 0.0;
   for (int i = 0; i < n; i++) {
@@ -137,48 +137,20 @@ double proballgeno(const IntegerVector &gA,
 //'
 //' @noRd
 // [[Rcpp::export]]
-double llike_geno(const NumericVector &par,
-                  const IntegerVector &gA,
-                  const IntegerVector &gB,
+double llike_geno(const arma::vec &par,
+                  const arma::vec &gA,
+                  const arma::vec &gB,
                   const int &K) {
-  if (par.length() != 3) {
+  if (par.n_elem != 3) {
     Rcpp::stop("par needs to be length 3");
   }
 
-  NumericVector prob = real_to_simplex(par);
+  arma::vec prob = real_to_simplex(par);
 
   double llike = proballgeno(gA, gB, K, prob, true);
 
   return llike;
 }
 
-
-//' Negative Likelihood function meant to be used in lbfgs package by pointer.
-//'
-//' @param xs This is \code{par} from \code{\link{llike_geno}()}.
-//' @param env This is an environtment containing \code{gA},
-//'     \code{gB}, and \code{K} from \code{\link{llike_geno}()}.
-//'
-//' @author David Gerard
-//'
-//' @noRd
-// [[Rcpp::export]]
-NumericVector nllike_geno_p(SEXP xs, SEXP env) {
-  NumericVector par(xs);
-  Environment e = as<Environment>(env);
-  IntegerVector gA = as<IntegerVector>(e["gA"]);
-  IntegerVector gB = as<IntegerVector>(e["gB"]);
-  int K = as<int>(e["K"]);
-
-  if (par.length() != 3) {
-    stop("par needs to be length 3");
-  }
-
-  NumericVector prob = real_to_simplex(par);
-
-  NumericVector llike = {-1.0 * proballgeno(gA, gB, K, prob, true)};
-
-  return llike;
-}
 
 

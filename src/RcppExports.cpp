@@ -7,20 +7,20 @@
 using namespace Rcpp;
 
 // dmulti_dprob
-NumericVector dmulti_dprob(const IntegerVector& x, const NumericVector& prob, bool log_p);
+arma::vec dmulti_dprob(const arma::vec& x, const arma::vec& prob, bool log_p);
 RcppExport SEXP _ldsep_dmulti_dprob(SEXP xSEXP, SEXP probSEXP, SEXP log_pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const IntegerVector& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
     Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
     rcpp_result_gen = Rcpp::wrap(dmulti_dprob(x, prob, log_p));
     return rcpp_result_gen;
 END_RCPP
 }
 // dprobgeno_dprob
-NumericVector dprobgeno_dprob(const int& gA, const int& gB, const int& K, const NumericVector& prob);
+arma::vec dprobgeno_dprob(const int& gA, const int& gB, const int& K, const arma::vec& prob);
 RcppExport SEXP _ldsep_dprobgeno_dprob(SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP probSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -28,77 +28,109 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int& >::type gA(gASEXP);
     Rcpp::traits::input_parameter< const int& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
     rcpp_result_gen = Rcpp::wrap(dprobgeno_dprob(gA, gB, K, prob));
     return rcpp_result_gen;
 END_RCPP
 }
 // dproballgeno_dprob
-NumericVector dproballgeno_dprob(const IntegerVector& gA, const IntegerVector& gB, const int& K, const NumericVector& prob);
+arma::vec dproballgeno_dprob(const arma::vec& gA, const arma::vec& gB, const int& K, const arma::vec& prob);
 RcppExport SEXP _ldsep_dproballgeno_dprob(SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP probSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gA(gASEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gB(gBSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
     rcpp_result_gen = Rcpp::wrap(dproballgeno_dprob(gA, gB, K, prob));
     return rcpp_result_gen;
 END_RCPP
 }
 // dreal_to_simplex_dy
-NumericMatrix dreal_to_simplex_dy(const NumericVector& y);
+arma::mat dreal_to_simplex_dy(const arma::vec& y);
 RcppExport SEXP _ldsep_dreal_to_simplex_dy(SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(dreal_to_simplex_dy(y));
     return rcpp_result_gen;
 END_RCPP
 }
+// dsimplex_to_real_dx
+arma::mat dsimplex_to_real_dx(const arma::vec& x);
+RcppExport SEXP _ldsep_dsimplex_to_real_dx(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(dsimplex_to_real_dx(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dllike_geno_dpar
-NumericVector dllike_geno_dpar(const NumericVector& par, const IntegerVector& gA, const IntegerVector& gB, const int& K);
+arma::vec dllike_geno_dpar(const arma::vec& par, const arma::vec& gA, const arma::vec& gB, const int& K);
 RcppExport SEXP _ldsep_dllike_geno_dpar(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gA(gASEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gB(gBSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     rcpp_result_gen = Rcpp::wrap(dllike_geno_dpar(par, gA, gB, K));
     return rcpp_result_gen;
 END_RCPP
 }
-// dnllike_geno_dpar_p
-NumericVector dnllike_geno_dpar_p(SEXP xs, SEXP env);
-RcppExport SEXP _ldsep_dnllike_geno_dpar_p(SEXP xsSEXP, SEXP envSEXP) {
+// dD_dprob
+arma::vec dD_dprob(const arma::vec& prob);
+RcppExport SEXP _ldsep_dD_dprob(SEXP probSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type xs(xsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type env(envSEXP);
-    rcpp_result_gen = Rcpp::wrap(dnllike_geno_dpar_p(xs, env));
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
+    rcpp_result_gen = Rcpp::wrap(dD_dprob(prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dr2_dprob
+arma::vec dr2_dprob(const arma::vec& prob);
+RcppExport SEXP _ldsep_dr2_dprob(SEXP probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
+    rcpp_result_gen = Rcpp::wrap(dr2_dprob(prob));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dDprime_dprob
+arma::vec dDprime_dprob(const arma::vec& prob);
+RcppExport SEXP _ldsep_dDprime_dprob(SEXP probSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
+    rcpp_result_gen = Rcpp::wrap(dDprime_dprob(prob));
     return rcpp_result_gen;
 END_RCPP
 }
 // dmulti_double
-double dmulti_double(const IntegerVector& x, const NumericVector& prob, bool log_p);
+double dmulti_double(const arma::vec& x, const arma::vec& prob, bool log_p);
 RcppExport SEXP _ldsep_dmulti_double(SEXP xSEXP, SEXP probSEXP, SEXP log_pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const IntegerVector& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
     Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
     rcpp_result_gen = Rcpp::wrap(dmulti_double(x, prob, log_p));
     return rcpp_result_gen;
 END_RCPP
 }
 // probgeno
-double probgeno(const int& gA, const int& gB, const int& K, const NumericVector& prob, bool log_p);
+double probgeno(const int& gA, const int& gB, const int& K, const arma::vec& prob, bool log_p);
 RcppExport SEXP _ldsep_probgeno(SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP probSEXP, SEXP log_pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -106,60 +138,63 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int& >::type gA(gASEXP);
     Rcpp::traits::input_parameter< const int& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
     Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
     rcpp_result_gen = Rcpp::wrap(probgeno(gA, gB, K, prob, log_p));
     return rcpp_result_gen;
 END_RCPP
 }
 // proballgeno
-double proballgeno(const IntegerVector& gA, const IntegerVector& gB, const int& K, const NumericVector& prob, bool log_p);
+double proballgeno(const arma::vec& gA, const arma::vec& gB, const int& K, const arma::vec& prob, bool log_p);
 RcppExport SEXP _ldsep_proballgeno(SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP probSEXP, SEXP log_pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gA(gASEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gB(gBSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type prob(probSEXP);
     Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
     rcpp_result_gen = Rcpp::wrap(proballgeno(gA, gB, K, prob, log_p));
     return rcpp_result_gen;
 END_RCPP
 }
 // llike_geno
-double llike_geno(const NumericVector& par, const IntegerVector& gA, const IntegerVector& gB, const int& K);
+double llike_geno(const arma::vec& par, const arma::vec& gA, const arma::vec& gB, const int& K);
 RcppExport SEXP _ldsep_llike_geno(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gA(gASEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type gB(gBSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
     rcpp_result_gen = Rcpp::wrap(llike_geno(par, gA, gB, K));
     return rcpp_result_gen;
 END_RCPP
 }
-// nllike_geno_p
-NumericVector nllike_geno_p(SEXP xs, SEXP env);
-RcppExport SEXP _ldsep_nllike_geno_p(SEXP xsSEXP, SEXP envSEXP) {
+// optimize_genocor
+List optimize_genocor(arma::vec& par, const arma::vec& gA, const arma::vec& gB, const int& K, double reltol);
+RcppExport SEXP _ldsep_optimize_genocor(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP reltolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type xs(xsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type env(envSEXP);
-    rcpp_result_gen = Rcpp::wrap(nllike_geno_p(xs, env));
+    Rcpp::traits::input_parameter< arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
+    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
+    Rcpp::traits::input_parameter< double >::type reltol(reltolSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimize_genocor(par, gA, gB, K, reltol));
     return rcpp_result_gen;
 END_RCPP
 }
 // log_sum_exp
-double log_sum_exp(const NumericVector& x);
+double log_sum_exp(const arma::vec& x);
 RcppExport SEXP _ldsep_log_sum_exp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(log_sum_exp(x));
     return rcpp_result_gen;
 END_RCPP
@@ -177,13 +212,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // plog_sum_exp
-NumericVector plog_sum_exp(const NumericVector& x, const NumericVector& y);
+arma::vec plog_sum_exp(const arma::vec& x, const arma::vec& y);
 RcppExport SEXP _ldsep_plog_sum_exp(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(plog_sum_exp(x, y));
     return rcpp_result_gen;
 END_RCPP
@@ -211,23 +246,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // real_to_simplex
-NumericVector real_to_simplex(const NumericVector& y);
+arma::vec real_to_simplex(const arma::vec& y);
 RcppExport SEXP _ldsep_real_to_simplex(SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(real_to_simplex(y));
     return rcpp_result_gen;
 END_RCPP
 }
 // simplex_to_real
-NumericVector simplex_to_real(const NumericVector& x);
+arma::vec simplex_to_real(const arma::vec& x);
 RcppExport SEXP _ldsep_simplex_to_real(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(simplex_to_real(x));
     return rcpp_result_gen;
 END_RCPP
@@ -238,13 +273,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dprobgeno_dprob", (DL_FUNC) &_ldsep_dprobgeno_dprob, 4},
     {"_ldsep_dproballgeno_dprob", (DL_FUNC) &_ldsep_dproballgeno_dprob, 4},
     {"_ldsep_dreal_to_simplex_dy", (DL_FUNC) &_ldsep_dreal_to_simplex_dy, 1},
+    {"_ldsep_dsimplex_to_real_dx", (DL_FUNC) &_ldsep_dsimplex_to_real_dx, 1},
     {"_ldsep_dllike_geno_dpar", (DL_FUNC) &_ldsep_dllike_geno_dpar, 4},
-    {"_ldsep_dnllike_geno_dpar_p", (DL_FUNC) &_ldsep_dnllike_geno_dpar_p, 2},
+    {"_ldsep_dD_dprob", (DL_FUNC) &_ldsep_dD_dprob, 1},
+    {"_ldsep_dr2_dprob", (DL_FUNC) &_ldsep_dr2_dprob, 1},
+    {"_ldsep_dDprime_dprob", (DL_FUNC) &_ldsep_dDprime_dprob, 1},
     {"_ldsep_dmulti_double", (DL_FUNC) &_ldsep_dmulti_double, 3},
     {"_ldsep_probgeno", (DL_FUNC) &_ldsep_probgeno, 5},
     {"_ldsep_proballgeno", (DL_FUNC) &_ldsep_proballgeno, 5},
     {"_ldsep_llike_geno", (DL_FUNC) &_ldsep_llike_geno, 4},
-    {"_ldsep_nllike_geno_p", (DL_FUNC) &_ldsep_nllike_geno_p, 2},
+    {"_ldsep_optimize_genocor", (DL_FUNC) &_ldsep_optimize_genocor, 5},
     {"_ldsep_log_sum_exp", (DL_FUNC) &_ldsep_log_sum_exp, 1},
     {"_ldsep_log_sum_exp_2", (DL_FUNC) &_ldsep_log_sum_exp_2, 2},
     {"_ldsep_plog_sum_exp", (DL_FUNC) &_ldsep_plog_sum_exp, 2},

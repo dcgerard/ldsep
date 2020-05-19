@@ -54,6 +54,17 @@ dreal_to_simplex_dy <- function(y) {
     .Call(`_ldsep_dreal_to_simplex_dy`, y)
 }
 
+#' Derivative of \code{\link{simplex_to_real}()} with respect to \code{x}.
+#'
+#' @param x A simplex elements.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dsimplex_to_real_dx <- function(x) {
+    .Call(`_ldsep_dsimplex_to_real_dx`, x)
+}
+
 #' Derivative of \code{\link{llike_geno}()} with respect to par.
 #'
 #'
@@ -66,17 +77,50 @@ dllike_geno_dpar <- function(par, gA, gB, K) {
     .Call(`_ldsep_dllike_geno_dpar`, par, gA, gB, K)
 }
 
-#' Negative Derivative function meant to be used in lbfgs package by pointer.
+#' Derivative of prob[[4]] - (prob[[2]] + prob[[4]]) * (prob[[3]] + prob[[4]])
+#' with respect to prob.
 #'
-#' @param xs This is \code{par} from \code{\link{dllike_geno_dpar}()}.
-#' @param env This is an environtment containing \code{gA},
-#'     \code{gB}, and \code{K} from \code{\link{dllike_geno_dpar}()}.
+#' These derivatives are with repsect to prob[1], prob[2], and prob[3].
+#' prob[4] is defined in terms of those other three values as
+#' prob[4] = 1 - sum(prob[1:3]).
+#'
+#' @param prob Probability vector in order of (ab, Ab, aB, AB)
 #'
 #' @author David Gerard
 #'
 #' @noRd
-dnllike_geno_dpar_p <- function(xs, env) {
-    .Call(`_ldsep_dnllike_geno_dpar_p`, xs, env)
+dD_dprob <- function(prob) {
+    .Call(`_ldsep_dD_dprob`, prob)
+}
+
+#' Derivative of squared correlation with respect to prob.
+#'
+#' These derivatives are with repsect to prob[1], prob[2], and prob[3].
+#' prob[4] is defined in terms of those other three values as
+#' prob[4] = 1 - sum(prob[1:3]).
+#'
+#' @param prob Probability vector in order of (ab, Ab, aB, AB)
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dr2_dprob <- function(prob) {
+    .Call(`_ldsep_dr2_dprob`, prob)
+}
+
+#' Derivative of D'with respect to prob.
+#'
+#' These derivatives are with repsect to prob[1], prob[2], and prob[3].
+#' prob[4] is defined in terms of those other three values as
+#' prob[4] = 1 - sum(prob[1:3]).
+#'
+#' @param prob Probability vector in order of (ab, Ab, aB, AB)
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dDprime_dprob <- function(prob) {
+    .Call(`_ldsep_dDprime_dprob`, prob)
 }
 
 #' Multinomial pdf
@@ -136,17 +180,21 @@ llike_geno <- function(par, gA, gB, K) {
     .Call(`_ldsep_llike_geno`, par, gA, gB, K)
 }
 
-#' Negative Likelihood function meant to be used in lbfgs package by pointer.
+#' Find LD estimates using just the genotypes.
 #'
-#' @param xs This is \code{par} from \code{\link{llike_geno}()}.
-#' @param env This is an environtment containing \code{gA},
-#'     \code{gB}, and \code{K} from \code{\link{llike_geno}()}.
+#'
+#' @param par The parameters on the real-scale.
+#' @param gA The genotypes at locus 1.
+#' @param gB The genotypes at locus 2.
+#' @param K The ploidy for the species. Assumed to be the same for
+#'     all individuals.
+#' @param reltol The stopping criterion for the gradient ascent.
 #'
 #' @author David Gerard
 #'
 #' @noRd
-nllike_geno_p <- function(xs, env) {
-    .Call(`_ldsep_nllike_geno_p`, xs, env)
+optimize_genocor <- function(par, gA, gB, K, reltol = 10.0e-08) {
+    .Call(`_ldsep_optimize_genocor`, par, gA, gB, K, reltol)
 }
 
 #' Log-sum-exponential trick.

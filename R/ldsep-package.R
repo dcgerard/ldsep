@@ -6,6 +6,7 @@
 #' shrinkage. The idea is to expand this to allow for a sliding window
 #' estimation procedure for genome-wise LD estimation.
 #'
+#' @importFrom foreach %dopar%
 #' @useDynLib ldsep, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #'

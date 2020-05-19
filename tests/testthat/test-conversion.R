@@ -11,13 +11,13 @@ test_that("real_to_simplex and simplex_to_real are inverses", {
   x <- c(0.1, 0.6, 0.2, 0.1)
   expect_equal(
     x,
-    real_to_simplex(simplex_to_real(x = x))
+    c(real_to_simplex(simplex_to_real(x = x)))
   )
 
   y <- c(-1, 0, 2)
   expect_equal(
     y,
-    simplex_to_real(real_to_simplex(y = y))
+    c(simplex_to_real(real_to_simplex(y = y)))
   )
 })
 

@@ -23,6 +23,8 @@ LinkingTo:
     roptim
 Imports: 
     Rcpp,
-    roptim
+    roptim,
+    foreach,
+    doParallel
 Suggests: 
     testthat

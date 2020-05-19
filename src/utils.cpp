@@ -1,4 +1,4 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 using namespace Rcpp;
 
 const double TOL = std::sqrt(DOUBLE_EPS);
@@ -14,13 +14,13 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-double log_sum_exp(const NumericVector &x) {
-  double max_x = Rcpp::max(x);
+double log_sum_exp(const arma::vec &x) {
+  double max_x = arma::max(x);
   double lse; // the log-sum-exp
-  if (max_x == R_NegInf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
-    lse = R_NegInf;
+  if (max_x == -arma::datum::inf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
+    lse = -arma::datum::inf;
   } else {
-    lse = max_x + std::log(Rcpp::sum(Rcpp::exp(x - max_x)));
+    lse = max_x + std::log(arma::sum(arma::exp(x - max_x)));
   }
   return lse;
 }
@@ -39,8 +39,8 @@ double log_sum_exp(const NumericVector &x) {
 double log_sum_exp_2(double x, double y) {
   double z = std::max(x, y);
   double finalval;
-  if (z == R_NegInf) {
-    finalval = R_NegInf;
+  if (z == -arma::datum::inf) {
+    finalval = -arma::datum::inf;
   } else {
     finalval = std::log(std::exp(x - z) + std::exp(y - z)) + z;
   }
@@ -58,16 +58,16 @@ double log_sum_exp_2(double x, double y) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-NumericVector plog_sum_exp(const NumericVector &x,
-                           const NumericVector &y) {
+arma::vec plog_sum_exp(const arma::vec &x,
+                       const arma::vec &y) {
 
-  if (x.length() != y.length()) {
+  if (x.n_elem != y.n_elem) {
     Rcpp::stop("x and y must have the same length");
   }
 
-  int n = x.length();
+  int n = x.n_elem;
 
-  NumericVector z(n);
+  arma::vec z(n);
 
   for (int i = 0; i < n; i++) {
     z[i] = log_sum_exp_2(x[i], y[i]);
@@ -125,9 +125,9 @@ double expit(double x) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-NumericVector real_to_simplex(const NumericVector &y) {
-  int K = y.length() + 1;
-  NumericVector x(K);
+arma::vec real_to_simplex(const arma::vec &y) {
+  int K = y.n_elem + 1;
+  arma::vec x(K);
 
   double recsum = 0.0;
   for (int k = 0; k < K - 1; k++) {
@@ -152,13 +152,13 @@ NumericVector real_to_simplex(const NumericVector &y) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-NumericVector simplex_to_real(const NumericVector &x) {
-  if (std::abs(Rcpp::sum(x) - 1.0) > TOL) {
+arma::vec simplex_to_real(const arma::vec &x) {
+  if (std::abs(arma::sum(x) - 1.0) > TOL) {
     Rcpp::stop("x should sum to 1");
   }
 
-  int K = x.length();
-  NumericVector y(K - 1);
+  int K = x.n_elem;
+  arma::vec y(K - 1);
 
   double recsum = 0.0;
   for (int k = 0; k < K - 1; k++) {

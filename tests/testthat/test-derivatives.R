@@ -12,7 +12,7 @@ test_that("dmulti_dprob works", {
 
   expect_equal(
     c(attr(nout, "gradient")),
-    derivvec
+    c(derivvec)
   )
 
   # microbenchmark::microbenchmark(
@@ -39,7 +39,7 @@ test_that("dprobgeno_dprob works", {
 
   expect_equal(
     c(attr(nout, "gradient")),
-    derivvec
+    c(derivvec)
   )
 
   # microbenchmark::microbenchmark(
@@ -66,7 +66,7 @@ test_that("dproballgeno_dprob works", {
 
   expect_equal(
     c(attr(nout, "gradient")),
-    derivvec,
+    c(derivvec),
     tolerance = 10^-5
   )
 
@@ -80,7 +80,6 @@ test_that("dproballgeno_dprob works", {
 
 test_that("derivative of real_to_simplex is correct", {
   y <- c(1, -2, 3)
-  real_to_simplex(y = y)
 
   jacobmat <- dreal_to_simplex_dy(y = y)
 
@@ -106,7 +105,37 @@ test_that("derivative of real_to_simplex is correct", {
 
   expect_equal(
     numerjacob,
-    jacobmat
+    jacobmat,
+    tolerance = 10^-5
+  )
+})
+
+test_that("derivative of simplex_to_real is correct", {
+  x <- c(0.1, 0.2, 0.3, 0.4)
+
+  jacobmat <- dsimplex_to_real_dx(x = x)
+
+  fpi <- function(x, i) {
+    simplex_to_real(x = x)[i]
+  }
+
+  numerjacob <- matrix(NA_real_, nrow = length(x) - 1, ncol = length(x))
+  myenv <- new.env()
+  assign(x = "x", value = x, envir = myenv)
+  assign(x = "i", value = 1, envir = myenv)
+  nout <- stats::numericDeriv(quote(fpi(x =x, i = i)), "x", myenv)
+  numerjacob[1, ] <- c(attr(nout, "gradient"))
+  assign(x = "i", value = 2, envir = myenv)
+  nout <- stats::numericDeriv(quote(fpi(x =x, i = i)), "x", myenv)
+  numerjacob[2, ] <- c(attr(nout, "gradient"))
+  assign(x = "i", value = 3, envir = myenv)
+  nout <- stats::numericDeriv(quote(fpi(x =x, i = i)), "x", myenv)
+  numerjacob[3, ] <- c(attr(nout, "gradient"))
+
+  expect_equal(
+    numerjacob,
+    jacobmat,
+    tolerance = 10^-5
   )
 })
 
@@ -127,7 +156,7 @@ test_that("dllike_geno_dpar works", {
 
   expect_equal(
     c(attr(nout, "gradient")),
-    derivvec,
+    c(derivvec),
     tolerance = 10^-5
   )
 
@@ -136,3 +165,84 @@ test_that("dllike_geno_dpar works", {
   #   dllike_geno_dpar(par = par, gA = gA, gB = gB, K = K)
   # )
 })
+
+
+test_that("dD_dprob works", {
+  D <- function(prob) { ## just the first three probabilities
+    stopifnot(length(prob) == 3)
+    p4 <- 1 - sum(prob)
+    p4 - (prob[[2]] + p4) * (prob[[3]] + p4)
+  }
+
+  prob <- c(0.01, 0.29, 0.3, 0.4)
+  deriv <- dD_dprob(prob)
+  myenv <- new.env()
+  assign(x = "prob", value = prob[1:3], envir = myenv)
+  nout <- stats::numericDeriv(quote(D(prob)), "prob", myenv)
+
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(deriv),
+    tolerance = 10^-5
+  )
+})
+
+test_that("dr2_dprob works", {
+  r2 <- function(prob) { ## just the first three probabilities
+    stopifnot(length(prob) == 3)
+    p4 <- 1 - sum(prob)
+    pA <- prob[2] + p4
+    pB <- prob[3] + p4
+    D <- p4 - pA * pB
+    D^2 / (pA * (1 - pA) * pB * (1 - pB))
+  }
+
+  prob <- c(0.1, 0.2, 0.3, 0.4)
+  deriv <- dr2_dprob(prob)
+  myenv <- new.env()
+  assign(x = "prob", value = prob[1:3], envir = myenv)
+  nout <- stats::numericDeriv(quote(r2(prob)), "prob", myenv)
+
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(deriv),
+    tolerance = 10^-5
+  )
+})
+
+test_that("drDprime_dprob works", {
+  Dprime <- function(prob) { ## just the first three probabilities
+    stopifnot(length(prob) == 3)
+    p4 <- 1 - sum(prob)
+    pA <- prob[2] + p4
+    pB <- prob[3] + p4
+    D <- p4 - pA * pB
+    if (D < 0) {
+      Dprime <- D / min(pA * pB, (1 - pA) * (1 - pB))
+    } else {
+      Dprime <- D / min(pA * (1 - pB), (1 - pA) * pB)
+    }
+    return(Dprime)
+  }
+
+  set.seed(1)
+  prob <- runif(4)
+  prob <- prob / sum(prob)
+  deriv <- dDprime_dprob(prob)
+  myenv <- new.env()
+  assign(x = "prob", value = prob[1:3], envir = myenv)
+  nout <- stats::numericDeriv(quote(Dprime(prob)), "prob", myenv)
+
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(deriv),
+    tolerance = 10^-5
+  )
+})
+
+
+
+
+
+
+
