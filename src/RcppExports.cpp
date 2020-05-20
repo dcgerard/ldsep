@@ -130,6 +130,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// proballgenolike_old
+double proballgenolike_old(const arma::mat& pgA, const arma::mat& pgB, const arma::vec prob, bool log_p);
+RcppExport SEXP _ldsep_proballgenolike_old(SEXP pgASEXP, SEXP pgBSEXP, SEXP probSEXP, SEXP log_pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
+    rcpp_result_gen = Rcpp::wrap(proballgenolike_old(pgA, pgB, prob, log_p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // proballgenolike
 double proballgenolike(const arma::mat& pgA, const arma::mat& pgB, const arma::vec prob, bool log_p);
 RcppExport SEXP _ldsep_proballgenolike(SEXP pgASEXP, SEXP pgBSEXP, SEXP probSEXP, SEXP log_pSEXP) {
@@ -277,6 +291,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// optimize_genolikecor
+List optimize_genolikecor(arma::vec& par, const arma::mat& pgA, const arma::mat& pgB);
+RcppExport SEXP _ldsep_optimize_genolikecor(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimize_genolikecor(par, pgA, pgB));
+    return rcpp_result_gen;
+END_RCPP
+}
 // optimize_genocor
 List optimize_genocor(arma::vec& par, const arma::vec& gA, const arma::vec& gB, const int& K, double reltol);
 RcppExport SEXP _ldsep_optimize_genocor(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP reltolSEXP) {
@@ -383,6 +410,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dr2_dprob", (DL_FUNC) &_ldsep_dr2_dprob, 1},
     {"_ldsep_dDprime_dprob", (DL_FUNC) &_ldsep_dDprime_dprob, 1},
     {"_ldsep_probgenolike", (DL_FUNC) &_ldsep_probgenolike, 4},
+    {"_ldsep_proballgenolike_old", (DL_FUNC) &_ldsep_proballgenolike_old, 4},
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},
     {"_ldsep_llike_genolike", (DL_FUNC) &_ldsep_llike_genolike, 3},
     {"_ldsep_get_dprobgeno_dprob_array", (DL_FUNC) &_ldsep_get_dprobgeno_dprob_array, 2},
@@ -394,6 +422,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_probgeno", (DL_FUNC) &_ldsep_probgeno, 5},
     {"_ldsep_proballgeno", (DL_FUNC) &_ldsep_proballgeno, 5},
     {"_ldsep_llike_geno", (DL_FUNC) &_ldsep_llike_geno, 4},
+    {"_ldsep_optimize_genolikecor", (DL_FUNC) &_ldsep_optimize_genolikecor, 3},
     {"_ldsep_optimize_genocor", (DL_FUNC) &_ldsep_optimize_genocor, 5},
     {"_ldsep_log_sum_exp", (DL_FUNC) &_ldsep_log_sum_exp, 1},
     {"_ldsep_log_sum_exp_2", (DL_FUNC) &_ldsep_log_sum_exp_2, 2},

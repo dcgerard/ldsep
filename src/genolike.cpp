@@ -21,6 +21,7 @@ arma::vec dmulti_dprob(const arma::vec x,
                        bool log_p);
 arma::vec plog_sum_exp(const arma::vec x,
                        const arma::vec y);
+arma::mat get_prob_array(int K, arma::vec prob);
 
 //' Probability of genotype likelihoods given haplotype frequencies for a
 //' single individual.
@@ -83,10 +84,10 @@ double probgenolike(const arma::vec &pgA,
 //'
 //' @noRd
 // [[Rcpp::export]]
-double proballgenolike(const arma::mat &pgA,
-                       const arma::mat &pgB,
-                       const arma::vec prob,
-                       bool log_p = true) {
+double proballgenolike_old(const arma::mat &pgA,
+                           const arma::mat &pgB,
+                           const arma::vec prob,
+                           bool log_p = true) {
   if (pgA.n_rows != pgB.n_rows) {
     Rcpp::stop("proballgenolike: dimensions of pgA and pgB are different");
   }
@@ -114,6 +115,62 @@ double proballgenolike(const arma::mat &pgA,
   return lp;
 }
 
+//' Probability of genotype likelihoods given haplotype frequencies for all
+//' individuals.
+//'
+//' @param pgA The matrix of genotype log-likelihoods for locus 1.
+//'     The rows index the individuals and the columns index the genotypes.
+//' @param pgA The matrix of genotype log-likelihoods for locus 2.
+//'     The rows index the individuals and the columns index the genotypes.
+//' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
+//' @param log_p A logical. Should we return the log probability or not?
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+double proballgenolike(const arma::mat &pgA,
+                       const arma::mat &pgB,
+                       const arma::vec prob,
+                       bool log_p = true) {
+  if (pgA.n_rows != pgB.n_rows) {
+    Rcpp::stop("proballgenolike_new: dimensions of pgA and pgB are different");
+  }
+  if (pgA.n_cols != pgB.n_cols) {
+    Rcpp::stop("proballgenolike_new: dimensions of pgA and pgB are different");
+  }
+  if (std::abs(arma::sum(prob) - 1.0) > TOL) {
+    Rcpp::stop("proballgenolike_new: prob should sum to 1");
+  }
+  if (prob.n_elem != 4) {
+    Rcpp::stop("proballgenolike_new: prob should have exactly 4 elements");
+  }
+
+  int n = pgA.n_rows;
+  int K = pgA.n_cols - 1;
+
+  arma::mat parray = get_prob_array(K, prob);
+
+  double logdenom_ind;
+  double logdenom = 0.0;
+
+  for (int i = 0; i < n; i++) {
+    logdenom_ind = -arma::datum::inf;
+    for (int gA = 0; gA <= K; gA++) {
+      for (int gB = 0; gB <= K; gB++) {
+        logdenom_ind = log_sum_exp_2(logdenom_ind, pgA(i, gA) + pgB(i, gB) + parray(gA, gB));
+      }
+    }
+    logdenom += logdenom_ind;
+  }
+
+  if (!log_p) {
+    logdenom = std::exp(logdenom);
+  }
+
+  return logdenom;
+}
+
 //' Likelihood function when estimating LD from genotype log-likelihoods
 //'
 //' @param par A vector of length 3 containing real numbers that are to
@@ -128,7 +185,7 @@ double llike_genolike(const arma::vec par,
                       const arma::mat &pgA,
                       const arma::mat &pgB) {
   if (par.n_elem != 3) {
-    Rcpp::stop("llike_geno: par needs to be length 3");
+    Rcpp::stop("llike_genolike: par needs to be length 3");
   }
 
   arma::vec prob = real_to_simplex(par);
@@ -154,10 +211,10 @@ double llike_genolike(const arma::vec par,
 // [[Rcpp::export]]
 arma::cube get_dprobgeno_dprob_array(int K, arma::vec prob) {
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
-    Rcpp::stop("proballgenolike: prob should sum to 1");
+    Rcpp::stop("get_dprobgeno_dprob_array: prob should sum to 1");
   }
   if (prob.n_elem != 4) {
-    Rcpp::stop("proballgenolike: prob should have exactly 4 elements");
+    Rcpp::stop("get_dprobgeno_dprob_array: prob should have exactly 4 elements");
   }
 
   int minz;
@@ -254,16 +311,16 @@ arma::vec dproballgenolike_dprob(const arma::mat &pgA,
                                  const arma::mat &pgB,
                                  const arma::vec prob) {
   if (pgA.n_rows != pgB.n_rows) {
-    Rcpp::stop("proballgenolike: dimensions of pgA and pgB are different");
+    Rcpp::stop("dproballgenolike_dprob: dimensions of pgA and pgB are different");
   }
   if (pgA.n_cols != pgB.n_cols) {
-    Rcpp::stop("proballgenolike: dimensions of pgA and pgB are different");
+    Rcpp::stop("dproballgenolike_dprob: dimensions of pgA and pgB are different");
   }
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
-    Rcpp::stop("proballgenolike: prob should sum to 1");
+    Rcpp::stop("dproballgenolike_dprob: prob should sum to 1");
   }
   if (prob.n_elem != 4) {
-    Rcpp::stop("proballgenolike: prob should have exactly 4 elements");
+    Rcpp::stop("dproballgenolike_dprob: prob should have exactly 4 elements");
   }
 
   int n = pgA.n_rows;
@@ -271,7 +328,6 @@ arma::vec dproballgenolike_dprob(const arma::mat &pgA,
 
   arma::cube darray = get_dprobgeno_dprob_array(K, prob);
   arma::mat parray = get_prob_array(K, prob);
-
 
   arma::vec deriv = {0.0, 0.0, 0.0, 0.0};
 
@@ -306,7 +362,7 @@ arma::vec dllike_genolike_dpar(const arma::vec par,
                                const arma::mat &pgA,
                                const arma::mat &pgB) {
   if (par.n_elem != 3) {
-    Rcpp::stop("par needs to be length 3");
+    Rcpp::stop("dllike_genolike_dpar: par needs to be length 3");
   }
 
   arma::mat dp_dy = dreal_to_simplex_dy(par);

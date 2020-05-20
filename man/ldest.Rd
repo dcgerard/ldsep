@@ -86,12 +86,12 @@ The standard error estimate of D' is not valid when
 }
 \examples{
 set.seed(1)
-n <- 10
+n <- 100
 K <- 6
 
 ## If you give ldest vectors, it assumes you are using genotypes
-ga <- sample(0:K, 100, TRUE)
-gb <- sample(0:K, 100, TRUE)
+ga <- sample(0:K, n, TRUE)
+gb <- sample(0:K, n, TRUE)
 head(ga)
 head(gb)
 ldout <- ldest(ga = ga, gb = gb, K = K)

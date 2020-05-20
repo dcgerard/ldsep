@@ -159,6 +159,23 @@ probgenolike <- function(pgA, pgB, prob, log_p = TRUE) {
 #' @author David Gerard
 #'
 #' @noRd
+proballgenolike_old <- function(pgA, pgB, prob, log_p = TRUE) {
+    .Call(`_ldsep_proballgenolike_old`, pgA, pgB, prob, log_p)
+}
+
+#' Probability of genotype likelihoods given haplotype frequencies for all
+#' individuals.
+#'
+#' @param pgA The matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param pgA The matrix of genotype log-likelihoods for locus 2.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
+#' @param log_p A logical. Should we return the log probability or not?
+#'
+#' @author David Gerard
+#'
+#' @noRd
 proballgenolike <- function(pgA, pgB, prob, log_p = TRUE) {
     .Call(`_ldsep_proballgenolike`, pgA, pgB, prob, log_p)
 }
@@ -294,6 +311,21 @@ proballgeno <- function(gA, gB, K, prob, log_p = TRUE) {
 #' @noRd
 llike_geno <- function(par, gA, gB, K) {
     .Call(`_ldsep_llike_geno`, par, gA, gB, K)
+}
+
+#' Find LD estimates using genotype likelihoods
+#'
+#'
+#' @param par The parameters on the real-scale.
+#' @param pgA The genotype log-liielihoods at locus 1.
+#' @param pgB The genotype log-likelihoods at locus 2.
+#' @param reltol The stopping criterion for the gradient ascent.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+optimize_genolikecor <- function(par, pgA, pgB) {
+    .Call(`_ldsep_optimize_genolikecor`, par, pgA, pgB)
 }
 
 #' Find LD estimates using just the genotypes.

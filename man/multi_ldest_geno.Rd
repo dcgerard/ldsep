@@ -34,7 +34,7 @@ nind  <- 100
 K <- 6
 nc <- 2
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
-rdf <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
+## rdf <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
 
 
 }

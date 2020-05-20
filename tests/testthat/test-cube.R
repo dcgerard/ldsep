@@ -22,3 +22,25 @@ test_that("get_dprobgeno_dprob_array works", {
   }
   expect_equal(darray, numdarray, tolerance = 10^-5)
 })
+
+
+test_that("old and new progallgenolike are the same", {
+  K <- 6
+  n <- 100
+  ga <- sample(0:K, n, TRUE)
+  gb <- sample(0:K, n, TRUE)
+  pgA <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
+  pgB <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
+  prob <- stats::runif(4)
+  prob <- prob / sum(prob)
+
+  expect_equal(
+    proballgenolike(pgA = pgA, pgB = pgB, prob = prob, log_p = TRUE),
+    proballgenolike_old(pgA = pgA, pgB = pgB, prob = prob, log_p = TRUE)
+  )
+
+  # microbenchmark::microbenchmark(
+  #   proballgenolike(pgA = pgA, pgB = pgB, prob = prob, log_p = TRUE),
+  #   proballgenolike_old(pgA = pgA, pgB = pgB, prob = prob, log_p = TRUE)
+  # )
+})

@@ -78,12 +78,12 @@
 #'
 #' @examples
 #' set.seed(1)
-#' n <- 10
+#' n <- 100
 #' K <- 6
 #'
 #' ## If you give ldest vectors, it assumes you are using genotypes
-#' ga <- sample(0:K, 100, TRUE)
-#' gb <- sample(0:K, 100, TRUE)
+#' ga <- sample(0:K, n, TRUE)
+#' gb <- sample(0:K, n, TRUE)
 #' head(ga)
 #' head(gb)
 #' ldout <- ldest(ga = ga, gb = gb, K = K)
@@ -128,13 +128,13 @@ ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
                          gA      = ga,
                          gB      = gb,
                          K       = K)
-  } else if (using == "genotypes") {
+  } else if (lang == "C++" & using == "genotypes") {
     oout <- optimize_genocor(par    = inity,
                              gA     = ga,
                              gB     = gb,
                              K      = K,
                              reltol = reltol)
-  } else {
+  } else if (lang == "R" & using == "likelihoods") {
     oout <- stats::optim(par     = inity,
                          fn      = llike_genolike,
                          gr      = dllike_genolike_dpar,
@@ -144,6 +144,8 @@ ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
                          pgA      = ga,
                          pgB      = gb)
 
+  } else {
+    oout <- optimize_genolikecor(par = inity, pgA = ga, pgB = gb)
   }
 
   ## Get estimates -------------------
