@@ -60,12 +60,14 @@ public:
 // [[Rcpp::export]]
 List optimize_genolikecor(arma::vec &par,
                           const arma::mat &pgA,
-                          const arma::mat &pgB) {
+                          const arma::mat &pgB,
+                          double reltol = 10.0e-08) {
   genoLikeCor gc;
   gc.pgA = pgA;
   gc.pgB = pgB;
   roptim::Roptim<genoLikeCor> opt("BFGS");
   opt.control.fnscale = -1.0;
+  opt.control.reltol = reltol;
   opt.set_hessian(true);
   opt.minimize(gc, par);
 

@@ -89,21 +89,23 @@ set.seed(1)
 n <- 100
 K <- 6
 
-## If you give ldest vectors, it assumes you are using genotypes
+## If you give ldest() vectors,
+## it assumes you are using genotypes.
 ga <- sample(0:K, n, TRUE)
 gb <- sample(0:K, n, TRUE)
 head(ga)
 head(gb)
-ldout <- ldest(ga = ga, gb = gb, K = K)
-ldout
+ldout1 <- ldest(ga = ga, gb = gb, K = K)
+ldout1
 
-## if you give ldest matrices, it assumes you are using genotype likelihoods.
-gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
-gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
+## If you give ldest() matrices,
+## it assumes you are using genotype likelihoods.
+gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 head(gamat)
 head(gbmat)
-ldout <- ldest(ga = gamat, gb = gbmat, K = K)
-ldout
+ldout2 <- ldest(ga = gamat, gb = gbmat, K = K)
+ldout2
 
 }
 \author{

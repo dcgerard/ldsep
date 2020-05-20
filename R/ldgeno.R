@@ -81,21 +81,23 @@
 #' n <- 100
 #' K <- 6
 #'
-#' ## If you give ldest vectors, it assumes you are using genotypes
+#' ## If you give ldest() vectors,
+#' ## it assumes you are using genotypes.
 #' ga <- sample(0:K, n, TRUE)
 #' gb <- sample(0:K, n, TRUE)
 #' head(ga)
 #' head(gb)
-#' ldout <- ldest(ga = ga, gb = gb, K = K)
-#' ldout
+#' ldout1 <- ldest(ga = ga, gb = gb, K = K)
+#' ldout1
 #'
-#' ## if you give ldest matrices, it assumes you are using genotype likelihoods.
-#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
-#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 2, log = TRUE))
+#' ## If you give ldest() matrices,
+#' ## it assumes you are using genotype likelihoods.
+#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 #' head(gamat)
 #' head(gbmat)
-#' ldout <- ldest(ga = gamat, gb = gbmat, K = K)
-#' ldout
+#' ldout2 <- ldest(ga = gamat, gb = gbmat, K = K)
+#' ldout2
 #'
 #' @export
 ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
@@ -198,7 +200,7 @@ ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
 }
 
 
-#' Estimate all pair-wise LD's in a collection of SNPs.
+#' Estimate all pair-wise LD's in a collection of SNPs using the genotypes.
 #'
 #' This function will run \code{\link{ldest}()} iteratively over
 #' all possible pairs of SNPs provided. Support is provided for parallelization
@@ -209,7 +211,7 @@ ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
 #'     is the allele dosage for individual \code{j} in SNP \code{i}.
 #' @param K The ploidy of the species. Assumed to be the same for all
 #'     individuals at all SNPs
-#' @param nc he number of computing cores to use. This should never be
+#' @param nc The number of computing cores to use. This should never be
 #'     more than the number of cores available in your computing environment.
 #'     You can determine the maximum number of available cores by running
 #'     \code{parallel::detectCores()} in R. This is probably fine for a
@@ -220,16 +222,18 @@ ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
 #' @author David Gerard
 #'
 #' @examples
+#' ## Simulate genotypes when true correlation is 0
 #' nloci <- 5
 #' nind  <- 100
 #' K <- 6
-#' nc <- 2
+#' nc <- 1
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
-#' rdf <- multi_ldest_geno(genomat = genomat, K = K, nc = nc)
 #'
+#' ## Estimate LD
+#' rdf <- mldest_geno(genomat = genomat, K = K, nc = nc)
 #'
 #' @export
-multi_ldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
+mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
   stopifnot(is.matrix(genomat))
   nloci <- nrow(genomat)
 
@@ -240,7 +244,7 @@ multi_ldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
     cl = parallel::makeCluster(nc)
     doParallel::registerDoParallel(cl = cl)
     if (foreach::getDoParWorkers() == 1) {
-      stop(paste0("multi_ldest_geno: nc > 1 ",
+      stop(paste0("mldest_geno: nc > 1 ",
                   "but only one core registered from ",
                   "foreach::getDoParWorkers()."))
     }
@@ -280,6 +284,112 @@ multi_ldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
   return(outmat)
 }
 
+
+#' Estimate all pair-wise LD's in a collection of SNPs using the genotype
+#' likleihoods.
+#'
+#' This function will run \code{\link{ldest}()} iteratively over
+#' all possible pairs of SNPs provided. Support is provided for parallelization
+#' through the doParallel and foreach packages.
+#'
+#' @param genoarray An three-way array of genotype \emph{log}-likelihoods.
+#'     The first dimension indexes the SNPs, the second dimension indexes
+#'     the individuals, and the third dimension indexes the genotypes.
+#'     That is, \code{genolike_array[i, j, k]} is the genotype log-likelihood
+#'     at SNP \code{i} for individual \code{j} and dosage \code{k - 1}.
+#'     The ploidy (assumed to be the same for all individuals) is assumed to
+#'     be one minus the size of the third dimension.
+#' @param nc The number of computing cores to use. This should never be
+#'     more than the number of cores available in your computing environment.
+#'     You can determine the maximum number of available cores by running
+#'     \code{parallel::detectCores()} in R. This is probably fine for a
+#'     personal computer, but some environments are only
+#'     able to use fewer. Ask your admins if you are unsure.
+#' @param reltol The relative tolerance for the stopping criterion.
+#'
+#' @author David Gerard
+#'
+#' @examples
+#' ## Simulate some data with true correlation of 0
+#' nloci <- 5
+#' nind  <- 100
+#' K <- 6
+#' genovec <- sample(0:K, nind * nloci, TRUE)
+#' genomat <- matrix(genovec, nrow = nloci)
+#' genoarray <- array(sapply(genovec,
+#'                           stats::dnorm,
+#'                           x = 0:K,
+#'                           sd = 1,
+#'                           log = TRUE),
+#'                    dim = c(K + 1, nloci, nind))
+#' genoarray <- aperm(genoarray, c(2, 3, 1)) ## loci, individuals, dosages
+#'
+#' ## Verify simulation
+#' locnum <- sample(seq_len(nloci), 1)
+#' indnum <- sample(seq_len(nind), 1)
+#' genoarray[locnum, indnum, ]
+#' stats::dnorm(x = 0:K, mean = genomat[locnum, indnum], sd = 1, log = TRUE)
+#'
+#' ## Find pairwise LD between all loci
+#' nc <- 1
+#' rdf <- mldest_genolike(genoarray = genoarray, nc = nc)
+#' rdf
+#'
+#' @export
+mldest_genolike <- function(genoarray, nc = 1, reltol = 10^-8) {
+  stopifnot(is.array(genoarray))
+  stopifnot(length(dim(genoarray)) == 3)
+  nloci <- dim(genoarray)[[1]]
+  nind <- dim(genoarray)[[2]]
+  K <- dim(genoarray)[[3]] - 1
+
+  ## Register workers ----------------------------------------------------------
+  if (nc == 1) {
+    foreach::registerDoSEQ()
+  } else {
+    cl = parallel::makeCluster(nc)
+    doParallel::registerDoParallel(cl = cl)
+    if (foreach::getDoParWorkers() == 1) {
+      stop(paste0("mldest_geno: nc > 1 ",
+                  "but only one core registered from ",
+                  "foreach::getDoParWorkers()."))
+    }
+  }
+
+  i <- 1
+  outmat <- foreach::foreach(i = seq_len(nloci - 1),
+                             .combine = rbind,
+                             .export = c("ldest")) %dopar% {
+
+                               for (j in (i + 1):nloci) {
+                                 ldout <- ldest(ga = genoarray[i, , ],
+                                                gb = genoarray[j, , ],
+                                                K = K,
+                                                reltol = reltol,
+                                                lang = "C++")
+                                 if (j == i + 1) {
+                                   estmat <- matrix(NA_real_,
+                                                    nrow = nloci - i,
+                                                    ncol = length(ldout) + 2)
+                                   colnames(estmat) <- c("i", "j", names(ldout))
+                                 }
+                                 estmat[j - i, 1] <- i
+                                 estmat[j - i, 2] <- j
+                                 estmat[j - i, -c(1, 2)] <- ldout
+                               }
+                               estmat
+                             }
+
+  if (nc > 1) {
+    parallel::stopCluster(cl)
+  }
+
+  outmat <- as.data.frame(outmat)
+  class(outmat) <- c("lddf", "data.frame")
+  return(outmat)
+}
+
+
 #' Tests if an argument is a \code{lddf} object.
 #'
 #' @param x Anything.
@@ -300,15 +410,17 @@ is.lddf <- function(x) {
 }
 
 
-#' Format an element of \code{\link{multi_ldest_geno}()} into an
+#' Format an element of \code{\link{mldest_geno}()} or
+#' \code{\link{mldest_genolike}()} into an
 #' upper-triangular matrix.
 #'
 #' Formats the correlation estimates and standard errors output
-#' from running \code{\link{multi_ldest_geno}()} into a more
-#' conventional upper-triangular matrix.
+#' from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
+#' into a more conventional upper-triangular matrix.
 #'
 #' @param obj An object of class \code{lddf}, usually output from
-#'     running \code{\link{multi_ldest_geno}()}.
+#'     running either \code{\link{mldest_geno}()} or
+#'     \code{\link{mldest_genolike}()}.
 #' @param element Which element in \code{obj} should we format into an
 #'     upper-triangular matrix?
 #'

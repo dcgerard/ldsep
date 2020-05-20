@@ -324,8 +324,8 @@ llike_geno <- function(par, gA, gB, K) {
 #' @author David Gerard
 #'
 #' @noRd
-optimize_genolikecor <- function(par, pgA, pgB) {
-    .Call(`_ldsep_optimize_genolikecor`, par, pgA, pgB)
+optimize_genolikecor <- function(par, pgA, pgB, reltol = 10.0e-08) {
+    .Call(`_ldsep_optimize_genolikecor`, par, pgA, pgB, reltol)
 }
 
 #' Find LD estimates using just the genotypes.

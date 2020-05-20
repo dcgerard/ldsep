@@ -89,16 +89,16 @@ double proballgenolike_old(const arma::mat &pgA,
                            const arma::vec prob,
                            bool log_p = true) {
   if (pgA.n_rows != pgB.n_rows) {
-    Rcpp::stop("proballgenolike: dimensions of pgA and pgB are different");
+    Rcpp::stop("proballgenolike_old: dimensions of pgA and pgB are different");
   }
   if (pgA.n_cols != pgB.n_cols) {
-    Rcpp::stop("proballgenolike: dimensions of pgA and pgB are different");
+    Rcpp::stop("proballgenolike_old: dimensions of pgA and pgB are different");
   }
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
-    Rcpp::stop("proballgenolike: prob should sum to 1");
+    Rcpp::stop("proballgenolike_old: prob should sum to 1");
   }
   if (prob.n_elem != 4) {
-    Rcpp::stop("proballgenolike: prob should have exactly 4 elements");
+    Rcpp::stop("proballgenolike_old: prob should have exactly 4 elements");
   }
 
 

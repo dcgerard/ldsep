@@ -2,7 +2,8 @@
 % Please edit documentation in R/ldgeno.R
 \name{format_lddf}
 \alias{format_lddf}
-\title{Format an element of \code{\link{multi_ldest_geno}()} into an
+\title{Format an element of \code{\link{mldest_geno}()} or
+\code{\link{mldest_genolike}()} into an
 upper-triangular matrix.}
 \usage{
 format_lddf(
@@ -13,15 +14,16 @@ format_lddf(
 }
 \arguments{
 \item{obj}{An object of class \code{lddf}, usually output from
-running \code{\link{multi_ldest_geno}()}.}
+running either \code{\link{mldest_geno}()} or
+\code{\link{mldest_genolike}()}.}
 
 \item{element}{Which element in \code{obj} should we format into an
 upper-triangular matrix?}
 }
 \description{
 Formats the correlation estimates and standard errors output
-from running \code{\link{multi_ldest_geno}()} into a more
-conventional upper-triangular matrix.
+from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
+into a more conventional upper-triangular matrix.
 }
 \author{
 David Gerard

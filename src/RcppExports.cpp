@@ -292,15 +292,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // optimize_genolikecor
-List optimize_genolikecor(arma::vec& par, const arma::mat& pgA, const arma::mat& pgB);
-RcppExport SEXP _ldsep_optimize_genolikecor(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP) {
+List optimize_genolikecor(arma::vec& par, const arma::mat& pgA, const arma::mat& pgB, double reltol);
+RcppExport SEXP _ldsep_optimize_genolikecor(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP reltolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::vec& >::type par(parSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimize_genolikecor(par, pgA, pgB));
+    Rcpp::traits::input_parameter< double >::type reltol(reltolSEXP);
+    rcpp_result_gen = Rcpp::wrap(optimize_genolikecor(par, pgA, pgB, reltol));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -422,7 +423,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_probgeno", (DL_FUNC) &_ldsep_probgeno, 5},
     {"_ldsep_proballgeno", (DL_FUNC) &_ldsep_proballgeno, 5},
     {"_ldsep_llike_geno", (DL_FUNC) &_ldsep_llike_geno, 4},
-    {"_ldsep_optimize_genolikecor", (DL_FUNC) &_ldsep_optimize_genolikecor, 3},
+    {"_ldsep_optimize_genolikecor", (DL_FUNC) &_ldsep_optimize_genolikecor, 4},
     {"_ldsep_optimize_genocor", (DL_FUNC) &_ldsep_optimize_genocor, 5},
     {"_ldsep_log_sum_exp", (DL_FUNC) &_ldsep_log_sum_exp, 1},
     {"_ldsep_log_sum_exp_2", (DL_FUNC) &_ldsep_log_sum_exp_2, 2},
