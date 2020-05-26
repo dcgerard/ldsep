@@ -27,21 +27,21 @@
 #' @export
 #'
 ldsimp <- function(ga, gb, K) {
-  n <- length(ga)
-  pA <- mean(ga) / K
-  pB <- mean(gb) / K
-  D <- stats::cov(ga, gb) / K
-  sda <- stats::sd(ga)
-  sdb <- stats::sd(gb)
-  D_se <- sqrt(max(sda * sdb / K ^ 2 - D ^ 2, 0)) / sqrt(n)
-  r <- stats::cor(ga, gb)
-  r_se <- (1 - r ^ 2) / sqrt(n)
-  z <- atanh(r)
-  z_se <- 1 / sqrt(n - 3)
-  r2 <- r ^ 2
+  n     <- length(ga)
+  pA    <- mean(ga) / K
+  pB    <- mean(gb) / K
+  D     <- stats::cov(ga, gb) / K
+  sda   <- stats::sd(ga)
+  sdb   <- stats::sd(gb)
+  D_se  <- sqrt(max(sda * sdb / K ^ 2 - D ^ 2, 0)) / sqrt(n)
+  r     <- stats::cor(ga, gb)
+  r_se  <- (1 - r ^ 2) / sqrt(n)
+  z     <- atanh(r)
+  z_se  <- 1 / sqrt(n - 3)
+  r2    <- r ^ 2
   r2_se <- 2 * abs(r) * (1 - r ^ 2) / sqrt(n)
-  g <- log(-log(r2))
-  g_se <- 2 * (1 - r ^ 2) / abs(r * log(r ^ 2) * sqrt(n))
+  # g <- log(-log(r2))
+  # g_se <- 2 * (1 - r ^ 2) / abs(r * log(r ^ 2) * sqrt(n))
 
   phat <- rep(NA_real_, 4)
   phat[[4]] <- D + pA * pB
@@ -59,8 +59,6 @@ ldsimp <- function(ga, gb, K) {
               r_se      = r_se,
               z         = z,
               z_se      = z_se,
-              g         = g,
-              g_se      = g_se,
               p_ab      = phat[[1]],
               p_Ab      = phat[[2]],
               p_aB      = phat[[3]],
