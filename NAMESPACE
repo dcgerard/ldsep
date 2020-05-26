@@ -3,6 +3,7 @@
 export(format_lddf)
 export(is.lddf)
 export(ldest)
+export(ldsimp)
 export(mldest_geno)
 export(mldest_genolike)
 importFrom(Rcpp,sourceCpp)

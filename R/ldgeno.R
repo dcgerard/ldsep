@@ -2,122 +2,23 @@
 ## Functions to estimate LD directly from genotypes
 ###################
 
-#' Estimate pair-wise LD directly from the genotypes.
+
+
+#' Wrapper for optim() conditional on lang and input
 #'
-#' Given genotype (allele dosage) data for each individual at a pair of
-#' loci, this function will calculate the maximum likelihood estimates
-#' and their corresponding asymptotic standard errors of a variety of
-#' measures of linkage disequilibrium (LD): D, D', and the
-#' squared correlation. This function can be used for both
-#' diploids and polyploids.
-#'
-#' Let A and a be the reference and alternative alleles, respectively, at
-#' locus 1. Let B and b be the reference and alternative alleles,
-#' respectively, at locus 2. Let paa, pAb, paB, and pAB be the
-#' frequencies of haplotypes ab, Ab, aB, and AB, respectively.
-#' Let pA = pAb + pAB and let pB = paB + pAB
-#' The \code{ldest} returns estimates of the following measures
-#' of LD.
-#' \itemize{
-#'   \item{D: pAB - pA pB}
-#'   \item{D': D / Dmax, where Dmax = min(pA pB, (1 - pA) (1 - pB)) if
-#'         D < 0 and Dmax = min(pA (1 - pB), pA (1 - pB)) if D > 0}
-#'   \item{r-squared: The squared Pearson correlation,
-#'         r^2 = D^2 / (pA (1 - pA) pB (1 - pB))}
-#'   \item{r: The Pearson correlation,
-#'         r = D / sqrt(pA (1 - pA) pB (1 - pB))}
-#' }
-#'
-#' Estimates are obtained via maximum likelihood under the assumption
-#' of Hardy-Weinberg equilibrium. The likelihood is calculated by
-#' integrating over the possible haplotypes for each pair of genotypes.
-#'
-#' The resulting standard errors are the square roots of the inverse of the
-#' negative Fisher-information. This is from standard maximum likelihood
-#' theory. The Fisher-information is known to be biased low, so the actual
-#' standard errors are probably a little bigger for small n (n < 100).
-#'
-#' The standard error estimate of the squared Pearson correlation is not
-#' valid when r^2 = 0.
-#'
-#' The standard error estimate of D' is not valid when
-#' \itemize{
-#'   \item{D' = 0,}
-#'   \item{D' < 0 and pA pB = (1 - pA) (1 - pB), or}
-#'   \item{D' > 0 and pA (1 - pB) = pA (1 - pB).}
-#' }
-#'
-#' @param ga A vector of counts, containing the genotypes for each individual
-#'     at the first locus.
-#' @param gb A vector of counts, containing the genotypes for each individual
-#'     at the second locus.
-#' @param K The ploidy of the species. Assumed the same for all individuals.
-#' @param reltol The relative tolerance for the stopping criterion.
-#' @param lang Should we use the R interface for optim (\code{"R"}) or the
-#'     C++ interface for optim through the roptim package (\code{"C++"})?
+#' @inheritParams ldest
 #'
 #' @author David Gerard
 #'
-#' @return A vector with the following elements:
-#' \describe{
-#'   \item{\code{D}}{The MLE of D.}
-#'   \item{\code{D_se}}{The standard error of the estimate of D.}
-#'   \item{\code{Dprime}}{The MLE of D'.}
-#'   \item{\code{Dprime_se}}{The standard error of the estimate of D'.}
-#'   \item{\code{r2}}{The MLE of the squared Pearson correlation.}
-#'   \item{\code{r2_se}}{The standard error of the estimate of the
-#'       squared Pearson correlation.}
-#'   \item{\code{r}}{he MLE of the Pearson correlation.}
-#'   \item{\code{r_se}}{The standard error of the estimate of the
-#'       Pearson correlation.}
-#'   \item{\code{p_ab}}{The estimated haplotype frequency of ab.}
-#'   \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.}
-#'   \item{\code{p_aB}}{The estimated haplotype frequency of aB.}
-#'   \item{\code{p_AB}}{The estimated haplotype frequency of AB.}
-#' }
-#'
-#' @examples
-#' set.seed(1)
-#' n <- 100
-#' K <- 6
-#'
-#' ## If you give ldest() vectors,
-#' ## it assumes you are using genotypes.
-#' ga <- sample(0:K, n, TRUE)
-#' gb <- sample(0:K, n, TRUE)
-#' head(ga)
-#' head(gb)
-#' ldout1 <- ldest(ga = ga, gb = gb, K = K)
-#' ldout1
-#'
-#' ## If you give ldest() matrices,
-#' ## it assumes you are using genotype likelihoods.
-#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
-#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
-#' head(gamat)
-#' head(gbmat)
-#' ldout2 <- ldest(ga = gamat, gb = gbmat, K = K)
-#' ldout2
-#'
-#' @export
-ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
-
-  stopifnot(length(K) == 1)
+#' @noRd
+find_mle <- function(ga,
+                     gb,
+                     K,
+                     reltol = 10^-8,
+                     lang = c("R", "C++"),
+                     using = c("genotypes", "likelihoods")) {
   lang <- match.arg(lang)
-  if (is.vector(ga) & is.vector(gb)) {
-    stopifnot(length(ga) == length(gb))
-    stopifnot(ga >= 0, ga <= K)
-    stopifnot(gb >= 0, gb <= K)
-    using = "genotypes"
-  } else if (is.matrix(ga) & is.matrix(gb)) {
-    stopifnot(dim(ga) == dim(gb))
-    stopifnot(K + 1 == ncol(ga))
-    using = "likelihoods"
-  } else {
-    stop("ldest: ga and gb must either both be vectors or both be matrices.")
-  }
-
-
+  using <- match.arg(using)
   ## find MLE of proportions ---------
   inity <- rep(0, 3)
   if (lang == "R" & using == "genotypes") {
@@ -149,48 +50,306 @@ ldest <- function(ga, gb, K, reltol = 10^-8, lang = c("C++", "R")) {
   } else {
     oout <- optimize_genolikecor(par = inity, pgA = ga, pgB = gb)
   }
+  return(oout)
+}
 
-  ## Get estimates -------------------
-  phat <- real_to_simplex(oout$par) # (ab, Ab, aB, AB)
+#' Converts a vector of probabilities of LD estimates
+#'
+#' @param phat A vector of haplotype frequencies in the order (ab, Ab, aB, AB)
+#'
+#' @author David Gerard
+#'
+#' @noRd
+convert_ld <- function(phat) {
   pA <- phat[[2]] + phat[[4]]
   pB <- phat[[3]] + phat[[4]]
   D  <- phat[[4]] - pA * pB
-  r2 <- D ^ 2 / (pA * (1 - pA) * pB * (1 - pB))
-  if (D < 0) {
-    Dprime <- D / min(pA * pB, (1 - pA) * (1 - pB))
+  if (abs(pA) < sqrt(.Machine$double.eps) ||
+      abs(pB) < sqrt(.Machine$double.eps) ||
+      abs(pA - 1) < sqrt(.Machine$double.eps) ||
+      abs(pB - 1) < sqrt(.Machine$double.eps)) {
+    ## mono-allelic SNPs
+    r2     <- NA
+    Dprime <- NA
+    r      <- NA
+    z      <- NA
   } else {
-    Dprime <- D / min(pA * (1 - pB), (1 - pA) * pB)
+    r2 <- D ^ 2 / (pA * (1 - pA) * pB * (1 - pB))
+    if (D < 0) {
+      Dprime <- D / min(pA * pB, (1 - pA) * (1 - pB))
+    } else {
+      Dprime <- D / min(pA * (1 - pB), (1 - pA) * pB)
+    }
+    r <- sqrt(r2) * sign(D)
+    z <- atanh(r)
   }
+
+  retvec <- c(pA = pA,
+              pB = pB,
+              D = D,
+              r2 = r2,
+              Dprime = Dprime,
+              r = r,
+              z = z)
+  return(retvec)
+}
+
+#' Estimate pair-wise LD using either genotypes or genotype likelihoods.
+#'
+#' Given genotype (allele dosage) or genotype likelihood data
+#' for each individual at a pair of loci, this function will
+#' calculate the maximum likelihood estimates
+#' and their corresponding asymptotic standard errors of some
+#' measures of linkage disequilibrium (LD): D, the Pearson correlation,
+#' the squared Pearson correlation, and the Fisher-z transformation of the
+#' Pearson correlation. This function can be used for both
+#' diploids and polyploids.
+#'
+#' Let A and a be the reference and alternative alleles, respectively, at
+#' locus 1. Let B and b be the reference and alternative alleles,
+#' respectively, at locus 2. Let paa, pAb, paB, and pAB be the
+#' frequencies of haplotypes ab, Ab, aB, and AB, respectively.
+#' Let pA = pAb + pAB and let pB = paB + pAB
+#' The \code{ldest} returns estimates of the following measures
+#' of LD.
+#' \itemize{
+#'   \item{D: pAB - pA pB}
+#'   \item{D': D / Dmax, where Dmax = min(pA pB, (1 - pA) (1 - pB)) if
+#'         D < 0 and Dmax = min(pA (1 - pB), pA (1 - pB)) if D > 0}
+#'   \item{r-squared: The squared Pearson correlation,
+#'         r^2 = D^2 / (pA (1 - pA) pB (1 - pB))}
+#'   \item{r: The Pearson correlation,
+#'         r = D / sqrt(pA (1 - pA) pB (1 - pB))}
+#' }
+#'
+#' Estimates are obtained via maximum likelihood under the assumption
+#' of Hardy-Weinberg equilibrium. The likelihood is calculated by
+#' integrating over the possible haplotypes for each pair of genotypes.
+#'
+#' The resulting standard errors are the square roots of the inverse of the
+#' negative Fisher-information. This is from standard maximum likelihood
+#' theory. The Fisher-information is known to be biased low, so the actual
+#' standard errors are probably a little bigger for small n (n < 20).
+#' In some cases the Fisher-information matrix is singular, and so we
+#' in these cases we return a bootstrap estimate of the standard error.
+#'
+#' The standard error estimate of the squared Pearson correlation is not
+#' valid when r^2 = 0.
+#'
+#' In cases where either SNP is estimated to be monoallelic
+#' (\code{pA %in% c(0, 1)} or \code{pB %in% c(0, 1)}), this function
+#' will return an estimated \code{D} of \code{0}, and all other estimates
+#' (including standard errors) will be returned as \code{NA}.
+#'
+#' @param ga One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
+#'     at the first locus; or (ii) A matrix of genotype log-likelihoods
+#'     at the second locus. The rows index the individuals and the columns
+#'     index the genotypes. That is \code{ga[i, j]} is the genotype
+#'     likelihood of individual \code{i} for genotype \code{j}.
+#' @param gb One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
+#'     at the second locus; or (ii) A matrix of genotype log-likelihoods at
+#'     the second locus. The rows index the individuals and the columns
+#'     index the genotypes. That is \code{ga[i, j]} is the genotype
+#'     likelihood of individual \code{i} for genotype \code{j}.
+#' @param K The ploidy of the species. Assumed the same for all individuals.
+#' @param reltol The relative tolerance for the stopping criterion.
+#' @param lang Should we use the R interface for optim (\code{"R"}) or the
+#'     C++ interface for optim through the roptim package (\code{"C++"})?
+#' @param nboot Sometimes, the MLE standard errors don't exist. So we use
+#'     the bootstrap as a backup. \code{nboot} specifies the number
+#'     of bootstrap iterations.
+#' @param useboot A logical. Optionally, you may always use the bootstrap
+#'     to estimate the standard errors (\code{TRUE}). These will be more
+#'     accurate but also much slower, so this defaults to \code{FALSE}.
+#'
+#' @author David Gerard
+#'
+#' @return A vector with some or all of the following elements:
+#' \describe{
+#'   \item{\code{D}}{The MLE of D.}
+#'   \item{\code{D_se}}{The standard error of the estimate of D.}
+#'   \item{\code{r2}}{The MLE of the squared Pearson correlation.}
+#'   \item{\code{r2_se}}{The standard error of the estimate of the
+#'       squared Pearson correlation.}
+#'   \item{\code{r}}{The MLE of the Pearson correlation.}
+#'   \item{\code{r_se}}{The standard error of the estimate of the
+#'       Pearson correlation.}
+#'   \item{\code{z}}{The Fisher-z transformation of \code{r}.}
+#'   \item{\code{z_se}}{The standard error of the Fisher-z
+#'       transformation of \code{r}.}
+#'   \item{\code{p_ab}}{The estimated haplotype frequency of ab.}
+#'   \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.}
+#'   \item{\code{p_aB}}{The estimated haplotype frequency of aB.}
+#'   \item{\code{p_AB}}{The estimated haplotype frequency of AB.}
+#' }
+#'
+#' @examples
+#' set.seed(1)
+#' n <- 100
+#' K <- 6
+#'
+#' ## If you give ldest() vectors,
+#' ## it assumes you are using genotypes.
+#' ga <- stats::rbinom(n = n, size = K, prob = 0.5)
+#' gb <- stats::rbinom(n = n, size = K, prob = 0.5)
+#' head(ga)
+#' head(gb)
+#' ldout1 <- ldest(ga = ga, gb = gb, K = K)
+#' ldout1
+#'
+#' ## Use bootstap for standard errors instead:
+#' ldout2 <- ldest(ga = ga, gb = gb, K = K, useboot = TRUE)
+#' ldout2
+#'
+#' ## Standard error estimates are similar for D, r, and z
+#' ldout1[c("D_se", "r2_se", "r_se", "z_se")]
+#' ldout2[c("D_se", "r2_se", "r_se", "z_se")]
+#'
+#' ## If you give ldest() matrices,
+#' ## it assumes you are using genotype likelihoods.
+#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' head(gamat)
+#' head(gbmat)
+#' ldout3 <- ldest(ga = gamat, gb = gbmat, K = K)
+#' ldout3
+#'
+#' @export
+ldest <- function(ga,
+                  gb,
+                  K,
+                  reltol  = 10^-8,
+                  lang    = c("R", "C++"),
+                  nboot   = 100,
+                  useboot = FALSE) {
+
+  stopifnot(length(K) == 1,
+            length(nboot) == 1,
+            length(reltol) == 1,
+            length(useboot) == 1)
+  stopifnot(is.logical(useboot))
+  stopifnot(reltol > 0, nboot > 0, K > 0)
+  lang <- match.arg(lang)
+  if (is.vector(ga) & is.vector(gb)) {
+    stopifnot(length(ga) == length(gb))
+    stopifnot(ga >= 0, ga <= K)
+    stopifnot(gb >= 0, gb <= K)
+    using = "genotypes"
+  } else if (is.matrix(ga) & is.matrix(gb)) {
+    stopifnot(dim(ga) == dim(gb))
+    stopifnot(K + 1 == ncol(ga))
+    using = "likelihoods"
+  } else {
+    stop("ldest: ga and gb must either both be vectors or both be matrices.")
+  }
+
+
+  ## find MLE of proportions ---------
+  oout <- find_mle(ga     = ga,
+                   gb     = gb,
+                   K      = K,
+                   reltol = reltol,
+                   lang   = lang,
+                   using  = using)
+
+  ## Get estimates -------------------
+  phat <- real_to_simplex(oout$par) # (ab, Ab, aB, AB)
+  ldestvec <- convert_ld(phat = phat)
+  pA     <- ldestvec[["pA"]]
+  pB     <- ldestvec[["pB"]]
+  D      <- ldestvec[["D"]]
+  r2     <- ldestvec[["r2"]]
+  Dprime <- ldestvec[["Dprime"]]
+  r      <- ldestvec[["r"]]
+  z      <- ldestvec[["z"]]
 
   ## Get variance estimates --------
   Hy <- oout$hessian ## Hessian of real parameters
 
-  ## jacobian converting from simplex to real. The last is just a column of
-  ## zeros because we use the transform from p1, p2, p3 to y1, y2, y3
-  J <- dsimplex_to_real_dx(phat)[, -4]
-  Hp <- t(J) %*% Hy %*% J ## Hessian of first three simplex parameters
-  nHp_inv <- -solve(Hp)
+  ## test for singularity
+  eval <- eigen(Hy)
+  if (abs(pA) < sqrt(.Machine$double.eps) ||
+      abs(pB) < sqrt(.Machine$double.eps) ||
+      abs(pA - 1) < sqrt(.Machine$double.eps) ||
+      abs(pB - 1) < sqrt(.Machine$double.eps)) {
+    ## Estimated to be monoallelic
+    D_se      <- NA
+    r2_se     <- NA
+    Dprime_se <- NA
+    z_se      <- NA
+    r_se      <- NA
+  } else if (any(abs(eval$values) < sqrt(.Machine$double.eps)) ||
+             useboot) {
+    ## Bootstrap SE
+    if (using == "genotypes") {
+      nind <- length(ga)
+    } else {
+      nind <- nrow(ga)
+    }
+    for (iboot in seq_len(nboot)) {
+      if (using == "genotypes") {
+        ga_boot <- ga[sample(seq_len(nind), size = nind, replace = TRUE)]
+        gb_boot <- gb[sample(seq_len(nind), size = nind, replace = TRUE)]
+      } else {
+        ga_boot <- ga[sample(seq_len(nind), size = nind, replace = TRUE), ]
+        gb_boot <- gb[sample(seq_len(nind), size = nind, replace = TRUE), ]
+      }
+      oout_boot <- find_mle(ga     = ga_boot,
+                            gb     = gb_boot,
+                            K      = K,
+                            reltol = reltol,
+                            lang   = lang,
+                            using  = using)
+      phat_boot <- real_to_simplex(oout_boot$par)
+      ldestvec_boot <- convert_ld(phat = phat_boot)
+      if (iboot == 1) {
+        bootmat <- matrix(NA_real_,
+                          ncol = length(ldestvec_boot),
+                          nrow = nboot)
+        colnames(bootmat) <- names(ldestvec_boot)
+      }
+      bootmat[iboot, ] <- ldestvec_boot
+    }
+    sevec <- apply(bootmat, 2, stats::sd, na.rm = TRUE)
+    D_se      <- sevec[["D"]]
+    r2_se     <- sevec[["r2"]]
+    Dprime_se <- sevec[["Dprime"]]
+    z_se      <- sevec[["z"]]
+    r_se      <- sevec[["r"]]
+  } else {
+    ## MLE theory
 
-  dD <- dD_dprob(prob = phat)
-  D_se <- sqrt(t(dD) %*% nHp_inv %*% dD)
+    ## jacobian converting from simplex to real. The last is just a column of
+    ## zeros because we use the transform from p1, p2, p3 to y1, y2, y3
+    J <- dsimplex_to_real_dx(phat)[, -4]
+    Hp <- t(J) %*% Hy %*% J ## Hessian of first three simplex parameters
+    nHp_inv <- -solve(Hp)
 
-  dDprime <- dDprime_dprob(prob = phat)
-  Dprime_se <- sqrt(t(dDprime) %*% nHp_inv %*% dDprime)
+    dD <- dD_dprob(prob = phat)
+    D_se <- sqrt(t(dD) %*% nHp_inv %*% dD)
 
-  dr2 <- dr2_dprob(prob = phat)
-  r2_se <- sqrt(t(dr2) %*% nHp_inv %*% dr2)
+    # dDprime <- dDprime_dprob(prob = phat)
+    # Dprime_se <- sqrt(t(dDprime) %*% nHp_inv %*% dDprime)
 
-  r <- sqrt(r2) * sign(D)
-  r_se <- r2_se / sqrt(4 * r2)
+    dr2 <- dr2_dprob(prob = phat)
+    r2_se <- sqrt(t(dr2) %*% nHp_inv %*% dr2)
+
+    r_se <- r2_se / sqrt(4 * r2)
+
+    z_se <- r_se / (1 - r2)
+
+    # g <- log(-log(r2))
+    # g_se <- r2_se / abs(r2 * log(r2))
+  }
 
   retvec <- c(D         = D,
               D_se      = D_se,
-              Dprime    = Dprime,
-              Dprime_se = Dprime_se,
               r2        = r2,
               r2_se     = r2_se,
               r         = r,
               r_se      = r_se,
+              z         = z,
+              z_se      = z_se,
               p_ab      = phat[[1]],
               p_Ab      = phat[[2]],
               p_aB      = phat[[3]],
@@ -311,7 +470,7 @@ mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
 #'
 #' @examples
 #' ## Simulate some data with true correlation of 0
-#' nloci <- 5
+#' nloci <- 10
 #' nind  <- 100
 #' K <- 6
 #' genovec <- sample(0:K, nind * nloci, TRUE)

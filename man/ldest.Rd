@@ -2,16 +2,30 @@
 % Please edit documentation in R/ldgeno.R
 \name{ldest}
 \alias{ldest}
-\title{Estimate pair-wise LD directly from the genotypes.}
+\title{Estimate pair-wise LD using either genotypes or genotype likelihoods.}
 \usage{
-ldest(ga, gb, K, reltol = 10^-8, lang = c("C++", "R"))
+ldest(
+  ga,
+  gb,
+  K,
+  reltol = 10^-8,
+  lang = c("R", "C++"),
+  nboot = 100,
+  useboot = FALSE
+)
 }
 \arguments{
-\item{ga}{A vector of counts, containing the genotypes for each individual
-at the first locus.}
+\item{ga}{One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
+at the first locus; or (ii) A matrix of genotype log-likelihoods
+at the second locus. The rows index the individuals and the columns
+index the genotypes. That is \code{ga[i, j]} is the genotype
+likelihood of individual \code{i} for genotype \code{j}.}
 
-\item{gb}{A vector of counts, containing the genotypes for each individual
-at the second locus.}
+\item{gb}{One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
+at the second locus; or (ii) A matrix of genotype log-likelihoods at
+the second locus. The rows index the individuals and the columns
+index the genotypes. That is \code{ga[i, j]} is the genotype
+likelihood of individual \code{i} for genotype \code{j}.}
 
 \item{K}{The ploidy of the species. Assumed the same for all individuals.}
 
@@ -19,20 +33,29 @@ at the second locus.}
 
 \item{lang}{Should we use the R interface for optim (\code{"R"}) or the
 C++ interface for optim through the roptim package (\code{"C++"})?}
+
+\item{nboot}{Sometimes, the MLE standard errors don't exist. So we use
+the bootstrap as a backup. \code{nboot} specifies the number
+of bootstrap iterations.}
+
+\item{useboot}{A logical. Optionally, you may always use the bootstrap
+to estimate the standard errors (\code{TRUE}). These will be more
+accurate but also much slower, so this defaults to \code{FALSE}.}
 }
 \value{
-A vector with the following elements:
+A vector with some or all of the following elements:
 \describe{
 \item{\code{D}}{The MLE of D.}
 \item{\code{D_se}}{The standard error of the estimate of D.}
-\item{\code{Dprime}}{The MLE of D'.}
-\item{\code{Dprime_se}}{The standard error of the estimate of D'.}
 \item{\code{r2}}{The MLE of the squared Pearson correlation.}
 \item{\code{r2_se}}{The standard error of the estimate of the
 squared Pearson correlation.}
-\item{\code{r}}{he MLE of the Pearson correlation.}
+\item{\code{r}}{The MLE of the Pearson correlation.}
 \item{\code{r_se}}{The standard error of the estimate of the
 Pearson correlation.}
+\item{\code{z}}{The Fisher-z transformation of \code{r}.}
+\item{\code{z_se}}{The standard error of the Fisher-z
+transformation of \code{r}.}
 \item{\code{p_ab}}{The estimated haplotype frequency of ab.}
 \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.}
 \item{\code{p_aB}}{The estimated haplotype frequency of aB.}
@@ -40,11 +63,13 @@ Pearson correlation.}
 }
 }
 \description{
-Given genotype (allele dosage) data for each individual at a pair of
-loci, this function will calculate the maximum likelihood estimates
-and their corresponding asymptotic standard errors of a variety of
-measures of linkage disequilibrium (LD): D, D', and the
-squared correlation. This function can be used for both
+Given genotype (allele dosage) or genotype likelihood data
+for each individual at a pair of loci, this function will
+calculate the maximum likelihood estimates
+and their corresponding asymptotic standard errors of some
+measures of linkage disequilibrium (LD): D, the Pearson correlation,
+the squared Pearson correlation, and the Fisher-z transformation of the
+Pearson correlation. This function can be used for both
 diploids and polyploids.
 }
 \details{
@@ -72,17 +97,17 @@ integrating over the possible haplotypes for each pair of genotypes.
 The resulting standard errors are the square roots of the inverse of the
 negative Fisher-information. This is from standard maximum likelihood
 theory. The Fisher-information is known to be biased low, so the actual
-standard errors are probably a little bigger for small n (n < 100).
+standard errors are probably a little bigger for small n (n < 20).
+In some cases the Fisher-information matrix is singular, and so we
+in these cases we return a bootstrap estimate of the standard error.
 
 The standard error estimate of the squared Pearson correlation is not
 valid when r^2 = 0.
 
-The standard error estimate of D' is not valid when
-\itemize{
-\item{D' = 0,}
-\item{D' < 0 and pA pB = (1 - pA) (1 - pB), or}
-\item{D' > 0 and pA (1 - pB) = pA (1 - pB).}
-}
+In cases where either SNP is estimated to be monoallelic
+(\code{pA \%in\% c(0, 1)} or \code{pB \%in\% c(0, 1)}), this function
+will return an estimated \code{D} of \code{0}, and all other estimates
+(including standard errors) will be returned as \code{NA}.
 }
 \examples{
 set.seed(1)
@@ -91,12 +116,20 @@ K <- 6
 
 ## If you give ldest() vectors,
 ## it assumes you are using genotypes.
-ga <- sample(0:K, n, TRUE)
-gb <- sample(0:K, n, TRUE)
+ga <- stats::rbinom(n = n, size = K, prob = 0.5)
+gb <- stats::rbinom(n = n, size = K, prob = 0.5)
 head(ga)
 head(gb)
 ldout1 <- ldest(ga = ga, gb = gb, K = K)
 ldout1
+
+## Use bootstap for standard errors instead:
+ldout2 <- ldest(ga = ga, gb = gb, K = K, useboot = TRUE)
+ldout2
+
+## Standard error estimates are similar for D, r, and z
+ldout1[c("D_se", "r2_se", "r_se", "z_se")]
+ldout2[c("D_se", "r2_se", "r_se", "z_se")]
 
 ## If you give ldest() matrices,
 ## it assumes you are using genotype likelihoods.
@@ -104,8 +137,8 @@ gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 head(gamat)
 head(gbmat)
-ldout2 <- ldest(ga = gamat, gb = gbmat, K = K)
-ldout2
+ldout3 <- ldest(ga = gamat, gb = gbmat, K = K)
+ldout3
 
 }
 \author{

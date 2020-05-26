@@ -32,7 +32,7 @@ through the doParallel and foreach packages.
 }
 \examples{
 ## Simulate some data with true correlation of 0
-nloci <- 5
+nloci <- 10
 nind  <- 100
 K <- 6
 genovec <- sample(0:K, nind * nloci, TRUE)
