@@ -19,11 +19,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 LinkingTo: 
     Rcpp,
-    RcppArmadillo,
-    roptim
+    RcppArmadillo
 Imports: 
     Rcpp,
-    roptim,
     foreach,
     doParallel
 Suggests: 
