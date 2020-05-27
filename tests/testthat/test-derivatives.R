@@ -153,14 +153,16 @@ test_that("dllike_geno_dpar works", {
   gB <- rep(0:4, 5)
   K <- 4
   par <- c(-1, 2, 3)
-  derivvec <- dllike_geno_dpar(par = par, gA = gA, gB = gB, K = K)
+  alpha <- 1:4
+  derivvec <- dllike_geno_dpar(par = par, gA = gA, gB = gB, K = K, alpha = alpha)
 
   myenv <- new.env()
   assign(x = "gA", value = gA, envir = myenv)
   assign(x = "gB", value = gB, envir = myenv)
   assign(x = "K", value = K, envir = myenv)
   assign(x = "par", value = par, envir = myenv)
-  nout <- stats::numericDeriv(quote(llike_geno(gA = gA, gB = gB, K = K, par = par)), "par", myenv)
+  assign(x = "alpha", value = alpha, envir = myenv)
+  nout <- stats::numericDeriv(quote(llike_geno(gA = gA, gB = gB, K = K, par = par, alpha = alpha)), "par", myenv)
 
   expect_equal(
     c(attr(nout, "gradient")),
@@ -296,13 +298,15 @@ test_that("dllike_genolike_dpar works OK", {
   pgA <- matrix(log(stats::runif(n * K)), nrow = n)
   pgB <- matrix(log(stats::runif(n * K)), nrow = n)
   par <- stats::rnorm(3)
-  derivvec <- dllike_genolike_dpar(par = par, pgA = pgA, pgB = pgB)
+  alpha <- 1:4
+  derivvec <- dllike_genolike_dpar(par = par, pgA = pgA, pgB = pgB, alpha = alpha)
 
   myenv <- new.env()
   assign(x = "pgA", value = pgA, envir = myenv)
   assign(x = "pgB", value = pgB, envir = myenv)
   assign(x = "par", value = par, envir = myenv)
-  nout <- stats::numericDeriv(quote(llike_genolike(pgA = pgA, pgB = pgB, par = par)), "par", myenv)
+  assign(x = "alpha", value = alpha, envir = myenv)
+  nout <- stats::numericDeriv(quote(llike_genolike(pgA = pgA, pgB = pgB, par = par, alpha = alpha)), "par", myenv)
   expect_equal(
     c(attr(nout, "gradient")),
     c(derivvec),
@@ -310,6 +314,22 @@ test_that("dllike_genolike_dpar works OK", {
   )
 })
 
+
+test_that("dlprior_par_dprob works OK", {
+  alpha <- 1:4
+  par <- stats::rnorm(3)
+  derivvec <- dlprior_par_dprob(par = par, alpha = alpha)
+
+  myenv <- new.env()
+  assign(x = "alpha", value = alpha, envir = myenv)
+  assign(x = "par", value = par, envir = myenv)
+  nout <- stats::numericDeriv(quote(lprior_par(par = par, alpha = alpha)), "par", myenv)
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(derivvec),
+    tolerance = 10^-4
+  )
+})
 
 
 

@@ -22,6 +22,8 @@ arma::vec dmulti_dprob(const arma::vec x,
 arma::vec plog_sum_exp(const arma::vec x,
                        const arma::vec y);
 arma::mat get_prob_array(int K, arma::vec prob);
+double lprior(const arma::vec prob, const arma::vec alpha);
+arma::vec dlprior_dprob(const arma::vec prob, const arma::vec alpha);
 
 //' Probability of genotype likelihoods given haplotype frequencies for a
 //' single individual.
@@ -175,6 +177,7 @@ double proballgenolike(const arma::mat &pgA,
 //'
 //' @param par A vector of length 3 containing real numbers that are to
 //'     be transformed into the simplex of prob (ab, Ab, aB, AB).
+//' @param alpha The prior sample size used in the penalty.
 //' @inheritParams proballgenolike
 //'
 //' @author David Gerard
@@ -183,14 +186,16 @@ double proballgenolike(const arma::mat &pgA,
 // [[Rcpp::export]]
 double llike_genolike(const arma::vec par,
                       const arma::mat &pgA,
-                      const arma::mat &pgB) {
+                      const arma::mat &pgB,
+                      const arma::vec alpha) {
   if (par.n_elem != 3) {
     Rcpp::stop("llike_genolike: par needs to be length 3");
   }
 
   arma::vec prob = real_to_simplex(par);
 
-  double llike = proballgenolike(pgA, pgB, prob, true);
+  double llike = proballgenolike(pgA, pgB, prob, true) +
+    lprior(prob, alpha);
 
   return llike;
 }
@@ -360,14 +365,16 @@ arma::vec dproballgenolike_dprob(const arma::mat &pgA,
 // [[Rcpp::export]]
 arma::vec dllike_genolike_dpar(const arma::vec par,
                                const arma::mat &pgA,
-                               const arma::mat &pgB) {
+                               const arma::mat &pgB,
+                               const arma::vec alpha) {
   if (par.n_elem != 3) {
     Rcpp::stop("dllike_genolike_dpar: par needs to be length 3");
   }
 
   arma::mat dp_dy = dreal_to_simplex_dy(par);
   arma::vec prob = real_to_simplex(par);
-  arma::vec df_dp = dproballgenolike_dprob(pgA, pgB, prob);
+  arma::vec df_dp = dproballgenolike_dprob(pgA, pgB, prob) +
+    dlprior_dprob(prob, alpha);
 
   arma::vec deriv = {0.0, 0.0, 0.0};
   for (int i = 0; i < 4; i++) {

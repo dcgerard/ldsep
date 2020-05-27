@@ -9,6 +9,7 @@ double dmulti_double(const arma::vec x, const arma::vec prob, bool log_p);
 arma::vec plog_sum_exp(const arma::vec x, const arma::vec y);
 arma::vec real_to_simplex(const arma::vec y);
 const double TOL = std::sqrt(DOUBLE_EPS);
+arma::vec dlprior_dprob(const arma::vec prob, const arma::vec alpha);
 
 //' Derivative of multinomial pdf
 //'
@@ -198,14 +199,16 @@ arma::mat dsimplex_to_real_dx(const arma::vec x) {
 arma::vec dllike_geno_dpar(const arma::vec par,
                            const arma::vec &gA,
                            const arma::vec &gB,
-                           const int K) {
+                           const int K,
+                           const arma::vec alpha) {
   if (par.n_elem != 3) {
     Rcpp::stop("par needs to be length 3");
   }
 
   arma::mat dp_dy = dreal_to_simplex_dy(par);
   arma::vec prob = real_to_simplex(par);
-  arma::vec df_dp = dproballgeno_dprob(gA, gB, K, prob);
+  arma::vec df_dp = dproballgeno_dprob(gA, gB, K, prob) +
+    dlprior_dprob(prob, alpha);
 
   arma::vec deriv = {0.0, 0.0, 0.0};
   for (int i = 0; i < 4; i++) {

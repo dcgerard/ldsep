@@ -26,9 +26,10 @@ test_that("proballgeno and llike_geno give same results", {
   ga <- c(1, 4, 1, 1)
   gb <- c(2, 4, 2, 5)
   K <- 6
+  alpha <- 1:4
 
   expect_equal(
-    llike_geno(par = par, gA = ga, gB = gb, K = K),
+    llike_geno(par = par, gA = ga, gB = gb, K = K, alpha = alpha) - lprior_par(par = par, alpha = alpha),
     proballgeno(gA = ga, gB = gb, K = K, prob = real_to_simplex(par), log_p = TRUE)
   )
 

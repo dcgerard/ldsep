@@ -74,8 +74,8 @@ dsimplex_to_real_dx <- function(x) {
 #' @author David Gerard
 #'
 #' @noRd
-dllike_geno_dpar <- function(par, gA, gB, K) {
-    .Call(`_ldsep_dllike_geno_dpar`, par, gA, gB, K)
+dllike_geno_dpar <- function(par, gA, gB, K, alpha) {
+    .Call(`_ldsep_dllike_geno_dpar`, par, gA, gB, K, alpha)
 }
 
 #' Derivative of prob[[4]] - (prob[[2]] + prob[[4]]) * (prob[[3]] + prob[[4]])
@@ -184,13 +184,14 @@ proballgenolike <- function(pgA, pgB, prob, log_p = TRUE) {
 #'
 #' @param par A vector of length 3 containing real numbers that are to
 #'     be transformed into the simplex of prob (ab, Ab, aB, AB).
+#' @param alpha The prior sample size used in the penalty.
 #' @inheritParams proballgenolike
 #'
 #' @author David Gerard
 #'
 #' @noRd
-llike_genolike <- function(par, pgA, pgB) {
-    .Call(`_ldsep_llike_genolike`, par, pgA, pgB)
+llike_genolike <- function(par, pgA, pgB, alpha) {
+    .Call(`_ldsep_llike_genolike`, par, pgA, pgB, alpha)
 }
 
 #' Obtain a matrix of derivatives of p(geno) (NOT log(p(geno)))
@@ -252,8 +253,8 @@ dproballgenolike_dprob <- function(pgA, pgB, prob) {
 #' @author David Gerard
 #'
 #' @noRd
-dllike_genolike_dpar <- function(par, pgA, pgB) {
-    .Call(`_ldsep_dllike_genolike_dpar`, par, pgA, pgB)
+dllike_genolike_dpar <- function(par, pgA, pgB, alpha) {
+    .Call(`_ldsep_dllike_genolike_dpar`, par, pgA, pgB, alpha)
 }
 
 #' Multinomial pdf
@@ -304,45 +305,62 @@ proballgeno <- function(gA, gB, K, prob, log_p = TRUE) {
 #'
 #' @param par A vector of length 3 containing real numbers that are to
 #'     be transformed into the simplex of prob (ab, Ab, aB, AB).
+#' @param alpha The prior sample size used in the penalty.
 #' @inheritParams proballgeno
 #'
 #' @author David Gerard
 #'
 #' @noRd
-llike_geno <- function(par, gA, gB, K) {
-    .Call(`_ldsep_llike_geno`, par, gA, gB, K)
+llike_geno <- function(par, gA, gB, K, alpha) {
+    .Call(`_ldsep_llike_geno`, par, gA, gB, K, alpha)
 }
 
-#' Find LD estimates using genotype likelihoods
+#' Prior probability for haplotype frequencies.
 #'
-#'
-#' @param par The parameters on the real-scale.
-#' @param pgA The genotype log-liielihoods at locus 1.
-#' @param pgB The genotype log-likelihoods at locus 2.
-#' @param reltol The stopping criterion for the gradient ascent.
+#' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
+#' @param alpha The prior counts for \code{prob}.
 #'
 #' @author David Gerard
 #'
 #' @noRd
-optimize_genolikecor <- function(par, pgA, pgB, reltol = 10.0e-08) {
-    .Call(`_ldsep_optimize_genolikecor`, par, pgA, pgB, reltol)
+lprior <- function(prob, alpha) {
+    .Call(`_ldsep_lprior`, prob, alpha)
 }
 
-#' Find LD estimates using just the genotypes.
+#' Derivative of lprior with respect to prob.
 #'
-#'
-#' @param par The parameters on the real-scale.
-#' @param gA The genotypes at locus 1.
-#' @param gB The genotypes at locus 2.
-#' @param K The ploidy for the species. Assumed to be the same for
-#'     all individuals.
-#' @param reltol The stopping criterion for the gradient ascent.
+#' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
+#' @param alpha The prior counts for \code{prob}.
 #'
 #' @author David Gerard
 #'
 #' @noRd
-optimize_genocor <- function(par, gA, gB, K, reltol = 10.0e-08) {
-    .Call(`_ldsep_optimize_genocor`, par, gA, gB, K, reltol)
+dlprior_dprob <- function(prob, alpha) {
+    .Call(`_ldsep_dlprior_dprob`, prob, alpha)
+}
+
+#' Prior probability on real-line scale.
+#'
+#' @param par A vector of length 3 containing real numbers that are to
+#'     be transformed into the simplex of prob (ab, Ab, aB, AB).
+#' @param alpha The prior counts for \code{prob}.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+lprior_par <- function(par, alpha) {
+    .Call(`_ldsep_lprior_par`, par, alpha)
+}
+
+#' Derivative of \code{\link{lprior_par}()} with respect to \code{par}.
+#'
+#' @inheritParams lprior_par
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dlprior_par_dprob <- function(par, alpha) {
+    .Call(`_ldsep_dlprior_par_dprob`, par, alpha)
 }
 
 #' Log-sum-exponential trick.

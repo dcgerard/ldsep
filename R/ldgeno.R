@@ -4,7 +4,7 @@
 
 
 
-#' Wrapper for optim() conditional on lang and input
+#' Wrapper for optim() conditional on input
 #'
 #' @inheritParams ldest
 #'
@@ -15,42 +15,64 @@ find_mle <- function(ga,
                      gb,
                      K,
                      reltol = 10^-8,
-                     lang = c("R", "C++"),
-                     using = c("genotypes", "likelihoods")) {
-  lang <- match.arg(lang)
+                     using = c("genotypes", "likelihoods"),
+                     pen = 2,
+                     grid_init = FALSE) {
   using <- match.arg(using)
-  ## find MLE of proportions ---------
-  inity <- rep(0, 3)
-  if (lang == "R" & using == "genotypes") {
-    oout <- stats::optim(par     = inity,
-                         fn      = llike_geno,
-                         gr      = dllike_geno_dpar,
-                         method  = "BFGS",
-                         control = list(fnscale = -1, reltol = reltol),
-                         hessian = TRUE,
-                         gA      = ga,
-                         gB      = gb,
-                         K       = K)
-  } else if (lang == "C++" & using == "genotypes") {
-    oout <- optimize_genocor(par    = inity,
-                             gA     = ga,
-                             gB     = gb,
-                             K      = K,
-                             reltol = reltol)
-  } else if (lang == "R" & using == "likelihoods") {
-    oout <- stats::optim(par     = inity,
-                         fn      = llike_genolike,
-                         gr      = dllike_genolike_dpar,
-                         method  = "BFGS",
-                         control = list(fnscale = -1, reltol = reltol),
-                         hessian = TRUE,
-                         pgA      = ga,
-                         pgB      = gb)
-
+  if (grid_init) {
+    inity_list <- lapply(
+      list(
+        c(0.25, 0.25, 0.25, 0.25),
+        c(0.85, 0.05, 0.05, 0.05),
+        c(0.05, 0.85, 0.05, 0.05),
+        c(0.05, 0.05, 0.85, 0.05),
+        c(0.05, 0.05, 0.05, 0.85),
+        c(0.45, 0.45, 0.05, 0.05),
+        c(0.45, 0.05, 0.45, 0.05),
+        c(0.45, 0.05, 0.05, 0.45),
+        c(0.05, 0.45, 0.45, 0.05),
+        c(0.05, 0.45, 0.05, 0.45),
+        c(0.05, 0.05, 0.45, 0.45),
+        c(0.04, 0.32, 0.32, 0.32),
+        c(0.32, 0.04, 0.32, 0.32),
+        c(0.32, 0.32, 0.04, 0.32),
+        c(0.32, 0.32, 0.32, 0.04)
+      ), simplex_to_real)
   } else {
-    oout <- optimize_genolikecor(par = inity, pgA = ga, pgB = gb)
+    inity_list <- list(c(0, 0, 0))
   }
-  return(oout)
+
+  oldlike <- -Inf
+  for (i in seq_along(inity_list)) {
+    inity <- inity_list[[i]]
+    if (using == "genotypes") {
+      oout <- stats::optim(par     = inity,
+                           fn      = llike_geno,
+                           gr      = dllike_geno_dpar,
+                           method  = "BFGS",
+                           control = list(fnscale = -1, reltol = reltol),
+                           hessian = TRUE,
+                           gA      = ga,
+                           gB      = gb,
+                           K       = K,
+                           alpha   = rep(pen, 4))
+    } else {
+      oout <- stats::optim(par     = inity,
+                           fn      = llike_genolike,
+                           gr      = dllike_genolike_dpar,
+                           method  = "BFGS",
+                           control = list(fnscale = -1, reltol = reltol),
+                           hessian = TRUE,
+                           pgA      = ga,
+                           pgB      = gb,
+                           alpha   = rep(pen, 4))
+    }
+    if (oout$value > oldlike) {
+      oldlike <- oout$value
+      oout_best <- oout
+    }
+  }
+  return(oout_best)
 }
 
 #' Converts a vector of probabilities of LD estimates
@@ -64,16 +86,12 @@ convert_ld <- function(phat) {
   pA <- phat[[2]] + phat[[4]]
   pB <- phat[[3]] + phat[[4]]
   D  <- phat[[4]] - pA * pB
-  if (abs(pA) < sqrt(.Machine$double.eps) ||
-      abs(pB) < sqrt(.Machine$double.eps) ||
-      abs(pA - 1) < sqrt(.Machine$double.eps) ||
-      abs(pB - 1) < sqrt(.Machine$double.eps)) {
-    ## mono-allelic SNPs
-    r2     <- NA
-    Dprime <- NA
-    r      <- NA
-    z      <- NA
-  } else {
+  TOL <- sqrt(.Machine$double.eps)
+  if (abs(pA) > TOL &&
+      abs(pA - 1) > TOL &&
+      abs(pB) > TOL &&
+      abs(pB - 1) > TOL) {
+    ## everthing is perfect
     r2 <- D ^ 2 / (pA * (1 - pA) * pB * (1 - pB))
     if (D < 0) {
       Dprime <- D / min(pA * pB, (1 - pA) * (1 - pB))
@@ -82,6 +100,12 @@ convert_ld <- function(phat) {
     }
     r <- sqrt(r2) * sign(D)
     z <- atanh(r)
+  } else {
+    ## bad
+    r2     <- 0
+    Dprime <- 0
+    r      <- 0
+    z      <- 0
   }
 
   retvec <- c(pA = pA,
@@ -138,8 +162,7 @@ convert_ld <- function(phat) {
 #'
 #' In cases where either SNP is estimated to be monoallelic
 #' (\code{pA %in% c(0, 1)} or \code{pB %in% c(0, 1)}), this function
-#' will return an estimated \code{D} of \code{0}, and all other estimates
-#' (including standard errors) will be returned as \code{NA}.
+#' will return LD estimates of \code{0}.
 #'
 #' @param ga One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
 #'     at the first locus; or (ii) A matrix of genotype log-likelihoods
@@ -153,14 +176,18 @@ convert_ld <- function(phat) {
 #'     likelihood of individual \code{i} for genotype \code{j}.
 #' @param K The ploidy of the species. Assumed the same for all individuals.
 #' @param reltol The relative tolerance for the stopping criterion.
-#' @param lang Should we use the R interface for optim (\code{"R"}) or the
-#'     C++ interface for optim through the roptim package (\code{"C++"})?
 #' @param nboot Sometimes, the MLE standard errors don't exist. So we use
 #'     the bootstrap as a backup. \code{nboot} specifies the number
 #'     of bootstrap iterations.
 #' @param useboot A logical. Optionally, you may always use the bootstrap
 #'     to estimate the standard errors (\code{TRUE}). These will be more
 #'     accurate but also much slower, so this defaults to \code{FALSE}.
+#' @param pen The penalty to be applied to the likelihood. You can think about
+#'     this as the prior sample size.
+#' @param grid_init A logical. Should we initialize the gradient ascent
+#'     at a grid of initial values (\code{TRUE}) or just initialize
+#'     at one value corresponding to the simplex point
+#'     \code{rep(0.25, 4)} (\code{FALSE})?
 #'
 #' @author David Gerard
 #'
@@ -194,11 +221,18 @@ convert_ld <- function(phat) {
 #' gb <- stats::rbinom(n = n, size = K, prob = 0.5)
 #' head(ga)
 #' head(gb)
-#' ldout1 <- ldest(ga = ga, gb = gb, K = K)
+#' ldout1 <- ldest(ga = ga,
+#'                 gb = gb,
+#'                 K = K,
+#'                 grid_init = FALSE)
 #' ldout1
 #'
 #' ## Use bootstap for standard errors instead:
-#' ldout2 <- ldest(ga = ga, gb = gb, K = K, useboot = TRUE)
+#' ldout2 <- ldest(ga = ga,
+#'                 gb = gb,
+#'                 K = K,
+#'                 useboot = TRUE,
+#'                 grid_init = FALSE)
 #' ldout2
 #'
 #' ## Standard error estimates are similar for D, r, and z
@@ -219,17 +253,20 @@ ldest <- function(ga,
                   gb,
                   K,
                   reltol  = 10^-8,
-                  lang    = c("R", "C++"),
                   nboot   = 100,
-                  useboot = FALSE) {
+                  useboot = FALSE,
+                  pen     = 2,
+                  grid_init = FALSE) {
 
   stopifnot(length(K) == 1,
             length(nboot) == 1,
             length(reltol) == 1,
-            length(useboot) == 1)
+            length(useboot) == 1,
+            length(grid_init) == 1)
+  stopifnot(pen > 0)
   stopifnot(is.logical(useboot))
+  stopifnot(is.logical(grid_init))
   stopifnot(reltol > 0, nboot > 0, K > 0)
-  lang <- match.arg(lang)
   if (is.vector(ga) & is.vector(gb)) {
     stopifnot(length(ga) == length(gb))
     stopifnot(ga >= 0, ga <= K)
@@ -249,8 +286,9 @@ ldest <- function(ga,
                    gb     = gb,
                    K      = K,
                    reltol = reltol,
-                   lang   = lang,
-                   using  = using)
+                   using  = using,
+                   pen    = pen,
+                   grid_init = grid_init)
 
   ## Get estimates -------------------
   phat <- real_to_simplex(oout$par) # (ab, Ab, aB, AB)
@@ -268,18 +306,7 @@ ldest <- function(ga,
 
   ## test for singularity
   eval <- eigen(Hy)
-  if (abs(pA) < sqrt(.Machine$double.eps) ||
-      abs(pB) < sqrt(.Machine$double.eps) ||
-      abs(pA - 1) < sqrt(.Machine$double.eps) ||
-      abs(pB - 1) < sqrt(.Machine$double.eps)) {
-    ## Estimated to be monoallelic
-    D_se      <- NA
-    r2_se     <- NA
-    Dprime_se <- NA
-    z_se      <- NA
-    r_se      <- NA
-  } else if (any(abs(eval$values) < sqrt(.Machine$double.eps)) ||
-             useboot) {
+  if (any(abs(eval$values) < sqrt(.Machine$double.eps)) || useboot) {
     ## Bootstrap SE
     if (using == "genotypes") {
       nind <- length(ga)
@@ -298,7 +325,6 @@ ldest <- function(ga,
                             gb     = gb_boot,
                             K      = K,
                             reltol = reltol,
-                            lang   = lang,
                             using  = using)
       phat_boot <- real_to_simplex(oout_boot$par)
       ldestvec_boot <- convert_ld(phat = phat_boot)
@@ -418,8 +444,7 @@ mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
                                  ldout <- ldest(ga = genomat[i, ],
                                                 gb = genomat[j, ],
                                                 K = K,
-                                                reltol = reltol,
-                                                lang = "C++")
+                                                reltol = reltol)
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,
@@ -524,8 +549,7 @@ mldest_genolike <- function(genoarray, nc = 1, reltol = 10^-8) {
                                  ldout <- ldest(ga = genoarray[i, , ],
                                                 gb = genoarray[j, , ],
                                                 K = K,
-                                                reltol = reltol,
-                                                lang = "C++")
+                                                reltol = reltol)
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,

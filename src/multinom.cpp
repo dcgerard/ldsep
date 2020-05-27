@@ -6,6 +6,7 @@ using namespace Rcpp;
 double log_sum_exp_2(double x, double y);
 arma::vec real_to_simplex(const arma::vec y);
 const double TOL = std::sqrt(DOUBLE_EPS);
+double lprior(const arma::vec prob, const arma::vec alpha);
 
 //' Multinomial pdf
 //'
@@ -131,6 +132,7 @@ double proballgeno(const arma::vec &gA,
 //'
 //' @param par A vector of length 3 containing real numbers that are to
 //'     be transformed into the simplex of prob (ab, Ab, aB, AB).
+//' @param alpha The prior sample size used in the penalty.
 //' @inheritParams proballgeno
 //'
 //' @author David Gerard
@@ -140,14 +142,16 @@ double proballgeno(const arma::vec &gA,
 double llike_geno(const arma::vec par,
                   const arma::vec &gA,
                   const arma::vec &gB,
-                  const int K) {
+                  const int K,
+                  const arma::vec alpha) {
   if (par.n_elem != 3) {
     Rcpp::stop("llike_geno: par needs to be length 3");
   }
 
   arma::vec prob = real_to_simplex(par);
 
-  double llike = proballgeno(gA, gB, K, prob, true);
+  double llike = proballgeno(gA, gB, K, prob, true) +
+    lprior(prob, alpha);
 
   return llike;
 }

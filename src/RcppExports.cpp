@@ -70,8 +70,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // dllike_geno_dpar
-arma::vec dllike_geno_dpar(const arma::vec par, const arma::vec& gA, const arma::vec& gB, const int K);
-RcppExport SEXP _ldsep_dllike_geno_dpar(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP) {
+arma::vec dllike_geno_dpar(const arma::vec par, const arma::vec& gA, const arma::vec& gB, const int K, const arma::vec alpha);
+RcppExport SEXP _ldsep_dllike_geno_dpar(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,7 +79,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int >::type K(KSEXP);
-    rcpp_result_gen = Rcpp::wrap(dllike_geno_dpar(par, gA, gB, K));
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(dllike_geno_dpar(par, gA, gB, K, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -159,15 +160,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // llike_genolike
-double llike_genolike(const arma::vec par, const arma::mat& pgA, const arma::mat& pgB);
-RcppExport SEXP _ldsep_llike_genolike(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP) {
+double llike_genolike(const arma::vec par, const arma::mat& pgA, const arma::mat& pgB, const arma::vec alpha);
+RcppExport SEXP _ldsep_llike_genolike(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
-    rcpp_result_gen = Rcpp::wrap(llike_genolike(par, pgA, pgB));
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(llike_genolike(par, pgA, pgB, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -222,15 +224,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // dllike_genolike_dpar
-arma::vec dllike_genolike_dpar(const arma::vec par, const arma::mat& pgA, const arma::mat& pgB);
-RcppExport SEXP _ldsep_dllike_genolike_dpar(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP) {
+arma::vec dllike_genolike_dpar(const arma::vec par, const arma::mat& pgA, const arma::mat& pgB, const arma::vec alpha);
+RcppExport SEXP _ldsep_dllike_genolike_dpar(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
-    rcpp_result_gen = Rcpp::wrap(dllike_genolike_dpar(par, pgA, pgB));
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(dllike_genolike_dpar(par, pgA, pgB, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -278,8 +281,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // llike_geno
-double llike_geno(const arma::vec par, const arma::vec& gA, const arma::vec& gB, const int K);
-RcppExport SEXP _ldsep_llike_geno(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP) {
+double llike_geno(const arma::vec par, const arma::vec& gA, const arma::vec& gB, const int K, const arma::vec alpha);
+RcppExport SEXP _ldsep_llike_geno(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -287,36 +290,56 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
     Rcpp::traits::input_parameter< const int >::type K(KSEXP);
-    rcpp_result_gen = Rcpp::wrap(llike_geno(par, gA, gB, K));
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(llike_geno(par, gA, gB, K, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
-// optimize_genolikecor
-List optimize_genolikecor(arma::vec& par, const arma::mat& pgA, const arma::mat& pgB, double reltol);
-RcppExport SEXP _ldsep_optimize_genolikecor(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP reltolSEXP) {
+// lprior
+double lprior(const arma::vec prob, const arma::vec alpha);
+RcppExport SEXP _ldsep_lprior(SEXP probSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec& >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
-    Rcpp::traits::input_parameter< double >::type reltol(reltolSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimize_genolikecor(par, pgA, pgB, reltol));
+    Rcpp::traits::input_parameter< const arma::vec >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(lprior(prob, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
-// optimize_genocor
-List optimize_genocor(arma::vec& par, const arma::vec& gA, const arma::vec& gB, const int& K, double reltol);
-RcppExport SEXP _ldsep_optimize_genocor(SEXP parSEXP, SEXP gASEXP, SEXP gBSEXP, SEXP KSEXP, SEXP reltolSEXP) {
+// dlprior_dprob
+arma::vec dlprior_dprob(const arma::vec prob, const arma::vec alpha);
+RcppExport SEXP _ldsep_dlprior_dprob(SEXP probSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::vec& >::type par(parSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type gA(gASEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type gB(gBSEXP);
-    Rcpp::traits::input_parameter< const int& >::type K(KSEXP);
-    Rcpp::traits::input_parameter< double >::type reltol(reltolSEXP);
-    rcpp_result_gen = Rcpp::wrap(optimize_genocor(par, gA, gB, K, reltol));
+    Rcpp::traits::input_parameter< const arma::vec >::type prob(probSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(dlprior_dprob(prob, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lprior_par
+double lprior_par(const arma::vec par, const arma::vec alpha);
+RcppExport SEXP _ldsep_lprior_par(SEXP parSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(lprior_par(par, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dlprior_par_dprob
+arma::vec dlprior_par_dprob(const arma::vec par, const arma::vec alpha);
+RcppExport SEXP _ldsep_dlprior_par_dprob(SEXP parSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(dlprior_par_dprob(par, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -406,25 +429,27 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dproballgeno_dprob", (DL_FUNC) &_ldsep_dproballgeno_dprob, 4},
     {"_ldsep_dreal_to_simplex_dy", (DL_FUNC) &_ldsep_dreal_to_simplex_dy, 1},
     {"_ldsep_dsimplex_to_real_dx", (DL_FUNC) &_ldsep_dsimplex_to_real_dx, 1},
-    {"_ldsep_dllike_geno_dpar", (DL_FUNC) &_ldsep_dllike_geno_dpar, 4},
+    {"_ldsep_dllike_geno_dpar", (DL_FUNC) &_ldsep_dllike_geno_dpar, 5},
     {"_ldsep_dD_dprob", (DL_FUNC) &_ldsep_dD_dprob, 1},
     {"_ldsep_dr2_dprob", (DL_FUNC) &_ldsep_dr2_dprob, 1},
     {"_ldsep_dDprime_dprob", (DL_FUNC) &_ldsep_dDprime_dprob, 1},
     {"_ldsep_probgenolike", (DL_FUNC) &_ldsep_probgenolike, 4},
     {"_ldsep_proballgenolike_old", (DL_FUNC) &_ldsep_proballgenolike_old, 4},
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},
-    {"_ldsep_llike_genolike", (DL_FUNC) &_ldsep_llike_genolike, 3},
+    {"_ldsep_llike_genolike", (DL_FUNC) &_ldsep_llike_genolike, 4},
     {"_ldsep_get_dprobgeno_dprob_array", (DL_FUNC) &_ldsep_get_dprobgeno_dprob_array, 2},
     {"_ldsep_get_prob_array", (DL_FUNC) &_ldsep_get_prob_array, 2},
     {"_ldsep_dprobgenolike_dprob", (DL_FUNC) &_ldsep_dprobgenolike_dprob, 3},
     {"_ldsep_dproballgenolike_dprob", (DL_FUNC) &_ldsep_dproballgenolike_dprob, 3},
-    {"_ldsep_dllike_genolike_dpar", (DL_FUNC) &_ldsep_dllike_genolike_dpar, 3},
+    {"_ldsep_dllike_genolike_dpar", (DL_FUNC) &_ldsep_dllike_genolike_dpar, 4},
     {"_ldsep_dmulti_double", (DL_FUNC) &_ldsep_dmulti_double, 3},
     {"_ldsep_probgeno", (DL_FUNC) &_ldsep_probgeno, 5},
     {"_ldsep_proballgeno", (DL_FUNC) &_ldsep_proballgeno, 5},
-    {"_ldsep_llike_geno", (DL_FUNC) &_ldsep_llike_geno, 4},
-    {"_ldsep_optimize_genolikecor", (DL_FUNC) &_ldsep_optimize_genolikecor, 4},
-    {"_ldsep_optimize_genocor", (DL_FUNC) &_ldsep_optimize_genocor, 5},
+    {"_ldsep_llike_geno", (DL_FUNC) &_ldsep_llike_geno, 5},
+    {"_ldsep_lprior", (DL_FUNC) &_ldsep_lprior, 2},
+    {"_ldsep_dlprior_dprob", (DL_FUNC) &_ldsep_dlprior_dprob, 2},
+    {"_ldsep_lprior_par", (DL_FUNC) &_ldsep_lprior_par, 2},
+    {"_ldsep_dlprior_par_dprob", (DL_FUNC) &_ldsep_dlprior_par_dprob, 2},
     {"_ldsep_log_sum_exp", (DL_FUNC) &_ldsep_log_sum_exp, 1},
     {"_ldsep_log_sum_exp_2", (DL_FUNC) &_ldsep_log_sum_exp_2, 2},
     {"_ldsep_plog_sum_exp", (DL_FUNC) &_ldsep_plog_sum_exp, 2},

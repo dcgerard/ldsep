@@ -9,9 +9,10 @@ ldest(
   gb,
   K,
   reltol = 10^-8,
-  lang = c("R", "C++"),
   nboot = 100,
-  useboot = FALSE
+  useboot = FALSE,
+  pen = 2,
+  grid_init = FALSE
 )
 }
 \arguments{
@@ -31,9 +32,6 @@ likelihood of individual \code{i} for genotype \code{j}.}
 
 \item{reltol}{The relative tolerance for the stopping criterion.}
 
-\item{lang}{Should we use the R interface for optim (\code{"R"}) or the
-C++ interface for optim through the roptim package (\code{"C++"})?}
-
 \item{nboot}{Sometimes, the MLE standard errors don't exist. So we use
 the bootstrap as a backup. \code{nboot} specifies the number
 of bootstrap iterations.}
@@ -41,6 +39,14 @@ of bootstrap iterations.}
 \item{useboot}{A logical. Optionally, you may always use the bootstrap
 to estimate the standard errors (\code{TRUE}). These will be more
 accurate but also much slower, so this defaults to \code{FALSE}.}
+
+\item{pen}{The penalty to be applied to the likelihood. You can think about
+this as the prior sample size.}
+
+\item{grid_init}{A logical. Should we initialize the gradient ascent
+at a grid of initial values (\code{TRUE}) or just initialize
+at one value corresponding to the simplex point
+\code{rep(0.25, 4)} (\code{FALSE})?}
 }
 \value{
 A vector with some or all of the following elements:
@@ -106,8 +112,7 @@ valid when r^2 = 0.
 
 In cases where either SNP is estimated to be monoallelic
 (\code{pA \%in\% c(0, 1)} or \code{pB \%in\% c(0, 1)}), this function
-will return an estimated \code{D} of \code{0}, and all other estimates
-(including standard errors) will be returned as \code{NA}.
+will return LD estimates of \code{0}.
 }
 \examples{
 set.seed(1)
@@ -120,11 +125,18 @@ ga <- stats::rbinom(n = n, size = K, prob = 0.5)
 gb <- stats::rbinom(n = n, size = K, prob = 0.5)
 head(ga)
 head(gb)
-ldout1 <- ldest(ga = ga, gb = gb, K = K)
+ldout1 <- ldest(ga = ga,
+                gb = gb,
+                K = K,
+                grid_init = FALSE)
 ldout1
 
 ## Use bootstap for standard errors instead:
-ldout2 <- ldest(ga = ga, gb = gb, K = K, useboot = TRUE)
+ldout2 <- ldest(ga = ga,
+                gb = gb,
+                K = K,
+                useboot = TRUE,
+                grid_init = FALSE)
 ldout2
 
 ## Standard error estimates are similar for D, r, and z
