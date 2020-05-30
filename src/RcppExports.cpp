@@ -117,6 +117,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_Amat
+arma::mat get_Amat(int K);
+RcppExport SEXP _ldsep_get_Amat(SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_Amat(K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// genolike_em
+arma::vec genolike_em(arma::vec p, const arma::mat& pgA, const arma::mat& pgB, const arma::vec& alpha, const int maxit, const double tol, bool verbose);
+RcppExport SEXP _ldsep_genolike_em(SEXP pSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(genolike_em(p, pgA, pgB, alpha, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // probgenolike
 double probgenolike(const arma::vec& pgA, const arma::vec& pgB, const arma::vec prob, bool log_p);
 RcppExport SEXP _ldsep_probgenolike(SEXP pgASEXP, SEXP pgBSEXP, SEXP probSEXP, SEXP log_pSEXP) {
@@ -344,12 +372,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // log_sum_exp
-double log_sum_exp(const arma::vec x);
+double log_sum_exp(const arma::vec& x);
 RcppExport SEXP _ldsep_log_sum_exp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(log_sum_exp(x));
     return rcpp_result_gen;
 END_RCPP
@@ -367,13 +395,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // plog_sum_exp
-arma::vec plog_sum_exp(const arma::vec x, const arma::vec y);
+arma::vec plog_sum_exp(const arma::vec& x, const arma::vec& y);
 RcppExport SEXP _ldsep_plog_sum_exp(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(plog_sum_exp(x, y));
     return rcpp_result_gen;
 END_RCPP
@@ -433,6 +461,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dD_dprob", (DL_FUNC) &_ldsep_dD_dprob, 1},
     {"_ldsep_dr2_dprob", (DL_FUNC) &_ldsep_dr2_dprob, 1},
     {"_ldsep_dDprime_dprob", (DL_FUNC) &_ldsep_dDprime_dprob, 1},
+    {"_ldsep_get_Amat", (DL_FUNC) &_ldsep_get_Amat, 1},
+    {"_ldsep_genolike_em", (DL_FUNC) &_ldsep_genolike_em, 7},
     {"_ldsep_probgenolike", (DL_FUNC) &_ldsep_probgenolike, 4},
     {"_ldsep_proballgenolike_old", (DL_FUNC) &_ldsep_proballgenolike_old, 4},
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},

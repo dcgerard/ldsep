@@ -124,6 +124,46 @@ dDprime_dprob <- function(prob) {
     .Call(`_ldsep_dDprime_dprob`, prob)
 }
 
+#' Get a matrix of all possible haplotype numbers
+#'
+#' The numbers are returned in lexicographical order.
+#'
+#' @param K The ploidy of the species.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+get_Amat <- function(K) {
+    .Call(`_ldsep_get_Amat`, K)
+}
+
+#' EM algorithm to estimate haplotype frequencies
+#'
+#' This runs an EM algorithm to obtain the maximum likelihood estimates
+#' of the haplotype frequencies for two loci when one has access
+#' to genotype likelihoods.
+#'
+#' @param p A vector of length 4. The intialization for the
+#'     haplotype frequencies.
+#' @param pgA The matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param pgB The matrix of genotype log-likelihoods for locus 2.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param alpha The prior sample size used in the penalty.
+#' @param maxit The maximum number of EM iterations.
+#' @param tol The convergence tolerance.
+#' @param verbose Should we output more (\code{TRUE}) or less
+#'     (\code{FALSE}).
+#'
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+genolike_em <- function(p, pgA, pgB, alpha, maxit = 100L, tol = 0.001, verbose = FALSE) {
+    .Call(`_ldsep_genolike_em`, p, pgA, pgB, alpha, maxit, tol, verbose)
+}
+
 #' Probability of genotype likelihoods given haplotype frequencies for a
 #' single individual.
 #'

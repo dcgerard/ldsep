@@ -19,8 +19,8 @@ arma::mat dreal_to_simplex_dy(const arma::vec y);
 arma::vec dmulti_dprob(const arma::vec x,
                        const arma::vec prob,
                        bool log_p);
-arma::vec plog_sum_exp(const arma::vec x,
-                       const arma::vec y);
+arma::vec plog_sum_exp(const arma::vec &x,
+                       const arma::vec &y);
 arma::mat get_prob_array(int K, arma::vec prob);
 double lprior(const arma::vec prob, const arma::vec alpha);
 arma::vec dlprior_dprob(const arma::vec prob, const arma::vec alpha);

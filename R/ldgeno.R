@@ -39,7 +39,19 @@ find_mle <- function(ga,
         c(0.32, 0.32, 0.32, 0.04)
       ), simplex_to_real)
   } else {
-    inity_list <- list(c(0, 0, 0))
+    if (using == "genotypes") {
+      mafA <- mean(ga) / K
+      mafB <- mean(gb) / K
+    } else {
+      mafA <- mean(apply(X = ga, MARGIN = 1, FUN = which.max) - 1) / K
+      mafB <- mean(apply(X = gb, MARGIN = 1, FUN = which.max) - 1) / K
+    }
+    inity_list <- list(
+      simplex_to_real(c((1 - mafA) * (1 - mafB),
+                        mafA * (1 - mafB),
+                        (1 - mafA) * mafB,
+                        mafA * mafB))
+    )
   }
 
   oldlike <- -Inf

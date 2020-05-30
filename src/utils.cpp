@@ -14,7 +14,7 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 //'
 //' @noRd
 // [[Rcpp::export]]
-double log_sum_exp(const arma::vec x) {
+double log_sum_exp(const arma::vec &x) {
   double max_x = arma::max(x);
   double lse; // the log-sum-exp
   if (max_x == -arma::datum::inf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
@@ -58,8 +58,8 @@ double log_sum_exp_2(double x, double y) {
 //'
 //' @noRd
 // [[Rcpp::export]]
-arma::vec plog_sum_exp(const arma::vec x,
-                       const arma::vec y) {
+arma::vec plog_sum_exp(const arma::vec &x,
+                       const arma::vec &y) {
 
   if (x.n_elem != y.n_elem) {
     Rcpp::stop("x and y must have the same length");

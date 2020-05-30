@@ -28,4 +28,4 @@ And the development version from [GitHub](https://github.com/) with:
 devtools::install_github("dcgerard/ldsep")
 ```
 
-# References
+## References
