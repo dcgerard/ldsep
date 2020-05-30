@@ -137,11 +137,20 @@ get_Amat <- function(K) {
     .Call(`_ldsep_get_Amat`, K)
 }
 
+simplex_proj <- function(y) {
+    .Call(`_ldsep_simplex_proj`, y)
+}
+
 #' EM algorithm to estimate haplotype frequencies
 #'
 #' This runs an EM algorithm to obtain the maximum likelihood estimates
 #' of the haplotype frequencies for two loci when one has access
 #' to genotype likelihoods.
+#'
+#' EM Squaring is performed via the algorithm of Ravi and Roland (2008)
+#' with each iteration's projection onto the simplex using the algorithm
+#' of Chen and Ye (2011). Though squaring is turned off be default because
+#' it usually doesn't help.
 #'
 #' @param p A vector of length 4. The intialization for the
 #'     haplotype frequencies.
@@ -153,15 +162,23 @@ get_Amat <- function(K) {
 #' @param maxit The maximum number of EM iterations.
 #' @param tol The convergence tolerance.
 #' @param verbose Should we output more (\code{TRUE}) or less
-#'     (\code{FALSE}).
+#'     (\code{FALSE})?
+#' @param square Should we implement squared acceleratred EM (\code{TRUE})
+#'     or not (\code{FALSE})?
 #'
+#'
+#' @references
+#' \itemize{
+#'   \item{Varadhan, Ravi, and Christophe Roland. "Simple and globally convergent methods for accelerating the convergence of any EM algorithm." Scandinavian Journal of Statistics 35.2 (2008): 335-353.}
+#'   \item{Chen, Yunmei, and Xiaojing Ye. "Projection onto a simplex." arXiv preprint arXiv:1101.6081 (2011).}
+#' }
 #'
 #' @author David Gerard
 #'
 #' @export
 #'
-genolike_em <- function(p, pgA, pgB, alpha, maxit = 100L, tol = 0.001, verbose = FALSE) {
-    .Call(`_ldsep_genolike_em`, p, pgA, pgB, alpha, maxit, tol, verbose)
+genolike_em <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.0001, verbose = FALSE, square = FALSE) {
+    .Call(`_ldsep_genolike_em`, p, pgA, pgB, alpha, maxit, tol, verbose, square)
 }
 
 #' Probability of genotype likelihoods given haplotype frequencies for a

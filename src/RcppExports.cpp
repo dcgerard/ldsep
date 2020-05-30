@@ -128,9 +128,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simplex_proj
+arma::vec simplex_proj(arma::vec y);
+RcppExport SEXP _ldsep_simplex_proj(SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(simplex_proj(y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // genolike_em
-arma::vec genolike_em(arma::vec p, const arma::mat& pgA, const arma::mat& pgB, const arma::vec& alpha, const int maxit, const double tol, bool verbose);
-RcppExport SEXP _ldsep_genolike_em(SEXP pSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+arma::vec genolike_em(arma::vec p, const arma::mat& pgA, const arma::mat& pgB, const arma::vec& alpha, const int maxit, const double tol, bool verbose, bool square);
+RcppExport SEXP _ldsep_genolike_em(SEXP pSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP, SEXP squareSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -141,7 +152,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(genolike_em(p, pgA, pgB, alpha, maxit, tol, verbose));
+    Rcpp::traits::input_parameter< bool >::type square(squareSEXP);
+    rcpp_result_gen = Rcpp::wrap(genolike_em(p, pgA, pgB, alpha, maxit, tol, verbose, square));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -462,7 +474,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dr2_dprob", (DL_FUNC) &_ldsep_dr2_dprob, 1},
     {"_ldsep_dDprime_dprob", (DL_FUNC) &_ldsep_dDprime_dprob, 1},
     {"_ldsep_get_Amat", (DL_FUNC) &_ldsep_get_Amat, 1},
-    {"_ldsep_genolike_em", (DL_FUNC) &_ldsep_genolike_em, 7},
+    {"_ldsep_simplex_proj", (DL_FUNC) &_ldsep_simplex_proj, 1},
+    {"_ldsep_genolike_em", (DL_FUNC) &_ldsep_genolike_em, 8},
     {"_ldsep_probgenolike", (DL_FUNC) &_ldsep_probgenolike, 4},
     {"_ldsep_proballgenolike_old", (DL_FUNC) &_ldsep_proballgenolike_old, 4},
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},

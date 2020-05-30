@@ -27,8 +27,7 @@ test_that("EM and gradient ascent give same results", {
                        pgB = pgB,
                        alpha = rep(pen, 4),
                        verbose = FALSE,
-                       tol = 0.00001,
-                       maxit = 1000)
+                       square = FALSE)
 
   p_grad <- real_to_simplex(oout$par)
 
