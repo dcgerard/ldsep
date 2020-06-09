@@ -9,7 +9,9 @@ double log_sum_exp(const arma::vec &x);
 double log_sum_exp_2(double x, double y);
 arma::vec plog_sum_exp(const arma::vec &x,
                        const arma::vec &y);
-
+double log_sum_exp_mat(const arma::mat &x);
+arma::mat plog_sum_exp_mat(const arma::mat &x,
+                           const arma::mat &y);
 
 
 //' Get a matrix of all possible haplotype numbers
@@ -43,6 +45,13 @@ arma::mat get_Amat(int K) {
 }
 
 
+
+//' Fixed point iteration for \code{\link{genolike_em}()}.
+//'
+//'
+//' @author David Gerard
+//'
+//' @noRd
 arma::vec em_fix(const arma::vec &p,
                  arma::vec &multivec,
                  const arma::mat &Amat,
@@ -252,3 +261,291 @@ arma::vec genolike_em(arma::vec p,
 
   return p;
 }
+
+
+//' EM algorithm to estimate joint genotype frequencies.
+//'
+//' Implements an EM algorithm to calculate the joing distribution of dosages
+//' using genotype likelihoods.
+//'
+//' @param p A matrix of proportions. The initialization of the joint genotype
+//'     frequencies. \code{p[i,j]} is the initialization of the probability
+//'     of genotype \code{i-1} on locus 1 and genotype \code{j-1} on locus 2.
+//' @param pgA The matrix of genotype log-likelihoods for locus 1.
+//'     The rows index the individuals and the columns index the genotypes.
+//' @param pgB The matrix of genotype log-likelihoods for locus 2.
+//'     The rows index the individuals and the columns index the genotypes.
+//' @param alpha A matrix of prior sample sizes used as the penalty.
+//' @param maxit The maximum number of EM iterations.
+//' @param tol The convergence tolerance.
+//' @param verbose Should we output the progress of each iteration (\code{TRUE})
+//'     or not (\code{FALSE})?
+//'
+//' @author David Gerard
+//'
+//' @export
+//'
+// [[Rcpp::export]]
+arma::mat em_jointgeno(arma::mat p,
+                       const arma::mat &pgA,
+                       const arma::mat &pgB,
+                       const arma::mat &alpha,
+                       const int maxit = 500,
+                       const double tol = 0.01,
+                       bool verbose = false) {
+  // check input ------------
+  if (pgA.n_rows != pgB.n_rows) {
+    Rcpp::stop("em_jointgeno: dimensions of pgA and pgB are different");
+  }
+  if (pgA.n_cols != pgB.n_cols) {
+    Rcpp::stop("em_jointgeno: dimensions of pgA and pgB are different");
+  }
+  if (std::abs(arma::accu(p) - 1.0) > TOL) {
+    Rcpp::stop("em_jointgeno: p should sum to 1");
+  }
+
+  int K = pgA.n_cols - 1; // ploidy
+  int n = pgA.n_rows; // number of individuals
+
+  if ((p.n_rows != pgA.n_cols) | (p.n_cols != pgA.n_cols)) {
+    Rcpp::stop("em_jointgeno: p should have K+1 cols and K+1 rows");
+  }
+  if ((alpha.n_rows != pgA.n_cols) | (alpha.n_cols != pgA.n_cols)) {
+    Rcpp::stop("em_jointgeno: alpha should have K+1 cols and K+1 rows");
+  }
+
+  arma::mat ellmat(K + 1, K + 1);
+  arma::mat wmat(K + 1, K + 1);
+  arma::mat lp = arma::log(p);
+  arma::mat lalpha = arma::log(alpha - 1.0);
+  double denom = std::log(arma::accu(alpha - 1.0) + (double)n);
+  double lval = -arma::datum::inf; // log-likelihood
+  double lval_old = -arma::datum::inf; // previous log-likelihood
+  double lseellmat = 0.0; //log-sum-exp of ellmat
+
+  // EM-algorithm -------------------------------------------------------------
+  double err = tol + 1.0;
+  int iternum = 0;
+  while ((err > tol) & (iternum < maxit)) {
+    lval_old = lval;
+
+    // EM-iteration -----------------------------------------------------------
+    wmat.fill(-arma::datum::inf);
+    lval = arma::accu((alpha - 1.0) % lp);
+    for (int ell = 0; ell < n; ell++) {
+      for (int i = 0; i <= K; i++) {
+        for (int j = 0; j <= K; j++) {
+          ellmat(i, j) = pgA(ell, i) + pgB(ell, j) + lp(i, j);
+        }
+      }
+      lseellmat = log_sum_exp_mat(ellmat);
+      lval += lseellmat;
+      ellmat = ellmat - lseellmat;
+      wmat = plog_sum_exp_mat(wmat, ellmat);
+    }
+    lp = plog_sum_exp_mat(wmat, lalpha) - denom;
+
+    // check convergence ------------------------------------------------------
+    err = std::abs(lval - lval_old);
+    iternum++;
+
+    if (verbose) {
+      Rcpp::Rcout << "Iteration: "
+                  << iternum
+                  << std::endl
+                  << "Log-likelihood: "
+                  << lval
+                  << std::endl;
+    }
+  }
+
+  lp = arma::exp(lp);
+  return lp;
+}
+
+
+
+//' Likelihood being maximized in \code{\link{em_jointgeno}()}
+//'
+//' @inheritParams em_jointgeno
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+double llike_jointgeno(arma::mat p,
+                       const arma::mat &pgA,
+                       const arma::mat &pgB,
+                       const arma::mat &alpha) {
+  int K = pgA.n_cols - 1; // ploidy
+  int n = pgA.n_rows; // number of individuals
+  arma::mat lp = arma::log(p);
+  arma::mat ellmat(K + 1, K + 1);
+  double lval = arma::accu((alpha - 1.0) % lp);
+  for (int ell = 0; ell < n; ell++) {
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        ellmat(i, j) = pgA(ell, i) + pgB(ell, j) + lp(i, j);
+      }
+    }
+    lval += log_sum_exp_mat(ellmat);
+  }
+  return lval;
+}
+
+//' Hessian of \code{\link{llike_jointgeno}()}
+//'
+//' Derivative of log-likelihood with respect to q_{ij} and q_{km}. The
+//' ordering of the matrix is the rows index with i going fastest, and the
+//' columns index with k going fastest.
+//'
+//' @inheritParams em_jointgeno
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::mat hessian_jointgeno(arma::mat p,
+                            const arma::mat &pgA,
+                            const arma::mat &pgB,
+                            const arma::mat &alpha) {
+
+  int K = pgA.n_cols - 1; // ploidy
+  int n = pgA.n_rows; // number of individuals
+  arma::mat lp = arma::log(p);
+  arma::mat hessmat(std::pow(K + 1, 2), std::pow(K + 1, 2));
+  hessmat.fill(-arma::datum::inf);
+  double denom;
+
+  int ind1; // index of rows
+  int ind2; // index of columns
+  for (int ell = 0; ell < n; ell++) {
+
+    denom = -arma::datum::inf;
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        denom = log_sum_exp_2(denom, pgA(ell, i) + pgB(ell, j) + lp(i, j));
+      }
+    }
+    denom = 2.0 * denom;
+
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        for (int k = 0; k <= K; k++) {
+          for (int m = 0; m <= K; m++) {
+            ind1 = j * (K + 1) + i;
+            ind2 = m * (K + 1) + k;
+            hessmat(ind1, ind2) = log_sum_exp_2(hessmat(ind1, ind2), pgA(ell, i) + pgB(ell, j) + pgA(ell, k) + pgB(ell, m) - denom);
+          }
+        }
+      }
+    }
+  }
+
+  hessmat = -1.0 * arma::exp(hessmat);
+
+  // add penalty along diagonal
+  for (int i = 0; i <= K; i++) {
+    for (int j = 0; j <= K; j++) {
+      ind1 = j * (K + 1) + i;
+      hessmat(ind1, ind1) += -1.0 * (alpha(i, j) - 1.0) / std::pow(p(i, j), 2.0);
+    }
+  }
+
+  return hessmat;
+}
+
+
+//' Derivative of \code{\link{Dfromg}()} with respect to gmat.
+//'
+//' @param p Element (i, j) is the probability of genotype i at locus 1
+//'     and genotype j at locus 2.
+//'
+//' @author David Gerard
+//'
+//' @noRd
+//'
+// [[Rcpp::export]]
+arma::vec dD_dqlm(arma::mat p) {
+  int K = p.n_cols - 1;
+  arma::vec grad((K + 1) * (K + 1));
+  int ind;
+
+  double ega = 0.0;
+  double egb = 0.0;
+  double pa = 0.0;
+  double pb = 0.0;
+
+  for (int i = 0; i <= K; i++) {
+    pa = 0.0;
+    pb = 0.0;
+    for (int j = 0; j <= K; j++) {
+      pa += p(i, j);
+      pb += p(j, i);
+    }
+    ega += (double)i * pa;
+    egb += (double)i * pb;
+  }
+
+  for (int i = 0; i <= K; i++) {
+    for (int j = 0; j <= K; j++) {
+      ind = j * (K + 1) + i;
+      grad(ind) = (double)i * (double)j / (double)K -
+        (double)i * egb / (double)K -
+        (double)j * ega / (double)K;
+    }
+  }
+
+  return grad;
+}
+
+
+//' Gradient of squared correlation with respect to the qlm's
+//'
+//' @param p Element (i, j) is the probability of genotype i at locus 1
+//'     and genotype j at locus 2.
+//' @param dgrad The output of \code{\link{dD_dqlm}()}.
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::vec dr2_dqlm(arma::mat p, arma::vec dgrad, double D) {
+  int K = p.n_cols - 1;
+  arma::vec distA = arma::sum(p, 1);
+  arma::vec distB = arma::sum(p, 0).t();
+  double dvargA_dqlm;
+  double dvargB_dqlm;
+  arma::vec grad((K + 1) * (K + 1));
+  int ind;
+
+  double ega = 0.0;
+  double egb = 0.0;
+  double ega2 = 0.0;
+  double egb2 = 0.0;
+  double varga = 0.0;
+  double vargb = 0.0;
+
+  for (int i = 0; i <= K; i++) {
+    ega += (double)i * distA(i);
+    egb += (double)i * distB(i);
+    ega2 += std::pow((double)i, 2.0) * distA(i);
+    egb2 += std::pow((double)i, 2.0) * distB(i);
+  }
+  varga = ega2 - std::pow(ega, 2.0);
+  vargb = egb2 - std::pow(egb, 2.0);
+
+  for (int i = 0; i <= K; i++) {
+    for (int j = 0; j <= K; j++) {
+      ind = j * (K + 1) + i;
+      dvargA_dqlm = std::pow((double)i, 2.0) - 2.0 * (double)i * ega;
+      dvargB_dqlm = std::pow((double)j, 2.0) - 2.0 * (double)j * egb;
+
+      grad(ind) = 2.0 * std::pow((double)K, 2.0) * D * dgrad(ind) / (varga * vargb) -
+        std::pow((double)K, 2.0) * std::pow(D, 2.0) * dvargA_dqlm / (std::pow(varga, 2.0) * vargb) -
+        std::pow((double)K, 2.0) * std::pow(D, 2.0) * dvargB_dqlm / (varga * std::pow(vargb, 2.0));
+    }
+  }
+
+  return grad;
+}
+
+

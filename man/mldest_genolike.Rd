@@ -5,7 +5,7 @@
 \title{Estimate all pair-wise LD's in a collection of SNPs using the genotype
 likleihoods.}
 \usage{
-mldest_genolike(genoarray, nc = 1, reltol = 10^-8)
+mldest_genolike(genoarray, nc = 1, reltol = 10^-8, pen = 2)
 }
 \arguments{
 \item{genoarray}{An three-way array of genotype \emph{log}-likelihoods.
@@ -24,6 +24,9 @@ personal computer, but some environments are only
 able to use fewer. Ask your admins if you are unsure.}
 
 \item{reltol}{The relative tolerance for the stopping criterion.}
+
+\item{pen}{The penalty to be applied to the likelihood. You can think about
+this as the prior sample size.}
 }
 \description{
 This function will run \code{\link{ldest}()} iteratively over

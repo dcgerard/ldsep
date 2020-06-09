@@ -23,6 +23,8 @@ LinkingTo:
 Imports: 
     Rcpp,
     foreach,
-    doParallel
+    doParallel,
+    ashr,
+    corrplot
 Suggests: 
     testthat

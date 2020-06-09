@@ -157,6 +157,75 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// em_jointgeno
+arma::mat em_jointgeno(arma::mat p, const arma::mat& pgA, const arma::mat& pgB, const arma::mat& alpha, const int maxit, const double tol, bool verbose);
+RcppExport SEXP _ldsep_em_jointgeno(SEXP pSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< const double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(em_jointgeno(p, pgA, pgB, alpha, maxit, tol, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// llike_jointgeno
+double llike_jointgeno(arma::mat p, const arma::mat& pgA, const arma::mat& pgB, const arma::mat& alpha);
+RcppExport SEXP _ldsep_llike_jointgeno(SEXP pSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(llike_jointgeno(p, pgA, pgB, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// hessian_jointgeno
+arma::mat hessian_jointgeno(arma::mat p, const arma::mat& pgA, const arma::mat& pgB, const arma::mat& alpha);
+RcppExport SEXP _ldsep_hessian_jointgeno(SEXP pSEXP, SEXP pgASEXP, SEXP pgBSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgA(pgASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pgB(pgBSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(hessian_jointgeno(p, pgA, pgB, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dD_dqlm
+arma::vec dD_dqlm(arma::mat p);
+RcppExport SEXP _ldsep_dD_dqlm(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(dD_dqlm(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dr2_dqlm
+arma::vec dr2_dqlm(arma::mat p, arma::vec dgrad, double D);
+RcppExport SEXP _ldsep_dr2_dqlm(SEXP pSEXP, SEXP dgradSEXP, SEXP DSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type p(pSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type dgrad(dgradSEXP);
+    Rcpp::traits::input_parameter< double >::type D(DSEXP);
+    rcpp_result_gen = Rcpp::wrap(dr2_dqlm(p, dgrad, D));
+    return rcpp_result_gen;
+END_RCPP
+}
 // probgenolike
 double probgenolike(const arma::vec& pgA, const arma::vec& pgB, const arma::vec prob, bool log_p);
 RcppExport SEXP _ldsep_probgenolike(SEXP pgASEXP, SEXP pgBSEXP, SEXP probSEXP, SEXP log_pSEXP) {
@@ -394,6 +463,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// log_sum_exp_mat
+double log_sum_exp_mat(const arma::mat& x);
+RcppExport SEXP _ldsep_log_sum_exp_mat(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_sum_exp_mat(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // log_sum_exp_2
 double log_sum_exp_2(double x, double y);
 RcppExport SEXP _ldsep_log_sum_exp_2(SEXP xSEXP, SEXP ySEXP) {
@@ -415,6 +495,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(plog_sum_exp(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// plog_sum_exp_mat
+arma::mat plog_sum_exp_mat(const arma::mat& x, const arma::mat& y);
+RcppExport SEXP _ldsep_plog_sum_exp_mat(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(plog_sum_exp_mat(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -476,6 +568,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_get_Amat", (DL_FUNC) &_ldsep_get_Amat, 1},
     {"_ldsep_simplex_proj", (DL_FUNC) &_ldsep_simplex_proj, 1},
     {"_ldsep_genolike_em", (DL_FUNC) &_ldsep_genolike_em, 8},
+    {"_ldsep_em_jointgeno", (DL_FUNC) &_ldsep_em_jointgeno, 7},
+    {"_ldsep_llike_jointgeno", (DL_FUNC) &_ldsep_llike_jointgeno, 4},
+    {"_ldsep_hessian_jointgeno", (DL_FUNC) &_ldsep_hessian_jointgeno, 4},
+    {"_ldsep_dD_dqlm", (DL_FUNC) &_ldsep_dD_dqlm, 1},
+    {"_ldsep_dr2_dqlm", (DL_FUNC) &_ldsep_dr2_dqlm, 3},
     {"_ldsep_probgenolike", (DL_FUNC) &_ldsep_probgenolike, 4},
     {"_ldsep_proballgenolike_old", (DL_FUNC) &_ldsep_proballgenolike_old, 4},
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},
@@ -494,8 +591,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_lprior_par", (DL_FUNC) &_ldsep_lprior_par, 2},
     {"_ldsep_dlprior_par_dprob", (DL_FUNC) &_ldsep_dlprior_par_dprob, 2},
     {"_ldsep_log_sum_exp", (DL_FUNC) &_ldsep_log_sum_exp, 1},
+    {"_ldsep_log_sum_exp_mat", (DL_FUNC) &_ldsep_log_sum_exp_mat, 1},
     {"_ldsep_log_sum_exp_2", (DL_FUNC) &_ldsep_log_sum_exp_2, 2},
     {"_ldsep_plog_sum_exp", (DL_FUNC) &_ldsep_plog_sum_exp, 2},
+    {"_ldsep_plog_sum_exp_mat", (DL_FUNC) &_ldsep_plog_sum_exp_mat, 2},
     {"_ldsep_logit", (DL_FUNC) &_ldsep_logit, 1},
     {"_ldsep_expit", (DL_FUNC) &_ldsep_expit, 1},
     {"_ldsep_real_to_simplex", (DL_FUNC) &_ldsep_real_to_simplex, 1},

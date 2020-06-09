@@ -25,6 +25,21 @@ double log_sum_exp(const arma::vec &x) {
   return lse;
 }
 
+//' log-sum-expontential of a matrix.
+//'
+//' @noRd
+// [[Rcpp::export]]
+double log_sum_exp_mat(const arma::mat &x) {
+  double max_x = x.max();
+  double lse; // the log-sum-exp
+  if (max_x == -arma::datum::inf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
+    lse = -arma::datum::inf;
+  } else {
+    lse = max_x + std::log(arma::accu(arma::exp(x - max_x)));
+  }
+  return lse;
+}
+
 //' Log-sum-exponential trick using just two doubles.
 //'
 //' @param x A double.
@@ -71,6 +86,34 @@ arma::vec plog_sum_exp(const arma::vec &x,
 
   for (int i = 0; i < n; i++) {
     z[i] = log_sum_exp_2(x[i], y[i]);
+  }
+
+  return z;
+}
+
+//' Parallel log-sum-exp of two matrices
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::mat plog_sum_exp_mat(const arma::mat &x,
+                           const arma::mat &y) {
+
+  if (x.n_rows != y.n_rows) {
+    Rcpp::stop("plog_sum_exp_mat: x and y must have the same number of rows");
+  }
+  if (x.n_cols != y.n_cols) {
+    Rcpp::stop("plog_sum_exp_mat: x and y must have the same number of columns");
+  }
+
+  int nrow = x.n_rows;
+  int ncol = x.n_cols;
+
+  arma::mat z(nrow, ncol);
+
+  for (int i = 0; i < nrow; i++) {
+    for (int j = 0; j < ncol; j++) {
+      z(i, j) = log_sum_exp_2(x(i, j), y(i, j));
+    }
   }
 
   return z;

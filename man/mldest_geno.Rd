@@ -4,7 +4,7 @@
 \alias{mldest_geno}
 \title{Estimate all pair-wise LD's in a collection of SNPs using the genotypes.}
 \usage{
-mldest_geno(genomat, K, nc = 1, reltol = 10^-8)
+mldest_geno(genomat, K, nc = 1, reltol = 10^-8, pen = 2)
 }
 \arguments{
 \item{genomat}{A matrix of genotypes (allele dosages). The rows index the
@@ -22,6 +22,9 @@ personal computer, but some environments are only
 able to use fewer. Ask your admins if you are unsure.}
 
 \item{reltol}{The relative tolerance for the stopping criterion.}
+
+\item{pen}{The penalty to be applied to the likelihood. You can think about
+this as the prior sample size.}
 }
 \description{
 This function will run \code{\link{ldest}()} iteratively over

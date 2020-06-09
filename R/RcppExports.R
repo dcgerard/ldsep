@@ -124,6 +124,14 @@ dDprime_dprob <- function(prob) {
     .Call(`_ldsep_dDprime_dprob`, prob)
 }
 
+#' Fixed point iteration for \code{\link{genolike_em}()}.
+#'
+#'
+#' @author David Gerard
+#'
+#' @noRd
+NULL
+
 #' Get a matrix of all possible haplotype numbers
 #'
 #' The numbers are returned in lexicographical order.
@@ -179,6 +187,82 @@ simplex_proj <- function(y) {
 #'
 genolike_em <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.0001, verbose = FALSE, square = FALSE) {
     .Call(`_ldsep_genolike_em`, p, pgA, pgB, alpha, maxit, tol, verbose, square)
+}
+
+#' EM algorithm to estimate joint genotype frequencies.
+#'
+#' Implements an EM algorithm to calculate the joing distribution of dosages
+#' using genotype likelihoods.
+#'
+#' @param p A matrix of proportions. The initialization of the joint genotype
+#'     frequencies. \code{p[i,j]} is the initialization of the probability
+#'     of genotype \code{i-1} on locus 1 and genotype \code{j-1} on locus 2.
+#' @param pgA The matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param pgB The matrix of genotype log-likelihoods for locus 2.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param alpha A matrix of prior sample sizes used as the penalty.
+#' @param maxit The maximum number of EM iterations.
+#' @param tol The convergence tolerance.
+#' @param verbose Should we output the progress of each iteration (\code{TRUE})
+#'     or not (\code{FALSE})?
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+em_jointgeno <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.01, verbose = FALSE) {
+    .Call(`_ldsep_em_jointgeno`, p, pgA, pgB, alpha, maxit, tol, verbose)
+}
+
+#' Likelihood being maximized in \code{\link{em_jointgeno}()}
+#'
+#' @inheritParams em_jointgeno
+#'
+#' @author David Gerard
+#'
+#' @noRd
+llike_jointgeno <- function(p, pgA, pgB, alpha) {
+    .Call(`_ldsep_llike_jointgeno`, p, pgA, pgB, alpha)
+}
+
+#' Hessian of \code{\link{llike_jointgeno}()}
+#'
+#' Derivative of log-likelihood with respect to q_{ij} and q_{km}. The
+#' ordering of the matrix is the rows index with i going fastest, and the
+#' columns index with k going fastest.
+#'
+#' @inheritParams em_jointgeno
+#'
+#' @author David Gerard
+#'
+#' @noRd
+hessian_jointgeno <- function(p, pgA, pgB, alpha) {
+    .Call(`_ldsep_hessian_jointgeno`, p, pgA, pgB, alpha)
+}
+
+#' Derivative of \code{\link{Dfromg}()} with respect to gmat.
+#'
+#' @param p Element (i, j) is the probability of genotype i at locus 1
+#'     and genotype j at locus 2.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+#'
+dD_dqlm <- function(p) {
+    .Call(`_ldsep_dD_dqlm`, p)
+}
+
+#' Gradient of squared correlation with respect to the qlm's
+#'
+#' @param p Element (i, j) is the probability of genotype i at locus 1
+#'     and genotype j at locus 2.
+#' @param dgrad The output of \code{\link{dD_dqlm}()}.
+#'
+#' @noRd
+dr2_dqlm <- function(p, dgrad, D) {
+    .Call(`_ldsep_dr2_dqlm`, p, dgrad, D)
 }
 
 #' Probability of genotype likelihoods given haplotype frequencies for a
@@ -434,6 +518,13 @@ log_sum_exp <- function(x) {
     .Call(`_ldsep_log_sum_exp`, x)
 }
 
+#' log-sum-expontential of a matrix.
+#'
+#' @noRd
+log_sum_exp_mat <- function(x) {
+    .Call(`_ldsep_log_sum_exp_mat`, x)
+}
+
 #' Log-sum-exponential trick using just two doubles.
 #'
 #' @param x A double.
@@ -460,6 +551,13 @@ log_sum_exp_2 <- function(x, y) {
 #' @noRd
 plog_sum_exp <- function(x, y) {
     .Call(`_ldsep_plog_sum_exp`, x, y)
+}
+
+#' Parallel log-sum-exp of two matrices
+#'
+#' @noRd
+plog_sum_exp_mat <- function(x, y) {
+    .Call(`_ldsep_plog_sum_exp_mat`, x, y)
 }
 
 #' The logit function.

@@ -366,8 +366,8 @@ ldest <- function(ga,
     dD <- dD_dprob(prob = phat)
     D_se <- sqrt(t(dD) %*% nHp_inv %*% dD)
 
-    # dDprime <- dDprime_dprob(prob = phat)
-    # Dprime_se <- sqrt(t(dDprime) %*% nHp_inv %*% dDprime)
+    dDprime <- dDprime_dprob(prob = phat)
+    Dprime_se <- sqrt(t(dDprime) %*% nHp_inv %*% dDprime)
 
     dr2 <- dr2_dprob(prob = phat)
     r2_se <- sqrt(t(dr2) %*% nHp_inv %*% dr2)
@@ -386,6 +386,8 @@ ldest <- function(ga,
               r2_se     = r2_se,
               r         = r,
               r_se      = r_se,
+              Dprime    = Dprime,
+              Dprime_se = Dprime_se,
               z         = z,
               z_se      = z_se,
               p_ab      = phat[[1]],
@@ -415,6 +417,8 @@ ldest <- function(ga,
 #'     personal computer, but some environments are only
 #'     able to use fewer. Ask your admins if you are unsure.
 #' @param reltol The relative tolerance for the stopping criterion.
+#' @param pen The penalty to be applied to the likelihood. You can think about
+#'     this as the prior sample size.
 #'
 #' @author David Gerard
 #'
@@ -430,7 +434,7 @@ ldest <- function(ga,
 #' rdf <- mldest_geno(genomat = genomat, K = K, nc = nc)
 #'
 #' @export
-mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
+mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8, pen = 2) {
   stopifnot(is.matrix(genomat))
   nloci <- nrow(genomat)
 
@@ -456,7 +460,8 @@ mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
                                  ldout <- ldest(ga = genomat[i, ],
                                                 gb = genomat[j, ],
                                                 K = K,
-                                                reltol = reltol)
+                                                reltol = reltol,
+                                                pen = pen)
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,
@@ -502,6 +507,8 @@ mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
 #'     personal computer, but some environments are only
 #'     able to use fewer. Ask your admins if you are unsure.
 #' @param reltol The relative tolerance for the stopping criterion.
+#' @param pen The penalty to be applied to the likelihood. You can think about
+#'     this as the prior sample size.
 #'
 #' @author David Gerard
 #'
@@ -532,7 +539,7 @@ mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8) {
 #' rdf
 #'
 #' @export
-mldest_genolike <- function(genoarray, nc = 1, reltol = 10^-8) {
+mldest_genolike <- function(genoarray, nc = 1, reltol = 10^-8, pen = 2) {
   stopifnot(is.array(genoarray))
   stopifnot(length(dim(genoarray)) == 3)
   nloci <- dim(genoarray)[[1]]
@@ -561,7 +568,8 @@ mldest_genolike <- function(genoarray, nc = 1, reltol = 10^-8) {
                                  ldout <- ldest(ga = genoarray[i, , ],
                                                 gb = genoarray[j, , ],
                                                 K = K,
-                                                reltol = reltol)
+                                                reltol = reltol,
+                                                pen = pen)
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,
@@ -604,6 +612,67 @@ is.lddf <- function(x) {
   inherits(x, "lddf")
 }
 
+#' Plot the output of \code{\link{mldest_geno}()} or
+#' \code{\link{mldest_genolike}()} using \code{\link[corrplot]{corrplot}()}
+#'
+#' Uses the \code{\link[corrplot]{corrplot}} R package to visualize
+#' correlation estimates.
+#'
+#' @param x An object of class \code{lddf}, usually created using
+#'     either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
+#' @param element Which element of \code{x} should be plot?
+#' @param type Character, \code{"full"},
+#'     \code{"upper"} (default) or \code{"lower"}, display
+#'     full matrix, lower triangular or upper
+#'     triangular matrix.
+#' @param diag Logical, whether display the correlation coefficients
+#'     on the principal diagonal.
+#' @param ... Additional arguments to pass to
+#'     \code{\link[corrplot]{corrplot}()}. See the documentation of that
+#'     function for options.
+#'
+#' @author David Gerard
+#'
+#' @export
+plot.lddf <- function(x,
+                      element = c("z",
+                                  "z_se",
+                                  "D",
+                                  "D_se",
+                                  "r2",
+                                  "r2_se",
+                                  "r",
+                                  "r_se",
+                                  "p_ab",
+                                  "p_Ab",
+                                  "p_aB",
+                                  "p_AB"),
+                      type = c("upper", "full", "lower"),
+                      diag = FALSE,
+                      ...) {
+  type <- match.arg(type)
+  stopifnot(is.logical(diag))
+  element <- match.arg(element)
+  cormat <- format_lddf(obj = x, element = element)
+
+  if (diag) {
+    diag(cormat) <- 1
+  }
+  if (type != "upper") {
+    cormat[lower.tri(cormat)] <- t(cormat)[lower.tri(cormat)]
+  }
+  if (element %in% c("z", "z_se")) {
+    is.corr <- FALSE
+  } else {
+    is.corr <- TRUE
+  }
+  corrplot::corrplot(corr = cormat,
+                     type = type,
+                     diag = diag,
+                     is.corr = is.corr,
+                     ...)
+}
+
 
 #' Format an element of \code{\link{mldest_geno}()} or
 #' \code{\link{mldest_genolike}()} into an
@@ -623,12 +692,12 @@ is.lddf <- function(x) {
 #'
 #' @export
 format_lddf <- function(obj,
-                        element = c("r2",
-                                    "r2_se",
+                        element = c("z",
+                                    "z_se",
                                     "D",
                                     "D_se",
-                                    "Dprime",
-                                    "Dprime_se",
+                                    "r2",
+                                    "r2_se",
                                     "r",
                                     "r_se",
                                     "p_ab",
