@@ -3,7 +3,7 @@
 \name{mldest_genolike}
 \alias{mldest_genolike}
 \title{Estimate all pair-wise LD's in a collection of SNPs using the genotype
-likleihoods.}
+likelihoods.}
 \usage{
 mldest_genolike(genoarray, nc = 1, type = c("hap", "comp"), pen = 2)
 }

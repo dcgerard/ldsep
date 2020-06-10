@@ -158,7 +158,7 @@ mldest_geno <- function(genomat,
 }
 
 #' Estimate all pair-wise LD's in a collection of SNPs using the genotype
-#' likleihoods.
+#' likelihoods.
 #'
 #' This function will run \code{\link{ldest}()} iteratively over
 #' all possible pairs of SNPs provided. Support is provided for parallelization

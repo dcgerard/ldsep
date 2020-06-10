@@ -67,7 +67,7 @@ Only returned if estimating the haplotypic LD.}
 \item{\code{p_AB}}{The estimated haplotype frequency of AB.
 Only returned if estimating the haplotypic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
-and genotpe j at locus 2. Only returned if estimating the
+and genotype j at locus 2. Only returned if estimating the
 composite LD.}
 }
 }
@@ -92,7 +92,7 @@ using the genotypes or genotype likelihoods
 \emph{as long as Hardy-Weinberg equilibrium (HWE) is satisfied}. We do
 this via maximum likelihood using gradient ascent. Gradient ascent is
 performed over the unconstrained parameterization of the 3-simplex from
-Betancourt (2012). The estimated haplotype fequencies are then used to
+Betancourt (2012). The estimated haplotype frequencies are then used to
 estimate haplotypic LD.
 
 Standard errors are provided using standard maximum likelihood theory.
@@ -108,7 +108,7 @@ haplotypes 00, 01, 10, and 11. This corresponds to the "add two" rule
 of Agresti (1998). You can change this prior via the \code{pen} argument.
 
 When HWE is \emph{not} satisfied, the estimates using \code{type = "hap"}
-are non-sensical. However, the composite measures of LD are still
+are nonsensical. However, the composite measures of LD are still
 applicable (see below).
 }
 
@@ -205,7 +205,7 @@ ldout4[["D"]]
 }
 \seealso{
 \describe{
-\item{\code{\link{ldest_hap}()}}{For the function that directly estiamtes
+\item{\code{\link{ldest_hap}()}}{For the function that directly estimates
 haplotypic LD when HWE is fulfilled.}
 \item{\code{\link{ldest_comp}()}}{For the function that directly
 estimates composite LD.}
