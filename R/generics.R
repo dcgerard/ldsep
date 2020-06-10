@@ -21,7 +21,7 @@ is.lddf <- function(x) {
 #' \code{\link{mldest_genolike}()} using \code{\link[corrplot]{corrplot}()}
 #'
 #' Uses the \code{\link[corrplot]{corrplot}} R package to visualize
-#' correlation estimates.
+#' LD estimates.
 #'
 #' @param x An object of class \code{lddf}, usually created using
 #'     either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
@@ -35,6 +35,27 @@ is.lddf <- function(x) {
 #' @param ... Additional arguments to pass to
 #'     \code{\link[corrplot]{corrplot}()}. See the documentation of that
 #'     function for options.
+#'
+#' @return (Invisibly) returns a matrix of the selected elements.
+#'
+#' @examples
+#' set.seed(1)
+#'
+#' ## Simulate genotypes when true correlation is 0
+#' nloci <- 5
+#' nind  <- 100
+#' K <- 6
+#' nc <- 1
+#' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+#'
+#' ## Haplotypic LD estimates
+#' lddf <- mldest_geno(genomat = genomat,
+#'                     K = K,
+#'                     nc = nc,
+#'                     type = "hap")
+#'
+#' ## Plot estimates of z
+#' plot(lddf, element = "z")
 #'
 #' @author David Gerard
 #'
@@ -95,7 +116,30 @@ plot.lddf <- function(x,
 #' @param element Which element in \code{obj} should we format into an
 #'     upper-triangular matrix?
 #'
+#' @return A matrix of the selected elements. Only the upper-triangle of the
+#'     matrix is filled. The lower-triangle and the diagonal are \code{NA}'s.
+#'
 #' @author David Gerard
+#'
+#' @examples
+#' set.seed(1)
+#'
+#' ## Simulate genotypes when true correlation is 0
+#' nloci <- 5
+#' nind  <- 100
+#' K <- 6
+#' nc <- 1
+#' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+#'
+#' ## Haplotypic LD estimates
+#' lddf <- mldest_geno(genomat = genomat,
+#'                     K = K,
+#'                     nc = nc,
+#'                     type = "hap")
+#'
+#' ## Obtain the D estimates in matrix form
+#' Dmat <- format_lddf(obj = lddf, element = "D")
+#' Dmat
 #'
 #' @export
 format_lddf <- function(obj,
@@ -118,6 +162,7 @@ format_lddf <- function(obj,
   nloci <- max(max(obj$i), max(obj$j))
   cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
   cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
+  colnames(cormat) <- seq_len(nloci)
+  rownames(cormat) <- seq_len(nloci)
   return(cormat)
 }
-

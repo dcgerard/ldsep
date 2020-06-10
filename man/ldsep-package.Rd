@@ -6,11 +6,15 @@
 \alias{ldsep}
 \title{Linkage Disequilibrium Shrinkage Estimation for Polyploids}
 \description{
-Estimates pairwise linkage disequilibrium (LD), using either
-genotype estimates or genotype likelihoods. Functions are then provided
-for shrinkage estimation using multidimensional scaling and adaptive
-shrinkage. The idea is to expand this to allow for a sliding window
-estimation procedure for genome-wise LD estimation.
+Estimate haplotypic or component pairwise linkage disequilibrium
+(LD), using either genotypes or genotype likelihoods. Support is
+provided to estimate the popular measures of LD: the LD coefficient D,
+the standardized LD coefficient D', and the Pearson correlation
+coefficient r. All estimates are returned with corresponding
+standard errors. These estimates and standard errors can then be used
+for shrinkage estimation. The main functions are \code{\link{ldest}()},
+\code{\link{mldest}()}, \code{\link{plot.lddf}()},
+\code{\link{format_lddf}()}, and \code{\link{ldshrink}()}.
 }
 \author{
 David Gerard

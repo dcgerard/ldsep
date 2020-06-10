@@ -15,7 +15,8 @@ dmulti_dprob <- function(x, prob, log_p = TRUE) {
     .Call(`_ldsep_dmulti_dprob`, x, prob, log_p)
 }
 
-#' Derivative of \code{\link{probgeno}(log = TRUE)} with respect to \code{prob}.
+#' Derivative of \code{\link{probgeno}(log = TRUE)} with respect to
+#' \code{prob}.
 #'
 #' @inheritParams probgeno
 #' @param log_d A logical. Should we return the log of the derivative or not?
@@ -177,8 +178,12 @@ simplex_proj <- function(y) {
 #'
 #' @references
 #' \itemize{
-#'   \item{Varadhan, Ravi, and Christophe Roland. "Simple and globally convergent methods for accelerating the convergence of any EM algorithm." Scandinavian Journal of Statistics 35.2 (2008): 335-353.}
-#'   \item{Chen, Yunmei, and Xiaojing Ye. "Projection onto a simplex." arXiv preprint arXiv:1101.6081 (2011).}
+#'   \item{Varadhan, Ravi, and Christophe Roland. "Simple and globally
+#'         convergent methods for accelerating the convergence of any
+#'         EM algorithm." Scandinavian Journal of Statistics 35.2 (2008):
+#'         335-353.}
+#'   \item{Chen, Yunmei, and Xiaojing Ye. "Projection onto a simplex."
+#'         arXiv preprint arXiv:1101.6081 (2011).}
 #' }
 #'
 #' @author David Gerard
@@ -203,8 +208,8 @@ genolike_em <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.0001, verbose 
 #' @param alpha A matrix of prior sample sizes used as the penalty.
 #' @param maxit The maximum number of EM iterations.
 #' @param tol The convergence tolerance.
-#' @param verbose Should we output the progress of each iteration (\code{TRUE})
-#'     or not (\code{FALSE})?
+#' @param verbose Should we output the progress of each iteration
+#'     (\code{TRUE}) or not (\code{FALSE})?
 #'
 #' @author David Gerard
 #'

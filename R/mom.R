@@ -127,11 +127,11 @@ ldest_comp <- function(ga,
     stopifnot(length(ga) == length(gb))
     stopifnot(ga >= 0, ga <= K)
     stopifnot(gb >= 0, gb <= K)
-    using = "genotypes"
+    using <- "genotypes"
   } else if (is.matrix(ga) & is.matrix(gb)) {
     stopifnot(dim(ga) == dim(gb))
     stopifnot(K + 1 == ncol(ga))
-    using = "likelihoods"
+    using <- "likelihoods"
   } else {
     stop("ldest: ga and gb must either both be vectors or both be matrices.")
   }
@@ -164,7 +164,9 @@ ldest_comp <- function(ga,
     Dprime <- D / Dmax
 
     ## get asymptotic covaraince ----
-    finfo <- -solve(hessian_jointgeno(p = gout, pgA = ga, pgB = gb, alpha = alphamat))
+    finfo <- -solve(
+      hessian_jointgeno(p = gout, pgA = ga, pgB = gb, alpha = alphamat)
+    )
 
     ## Standard errors ----
     grad_dq <- dD_dqlm(p = gout)
@@ -215,7 +217,14 @@ Dfromg <- function(gmat) {
   stopifnot(nrow(gmat) == ncol(gmat))
   stopifnot(abs(sum(gmat) - 1) < TOL)
   K <- ncol(gmat) - 1
-  sum(sweep(x = sweep(x = gmat, MARGIN = 1, STATS = 0:K, FUN = `*`), MARGIN = 2, STATS = 0:K, FUN = `*`)) / K -
+  sum(
+    sweep(x = sweep(x = gmat,
+                    MARGIN = 1,
+                    STATS = 0:K,
+                    FUN = `*`),
+          MARGIN = 2,
+          STATS = 0:K,
+          FUN = `*`)) / K -
     sum(0:K * rowSums(gmat)) * sum(0:K * colSums(gmat)) / K
 }
 

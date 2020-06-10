@@ -52,7 +52,8 @@ arma::vec dmulti_dprob(const arma::vec x,
   return deriv;
 }
 
-//' Derivative of \code{\link{probgeno}(log = TRUE)} with respect to \code{prob}.
+//' Derivative of \code{\link{probgeno}(log = TRUE)} with respect to
+//' \code{prob}.
 //'
 //' @inheritParams probgeno
 //' @param log_d A logical. Should we return the log of the derivative or not?
@@ -71,7 +72,8 @@ arma::vec dprobgeno_dprob(const int &gA,
   int minz = std::max(0, gA + gB - K);
   int maxz = std::min(gA, gB);
 
-  arma::vec deriv = {-arma::datum::inf, -arma::datum::inf, -arma::datum::inf, -arma::datum::inf};
+  arma::vec deriv(4);
+  deriv.fill(-arma::datum::inf);
   double logdenom = -arma::datum::inf;
   arma::vec x(4);
   for (int z = minz; z <= maxz; z++) {

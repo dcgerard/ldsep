@@ -195,9 +195,16 @@
 #'
 #' @references
 #' \itemize{
-#'   \item{Agresti, Alan, and Brent A. Coull. "Approximate is better than "exact" for interval estimation of binomial proportions." The American Statistician 52, no. 2 (1998): 119-126.}
-#'   \item{Betancourt, Michael. "Cruising the simplex: Hamiltonian Monte Carlo and the Dirichlet distribution." In AIP Conference Proceedings 31st, vol. 1443, no. 1, pp. 157-164. American Institute of Physics, 2012.}
-#'   \item{Cockerham, C. Clark, and B. S. Weir. "Digenic descent measures for finite populations." Genetics Research 30, no. 2 (1977): 121-147.}
+#'   \item{Agresti, Alan, and Brent A. Coull. "Approximate is better than
+#'         "exact" for interval estimation of binomial proportions."
+#'         The American Statistician 52, no. 2 (1998): 119-126.}
+#'   \item{Betancourt, Michael. "Cruising the simplex: Hamiltonian Monte
+#'         Carlo and the Dirichlet distribution." In AIP Conference
+#'         Proceedings 31st, vol. 1443, no. 1, pp. 157-164. American
+#'         Institute of Physics, 2012.}
+#'   \item{Cockerham, C. Clark, and B. S. Weir. "Digenic descent measures
+#'         for finite populations." Genetics Research 30, no. 2 (1977):
+#'         121-147.}
 #' }
 #'
 #' @export
@@ -345,7 +352,8 @@ convert_ld <- function(phat) {
   return(retvec)
 }
 
-#' Estimate haplotypic pair-wise LD using either genotypes or genotype likelihoods.
+#' Estimate haplotypic pair-wise LD using either genotypes or genotype
+#' likelihoods.
 #'
 #' Given genotype (allele dosage) or genotype likelihood data
 #' for each individual at a pair of loci, this function will

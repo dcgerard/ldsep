@@ -45,6 +45,41 @@ could be a little tricky.}
 \item{pen}{The penalty to be applied to the likelihood. You can think about
 this as the prior sample size. Should be greater than 1.}
 }
+\value{
+A data frame of class \code{c("lddf", "data.frame")}
+with some or all of the following elements:
+\describe{
+\item{\code{i}}{The index of the first SNP.}
+\item{\code{j}}{The index of the second SNP.}
+\item{\code{D}}{The estimate of the LD coefficient.}
+\item{\code{D_se}}{The standard error of the estimate of
+the LD coefficient.}
+\item{\code{r2}}{The estimate of the squared Pearson correlation.}
+\item{\code{r2_se}}{The standard error of the estimate of the
+squared Pearson correlation.}
+\item{\code{r}}{The estimate of the Pearson correlation.}
+\item{\code{r_se}}{The standard error of the estimate of the
+Pearson correlation.}
+\item{\code{Dprime}}{The estimate of the standardized LD
+coefficient.}
+\item{\code{Dprime_se}}{The standard error of the estimate of the
+standardized LD coefficient.}
+\item{\code{z}}{The Fisher-z transformation of \code{r}.}
+\item{\code{z_se}}{The standard error of the Fisher-z
+transformation of \code{r}.}
+\item{\code{p_ab}}{The estimated haplotype frequency of ab.
+Only returned if estimating the haplotypic LD.}
+\item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
+Only returned if estimating the haplotypic LD.}
+\item{\code{p_aB}}{The estimated haplotype frequency of aB.
+Only returned if estimating the haplotypic LD.}
+\item{\code{p_AB}}{The estimated haplotype frequency of AB.
+Only returned if estimating the haplotypic LD.}
+\item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
+and genotype j at locus 2. Only returned if estimating the
+composite LD.}
+}
+}
 \description{
 This function is a wrapper to run \code{\link{ldest}()} for many pairs of
 SNPs. Support is provided for parallelization through the
@@ -53,6 +88,25 @@ foreach and doParallel packages.
 \details{
 See \code{\link{ldest}()} for details on the different types of LD
 estimators supported.
+}
+\examples{
+set.seed(1)
+
+## Simulate genotypes when true correlation is 0
+nloci <- 5
+nind  <- 100
+K <- 6
+nc <- 1
+genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+
+## Composite LD estimates
+lddf <- mldest(geno = genomat,
+               K = K,
+               nc = nc,
+               type = "comp")
+lddf[1:6, 1:6]
+
+
 }
 \author{
 David Gerard

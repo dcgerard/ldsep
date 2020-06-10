@@ -2,7 +2,8 @@
 % Please edit documentation in R/ldgeno.R
 \name{ldest_hap}
 \alias{ldest_hap}
-\title{Estimate haplotypic pair-wise LD using either genotypes or genotype likelihoods.}
+\title{Estimate haplotypic pair-wise LD using either genotypes or genotype
+likelihoods.}
 \usage{
 ldest_hap(
   ga,

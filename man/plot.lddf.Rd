@@ -32,9 +32,32 @@ on the principal diagonal.}
 \code{\link[corrplot]{corrplot}()}. See the documentation of that
 function for options.}
 }
+\value{
+(Invisibly) returns a matrix of the selected elements.
+}
 \description{
 Uses the \code{\link[corrplot]{corrplot}} R package to visualize
-correlation estimates.
+LD estimates.
+}
+\examples{
+set.seed(1)
+
+## Simulate genotypes when true correlation is 0
+nloci <- 5
+nind  <- 100
+K <- 6
+nc <- 1
+genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+
+## Haplotypic LD estimates
+lddf <- mldest_geno(genomat = genomat,
+                    K = K,
+                    nc = nc,
+                    type = "hap")
+
+## Plot estimates of z
+plot(lddf, element = "z")
+
 }
 \author{
 David Gerard

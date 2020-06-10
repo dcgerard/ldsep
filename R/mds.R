@@ -20,8 +20,11 @@
 #'
 #' @references
 #' \itemize{
-#' \item Stephens, Matthew. "False discovery rates: a new deal." Biostatistics 18, no. 2 (2017): 275-294.
-#' \item Dey, Kushal K., and Matthew Stephens. "CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications." bioRxiv (2018): 368316.
+#' \item{Stephens, Matthew. "False discovery rates: a new deal."
+#'       Biostatistics 18, no. 2 (2017): 275-294.}
+#' \item{Dey, Kushal K., and Matthew Stephens. "CorShrink:
+#'       Empirical Bayes shrinkage estimation of correlations,
+#'       with applications." bioRxiv (2018): 368316.}
 #' }
 #'
 #' @author David Gerard
@@ -115,5 +118,6 @@ mds_laplace_like <- function(zmat, smat, uvec, xivec, beta) {
   stopifnot(beta > 0)
   thetamat <- atanh(exp(-beta * tanh(distmat)))
   thetamat <- sweep(x = thetamat * xivec, MARGIN = 2, STATS = xivec, FUN = `*`)
-  sum(dlaplace(x = zmat, mean = thetamat, scale = smat, log = TRUE), na.rm = TRUE)
+  sum(dlaplace(x = zmat, mean = thetamat, scale = smat, log = TRUE),
+      na.rm = TRUE)
 }

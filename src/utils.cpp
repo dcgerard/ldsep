@@ -17,7 +17,8 @@ const double TOL = std::sqrt(DOUBLE_EPS);
 double log_sum_exp(const arma::vec &x) {
   double max_x = arma::max(x);
   double lse; // the log-sum-exp
-  if (max_x == -arma::datum::inf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
+  // if all -Inf, need to treat this special to avoid -Inf + Inf.
+  if (max_x == -arma::datum::inf) {
     lse = -arma::datum::inf;
   } else {
     lse = max_x + std::log(arma::sum(arma::exp(x - max_x)));
@@ -32,7 +33,8 @@ double log_sum_exp(const arma::vec &x) {
 double log_sum_exp_mat(const arma::mat &x) {
   double max_x = x.max();
   double lse; // the log-sum-exp
-  if (max_x == -arma::datum::inf) { // if all -Inf, need to treat this special to avoid -Inf + Inf.
+  // if all -Inf, need to treat this special to avoid -Inf + Inf.
+  if (max_x == -arma::datum::inf) {
     lse = -arma::datum::inf;
   } else {
     lse = max_x + std::log(arma::accu(arma::exp(x - max_x)));

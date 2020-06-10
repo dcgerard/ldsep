@@ -34,7 +34,8 @@ test_that("hessian works", {
 
   hess2 <- hessian_jointgeno(p = gout, pgA = ga, pgB = gb, alpha = alphamat)
 
-  expect_equal(hess2, oout$hessian, tol = 1000) ## high because high numerical error in optim
+  ## high because high numerical error in optim
+  expect_equal(hess2, oout$hessian, tol = 1000)
 })
 
 

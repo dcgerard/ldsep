@@ -25,7 +25,8 @@ arma::mat plog_sum_exp_mat(const arma::mat &x,
 //' @noRd
 // [[Rcpp::export]]
 arma::mat get_Amat(int K) {
- int numa = R::choose(K + 4 - 1, K); // K indistinguishable balls into 4 distinguishable urns. "stars and bars"
+  // K indistinguishable balls into 4 distinguishable urns. "stars and bars"
+ int numa = R::choose(K + 4 - 1, K);
  arma::mat Amat(4, numa);
 
  int i = 0;
@@ -99,7 +100,8 @@ arma::vec em_fix(const arma::vec &p,
       }
     }
   }
-  if ((alpha(0) > 1.0) & (alpha(1) > 1.0) & (alpha(2) > 1.0) & (alpha(3) > 1.0)) {
+  if ((alpha(0) > 1.0) & (alpha(1) > 1.0) &
+      (alpha(2) > 1.0) & (alpha(3) > 1.0)) {
     pnew = plog_sum_exp(pnew, arma::log(alpha - 1.0));
     pnew = arma::exp(pnew - log_sum_exp(pnew));
   } else {
@@ -164,8 +166,12 @@ arma::vec simplex_proj(arma::vec y) {
 //'
 //' @references
 //' \itemize{
-//'   \item{Varadhan, Ravi, and Christophe Roland. "Simple and globally convergent methods for accelerating the convergence of any EM algorithm." Scandinavian Journal of Statistics 35.2 (2008): 335-353.}
-//'   \item{Chen, Yunmei, and Xiaojing Ye. "Projection onto a simplex." arXiv preprint arXiv:1101.6081 (2011).}
+//'   \item{Varadhan, Ravi, and Christophe Roland. "Simple and globally
+//'         convergent methods for accelerating the convergence of any
+//'         EM algorithm." Scandinavian Journal of Statistics 35.2 (2008):
+//'         335-353.}
+//'   \item{Chen, Yunmei, and Xiaojing Ye. "Projection onto a simplex."
+//'         arXiv preprint arXiv:1101.6081 (2011).}
 //' }
 //'
 //' @author David Gerard
@@ -277,8 +283,8 @@ arma::vec genolike_em(arma::vec p,
 //' @param alpha A matrix of prior sample sizes used as the penalty.
 //' @param maxit The maximum number of EM iterations.
 //' @param tol The convergence tolerance.
-//' @param verbose Should we output the progress of each iteration (\code{TRUE})
-//'     or not (\code{FALSE})?
+//' @param verbose Should we output the progress of each iteration
+//'     (\code{TRUE}) or not (\code{FALSE})?
 //'
 //' @author David Gerard
 //'

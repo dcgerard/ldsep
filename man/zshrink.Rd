@@ -26,8 +26,11 @@ since the CorShrink package is not available on CRAN.
 }
 \references{
 \itemize{
-\item Stephens, Matthew. "False discovery rates: a new deal." Biostatistics 18, no. 2 (2017): 275-294.
-\item Dey, Kushal K., and Matthew Stephens. "CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications." bioRxiv (2018): 368316.
+\item{Stephens, Matthew. "False discovery rates: a new deal."
+Biostatistics 18, no. 2 (2017): 275-294.}
+\item{Dey, Kushal K., and Matthew Stephens. "CorShrink:
+Empirical Bayes shrinkage estimation of correlations,
+with applications." bioRxiv (2018): 368316.}
 }
 }
 \author{

@@ -33,6 +33,58 @@
 #'             individual \code{j} and dosage \code{k - 1}.}
 #'     }
 #'
+#' @return A data frame of class \code{c("lddf", "data.frame")}
+#'     with some or all of the following elements:
+#' \describe{
+#'   \item{\code{i}}{The index of the first SNP.}
+#'   \item{\code{j}}{The index of the second SNP.}
+#'   \item{\code{D}}{The estimate of the LD coefficient.}
+#'   \item{\code{D_se}}{The standard error of the estimate of
+#'       the LD coefficient.}
+#'   \item{\code{r2}}{The estimate of the squared Pearson correlation.}
+#'   \item{\code{r2_se}}{The standard error of the estimate of the
+#'       squared Pearson correlation.}
+#'   \item{\code{r}}{The estimate of the Pearson correlation.}
+#'   \item{\code{r_se}}{The standard error of the estimate of the
+#'       Pearson correlation.}
+#'   \item{\code{Dprime}}{The estimate of the standardized LD
+#'       coefficient.}
+#'   \item{\code{Dprime_se}}{The standard error of the estimate of the
+#'       standardized LD coefficient.}
+#'   \item{\code{z}}{The Fisher-z transformation of \code{r}.}
+#'   \item{\code{z_se}}{The standard error of the Fisher-z
+#'       transformation of \code{r}.}
+#'   \item{\code{p_ab}}{The estimated haplotype frequency of ab.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{p_aB}}{The estimated haplotype frequency of aB.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{p_AB}}{The estimated haplotype frequency of AB.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
+#'       and genotype j at locus 2. Only returned if estimating the
+#'       composite LD.}
+#' }
+#'
+#' @examples
+#' set.seed(1)
+#'
+#' ## Simulate genotypes when true correlation is 0
+#' nloci <- 5
+#' nind  <- 100
+#' K <- 6
+#' nc <- 1
+#' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+#'
+#' ## Composite LD estimates
+#' lddf <- mldest(geno = genomat,
+#'                K = K,
+#'                nc = nc,
+#'                type = "comp")
+#' lddf[1:6, 1:6]
+#'
+#'
 #' @author David Gerard
 #'
 #' @export
@@ -43,9 +95,9 @@ mldest <- function(geno,
                    pen = 2) {
 
   if (length(dim(geno)) == 2) {
-    outdf <- mldest_geno(genomat = geno, K = K, nc = nc, pen = pen)
+    outdf <- mldest_geno(genomat = geno, K = K, nc = nc, pen = pen, type = type)
   } else if (length(dim(geno)) == 3) {
-    outdf <- mldest_genolike(genoarray = geno, nc = nc, pen = pen)
+    outdf <- mldest_genolike(genoarray = geno, nc = nc, pen = pen, type = type)
   } else {
     stop("mldest: geno needs to either be a matrix or a three-way array.")
   }
@@ -69,8 +121,11 @@ mldest <- function(geno,
 #'
 #' @author David Gerard
 #'
+#' @inherit mldest return
+#'
 #' @examples
 #' set.seed(1)
+#'
 #' ## Simulate genotypes when true correlation is 0
 #' nloci <- 5
 #' nind  <- 100
@@ -110,11 +165,11 @@ mldest_geno <- function(genomat,
   stopifnot(is.matrix(genomat))
   nloci <- nrow(genomat)
 
-  ## Register workers ----------------------------------------------------------
+  ## Register workers ---------------------------------------------------------
   if (nc == 1) {
     foreach::registerDoSEQ()
   } else {
-    cl = parallel::makeCluster(nc)
+    cl <- parallel::makeCluster(nc)
     doParallel::registerDoParallel(cl = cl)
     if (foreach::getDoParWorkers() == 1) {
       stop(paste0("mldest_geno: nc > 1 ",
@@ -177,8 +232,11 @@ mldest_geno <- function(genomat,
 #'
 #' @author David Gerard
 #'
+#' @inherit mldest return
+#'
 #' @examples
 #' set.seed(1)
+#'
 #' ## Simulate some data with true correlation of 0
 #' nloci <- 5
 #' nind  <- 100
@@ -231,11 +289,11 @@ mldest_genolike <- function(genoarray,
   nind <- dim(genoarray)[[2]]
   K <- dim(genoarray)[[3]] - 1
 
-  ## Register workers ----------------------------------------------------------
+  ## Register workers ---------------------------------------------------------
   if (nc == 1) {
     foreach::registerDoSEQ()
   } else {
-    cl = parallel::makeCluster(nc)
+    cl <- parallel::makeCluster(nc)
     doParallel::registerDoParallel(cl = cl)
     if (foreach::getDoParWorkers() == 1) {
       stop(paste0("mldest_geno: nc > 1 ",

@@ -160,7 +160,8 @@ double proballgenolike(const arma::mat &pgA,
     logdenom_ind = -arma::datum::inf;
     for (int gA = 0; gA <= K; gA++) {
       for (int gB = 0; gB <= K; gB++) {
-        logdenom_ind = log_sum_exp_2(logdenom_ind, pgA(i, gA) + pgB(i, gB) + parray(gA, gB));
+        logdenom_ind = log_sum_exp_2(logdenom_ind,
+                                     pgA(i, gA) + pgB(i, gB) + parray(gA, gB));
       }
     }
     logdenom += logdenom_ind;
@@ -237,7 +238,8 @@ arma::cube get_dprobgeno_dprob_array(int K, arma::vec prob) {
         x[1] = gA - z; // number Ab
         x[2] = gB - z; // number aB
         x[3] = z; // number AB
-        derivarray.tube(gA, gB) = plog_sum_exp(derivarray.tube(gA, gB), dmulti_dprob(x, prob, true));
+        derivarray.tube(gA, gB) =
+          plog_sum_exp(derivarray.tube(gA, gB), dmulti_dprob(x, prob, true));
       }
     }
   }
@@ -288,7 +290,8 @@ arma::vec dprobgenolike_dprob(const arma::vec &pgA,
   arma::cube darray = get_dprobgeno_dprob_array(K, prob);
   arma::mat parray = get_prob_array(K, prob);
 
-  arma::vec deriv = {-arma::datum::inf, -arma::datum::inf, -arma::datum::inf, -arma::datum::inf};
+  arma::vec deriv(4);
+  deriv.fill(-arma::datum::inf);
   double logdenom = -arma::datum::inf;
   for (int i = 0; i <= K; i++) {
     for (int j = 0; j <= K; j++) {

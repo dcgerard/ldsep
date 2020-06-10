@@ -20,10 +20,35 @@ running either \code{\link{mldest_geno}()} or
 \item{element}{Which element in \code{obj} should we format into an
 upper-triangular matrix?}
 }
+\value{
+A matrix of the selected elements. Only the upper-triangle of the
+matrix is filled. The lower-triangle and the diagonal are \code{NA}'s.
+}
 \description{
 Formats the correlation estimates and standard errors output
 from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
 into a more conventional upper-triangular matrix.
+}
+\examples{
+set.seed(1)
+
+## Simulate genotypes when true correlation is 0
+nloci <- 5
+nind  <- 100
+K <- 6
+nc <- 1
+genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+
+## Haplotypic LD estimates
+lddf <- mldest_geno(genomat = genomat,
+                    K = K,
+                    nc = nc,
+                    type = "hap")
+
+## Obtain the D estimates in matrix form
+Dmat <- format_lddf(obj = lddf, element = "D")
+Dmat
+
 }
 \author{
 David Gerard
