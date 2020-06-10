@@ -9,8 +9,7 @@
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R build
 status](https://github.com/dcgerard/ldsep/workflows/R-CMD-check/badge.svg)](https://github.com/dcgerard/ldsep/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/dcgerard/ldsep/branch/master/graph/badge.svg)](https://codecov.io/gh/dcgerard/ldsep?branch=master)
+[![codecov](https://codecov.io/gh/dcgerard/ldsep/branch/master/graph/badge.svg?token=J3ZRB8PAHY)](https://codecov.io/gh/dcgerard/ldsep)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ldsep)](https://CRAN.R-project.org/package=ldsep)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ldsep)](https://cran.r-project.org/package=ldsep)
