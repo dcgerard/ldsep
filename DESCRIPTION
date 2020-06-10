@@ -27,4 +27,6 @@ Imports:
     ashr,
     corrplot
 Suggests: 
-    testthat
+    testthat,
+    covr
+RdMacros: lifecycle
