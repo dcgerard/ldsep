@@ -29,4 +29,3 @@ Imports:
 Suggests: 
     testthat,
     covr
-RdMacros: lifecycle
