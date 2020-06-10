@@ -8,8 +8,8 @@ upper-triangular matrix.}
 \usage{
 format_lddf(
   obj,
-  element = c("z", "z_se", "D", "D_se", "r2", "r2_se", "r", "r_se", "p_ab", "p_Ab",
-    "p_aB", "p_AB")
+  element = c("z", "z_se", "D", "D_se", "Dprime", "Dprime_se", "r2", "r2_se", "r",
+    "r_se", "p_ab", "p_Ab", "p_aB", "p_AB")
 )
 }
 \arguments{

@@ -505,6 +505,7 @@ arma::vec dD_dqlm(arma::mat p) {
 //' @param p Element (i, j) is the probability of genotype i at locus 1
 //'     and genotype j at locus 2.
 //' @param dgrad The output of \code{\link{dD_dqlm}()}.
+//' @param D The value of D.
 //'
 //' @noRd
 // [[Rcpp::export]]
@@ -548,4 +549,67 @@ arma::vec dr2_dqlm(arma::mat p, arma::vec dgrad, double D) {
   return grad;
 }
 
+
+//' Gradient of standardized component LD coefficient with respect to the qlm's
+//'
+//' @param p Element (i, j) is the probability of genotype i at locus 1
+//'     and genotype j at locus 2.
+//' @param dgrad The output of \code{\link{dD_dqlm}()}.
+//' @param D The value of D.
+//' @param Dm The value of Dm
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::vec ddprime_dqlm(arma::mat p, arma::vec dgrad, double D, double Dm) {
+  int K = p.n_cols - 1;
+  arma::vec grad = dgrad / Dm;
+
+  arma::vec distA = arma::sum(p, 1);
+  arma::vec distB = arma::sum(p, 0).t();
+  double ega = 0.0;
+  double egb = 0.0;
+  for (int i = 0; i <= K; i++) {
+    ega += (double)i * distA(i);
+    egb += (double)i * distB(i);
+  }
+
+  double ddeltam_dqlm;
+  int ind;
+
+  if ((D < 0) & ((ega * egb) < (((double)K - ega) * ((double)K - egb)))) {
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        ind = j * (K + 1) + i;
+        ddeltam_dqlm = ((double)i * egb + (double)j * ega) / std::pow((double)K, 2.0);
+        grad(ind) += -1.0 * D * ddeltam_dqlm / std::pow(Dm, 2.0);
+      }
+    }
+  } else if ((D < 0) & ((ega * egb) > (((double)K - ega) * ((double)K - egb)))) {
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        ind = j * (K + 1) + i;
+        ddeltam_dqlm = (-1.0 * (double)i * ((double)K - egb) - (double)j * ((double)K - ega)) / std::pow((double)K, 2.0);
+        grad(ind) += -1.0 * D * ddeltam_dqlm / std::pow(Dm, 2.0);
+      }
+    }
+  } else if ((D > 0) & ((ega * ((double)K - egb)) < (((double)K - ega) * egb))) {
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        ind = j * (K + 1) + i;
+        ddeltam_dqlm = ((double)i * ((double)K - egb) - (double)j * ega) / std::pow((double)K, 2.0);
+        grad(ind) += -1.0 * D * ddeltam_dqlm / std::pow(Dm, 2.0);
+      }
+    }
+  } else {
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        ind = j * (K + 1) + i;
+        ddeltam_dqlm = (-1.0 * (double)i * egb + (double)j * ((double)K - ega)) / std::pow((double)K, 2.0);
+        grad(ind) += -1.0 * D * ddeltam_dqlm / std::pow(Dm, 2.0);
+      }
+    }
+  }
+
+  return grad;
+}
 

@@ -46,7 +46,7 @@ transformation of \code{r}.}
 }
 }
 \description{
-This function will estimate the covariance between gentoypes, either
+This function will estimate the composite LD between two loci, either
 using genotype estimates or using genotype likelihoods. The resulting
 measures of LD are generalizations of Burrow's "composite" LD measure.
 }

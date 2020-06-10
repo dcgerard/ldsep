@@ -226,6 +226,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ddprime_dqlm
+arma::vec ddprime_dqlm(arma::mat p, arma::vec dgrad, double D, double Dm);
+RcppExport SEXP _ldsep_ddprime_dqlm(SEXP pSEXP, SEXP dgradSEXP, SEXP DSEXP, SEXP DmSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type p(pSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type dgrad(dgradSEXP);
+    Rcpp::traits::input_parameter< double >::type D(DSEXP);
+    Rcpp::traits::input_parameter< double >::type Dm(DmSEXP);
+    rcpp_result_gen = Rcpp::wrap(ddprime_dqlm(p, dgrad, D, Dm));
+    return rcpp_result_gen;
+END_RCPP
+}
 // probgenolike
 double probgenolike(const arma::vec& pgA, const arma::vec& pgB, const arma::vec prob, bool log_p);
 RcppExport SEXP _ldsep_probgenolike(SEXP pgASEXP, SEXP pgBSEXP, SEXP probSEXP, SEXP log_pSEXP) {
@@ -573,6 +587,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_hessian_jointgeno", (DL_FUNC) &_ldsep_hessian_jointgeno, 4},
     {"_ldsep_dD_dqlm", (DL_FUNC) &_ldsep_dD_dqlm, 1},
     {"_ldsep_dr2_dqlm", (DL_FUNC) &_ldsep_dr2_dqlm, 3},
+    {"_ldsep_ddprime_dqlm", (DL_FUNC) &_ldsep_ddprime_dqlm, 4},
     {"_ldsep_probgenolike", (DL_FUNC) &_ldsep_probgenolike, 4},
     {"_ldsep_proballgenolike_old", (DL_FUNC) &_ldsep_proballgenolike_old, 4},
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},

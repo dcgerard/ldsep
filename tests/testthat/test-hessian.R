@@ -63,8 +63,7 @@ test_that("dD_dqlm works OK", {
 
 
 test_that("dr2_dqlm works OK", {
-
-  K <- 7
+  K <- 6
   qmat <- matrix(runif((K + 1) ^ 2), nrow = K + 1)
   qmat <- qmat / sum(qmat)
   par <- c(qmat)
@@ -87,3 +86,56 @@ test_that("dr2_dqlm works OK", {
   )
 })
 
+
+test_that("dr2_dqlm works OK", {
+  f <- function(par, K) {
+    gout <- matrix(par, nrow = K + 1)
+    D <- Dfromg(gout)
+    distA <- rowSums(gout)
+    distB <- colSums(gout)
+    egA <- sum((0:K) * distA)
+    egB <- sum((0:K) * distB)
+    if (D < 0) {
+      Dmax <- min(egA * egB, (K - egA) * (K - egB)) / K^2
+    } else {
+      Dmax <- min(egA * (K - egB), (K - egA) * egB) / K^2
+    }
+    Dprime <- D / Dmax
+    Dprime
+  }
+
+  g <- function(par, K) {
+    gout <- matrix(par, nrow = K + 1)
+    D <- Dfromg(gout)
+    distA <- rowSums(gout)
+    distB <- colSums(gout)
+    egA <- sum((0:K) * distA)
+    egB <- sum((0:K) * distB)
+    if (D < 0) {
+      Dmax <- min(egA * egB, (K - egA) * (K - egB)) / K^2
+    } else {
+      Dmax <- min(egA * (K - egB), (K - egA) * egB) / K^2
+    }
+    Dprime <- D / Dmax
+    Dprime
+    dgrad <- dD_dqlm(p = gout)
+    ddprime_dqlm(p = gout, dgrad = dgrad, D = D, Dm = Dmax)
+  }
+
+
+  K <- 6
+  qmat <- matrix(runif((K + 1) ^ 2), nrow = K + 1)
+  qmat <- qmat / sum(qmat)
+  par <- c(qmat)
+  gradval <- g(par = par, K = K)
+
+  myenv <- new.env()
+  assign(x = "qmat", value = qmat, envir = myenv)
+  assign(x = "K", value = K, envir = myenv)
+  nout <- stats::numericDeriv(quote(f(par = par, K = K)), "par", myenv)
+  expect_equal(
+    c(attr(nout, "gradient")),
+    c(gradval),
+    tol = 10^-5
+  )
+})

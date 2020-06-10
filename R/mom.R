@@ -31,25 +31,33 @@ ldsimp <- function(ga, gb, K) {
   pA    <- mean(ga) / K
   pB    <- mean(gb) / K
   D     <- stats::cov(ga, gb) / K
-  sda   <- stats::sd(ga)
-  sdb   <- stats::sd(gb)
-  D_se  <- sqrt(max(sda * sdb / K ^ 2 - D ^ 2, 0)) / sqrt(n)
+  vara   <- stats::var(ga)
+  varb   <- stats::var(gb)
+  D_se  <- sqrt(vara * varb / K ^ 2 + D ^ 2) / sqrt(n)
+  if (D < 0) {
+    Dmax <- min(pA * pB, (1 - pA) * (1 - pB))
+  } else {
+    Dmax <- min(pA * (1 - pB), pA * (1 - pB))
+  }
+  Dprime <- D / Dmax
+  Dprime_se <- D_se / Dmax
   r     <- stats::cor(ga, gb)
   r_se  <- (1 - r ^ 2) / sqrt(n)
   z     <- atanh(r)
   z_se  <- 1 / sqrt(n - 3)
   r2    <- r ^ 2
   r2_se <- 2 * abs(r) * (1 - r ^ 2) / sqrt(n)
-  # g <- log(-log(r2))
-  # g_se <- 2 * (1 - r ^ 2) / abs(r * log(r ^ 2) * sqrt(n))
 
-  phat <- rep(NA_real_, 4)
-  phat[[4]] <- D + pA * pB
-  phat[[3]] <- pB - phat[[4]]
-  phat[[2]] <- pA - phat[[4]]
-  phat[[1]] <- 1 - sum(phat[2:4])
-  phat[phat < 0] <- 0
-  phat <- phat / sum(phat)
+  qvec <- c(
+    as.matrix(
+      prop.table(
+        table(factor(round(ga), levels = 0:K),
+              factor(round(gb), levels = 0:K))
+      )
+    )
+  )
+  inddf <- expand.grid(i = 0:K, j = 0:K)
+  names(qvec) <- paste0("q", inddf$i, inddf$j)
 
   retvec <- c(D         = D,
               D_se      = D_se,
@@ -57,12 +65,11 @@ ldsimp <- function(ga, gb, K) {
               r2_se     = r2_se,
               r         = r,
               r_se      = r_se,
+              Dprime    = Dprime,
+              Dprime_se = Dprime_se,
               z         = z,
-              z_se      = z_se,
-              p_ab      = phat[[1]],
-              p_Ab      = phat[[2]],
-              p_aB      = phat[[3]],
-              p_AB      = phat[[4]])
+              z_se      = z_se)
+  retvec <- c(retvec, qvec)
 
   return(retvec)
 }
@@ -71,7 +78,7 @@ ldsimp <- function(ga, gb, K) {
 #' Estimates of composite LD based either on genotype estimates or
 #' genotype likelihoods.
 #'
-#' This function will estimate the covariance between gentoypes, either
+#' This function will estimate the composite LD between two loci, either
 #' using genotype estimates or using genotype likelihoods. The resulting
 #' measures of LD are generalizations of Burrow's "composite" LD measure.
 #'
@@ -125,6 +132,17 @@ compldest <- function(ga,
     r <- sqrt(r2) * sign(D)
     z <- atanh(r)
 
+    distA <- rowSums(gout)
+    distB <- colSums(gout)
+    egA <- sum((0:K) * distA)
+    egB <- sum((0:K) * distB)
+    if (D < 0) {
+      Dmax <- min(egA * egB, (K - egA) * (K - egB)) / K^2
+    } else {
+      Dmax <- min(egA * (K - egB), (K - egA) * egB) / K^2
+    }
+    Dprime <- D / Dmax
+
     ## get asymptotic covaraince ----
     finfo <- -solve(hessian_jointgeno(p = gout, pgA = ga, pgB = gb, alpha = alphamat))
 
@@ -134,6 +152,9 @@ compldest <- function(ga,
 
     grad_r2q <- dr2_dqlm(p = gout, dgrad = grad_dq, D = D)
     r2_se <- sqrt(c(t(grad_r2q) %*% finfo %*% grad_r2q))
+
+    grad_dprimeq <- ddprime_dqlm(p = gout, dgrad = grad_dq, D = D, Dm = Dmax)
+    Dprime_se <- sqrt(c(t(grad_dprimeq) %*% finfo %*% grad_dprimeq))
 
     r_se <- r2_se / sqrt(4 * r2)
 
@@ -146,6 +167,8 @@ compldest <- function(ga,
                 r2_se     = r2_se,
                 r         = r,
                 r_se      = r_se,
+                Dprime    = Dprime,
+                Dprime_se = Dprime_se,
                 z         = z,
                 z_se      = z_se)
 

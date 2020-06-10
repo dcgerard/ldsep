@@ -7,8 +7,8 @@
 \usage{
 \method{plot}{lddf}(
   x,
-  element = c("z", "z_se", "D", "D_se", "r2", "r2_se", "r", "r_se", "p_ab", "p_Ab",
-    "p_aB", "p_AB"),
+  element = c("z", "z_se", "D", "D_se", "Dprime", "Dprime_se", "r2", "r2_se", "r",
+    "r_se", "p_ab", "p_Ab", "p_aB", "p_AB"),
   type = c("upper", "full", "lower"),
   diag = FALSE,
   ...

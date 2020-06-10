@@ -259,10 +259,24 @@ dD_dqlm <- function(p) {
 #' @param p Element (i, j) is the probability of genotype i at locus 1
 #'     and genotype j at locus 2.
 #' @param dgrad The output of \code{\link{dD_dqlm}()}.
+#' @param D The value of D.
 #'
 #' @noRd
 dr2_dqlm <- function(p, dgrad, D) {
     .Call(`_ldsep_dr2_dqlm`, p, dgrad, D)
+}
+
+#' Gradient of standardized component LD coefficient with respect to the qlm's
+#'
+#' @param p Element (i, j) is the probability of genotype i at locus 1
+#'     and genotype j at locus 2.
+#' @param dgrad The output of \code{\link{dD_dqlm}()}.
+#' @param D The value of D.
+#' @param Dm The value of Dm
+#'
+#' @noRd
+ddprime_dqlm <- function(p, dgrad, D, Dm) {
+    .Call(`_ldsep_ddprime_dqlm`, p, dgrad, D, Dm)
 }
 
 #' Probability of genotype likelihoods given haplotype frequencies for a
