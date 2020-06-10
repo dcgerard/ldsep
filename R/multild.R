@@ -1,0 +1,278 @@
+
+
+#' Estimate all pair-wise LD's in a collection of SNPs using genotypes or
+#' genotype likelihoods.
+#'
+#' This function is a wrapper to run \code{\link{ldest}()} for many pairs of
+#' SNPs. Support is provided for parallelization through the
+#' foreach and doParallel packages.
+#'
+#' See \code{\link{ldest}()} for details on the different types of LD
+#' estimators supported.
+#'
+#' @inheritParams ldest
+#' @param nc The number of computing cores to use. This should never be
+#'     more than the number of cores available in your computing environment.
+#'     You can determine the maximum number of available cores by running
+#'     \code{parallel::detectCores()} in R. This is probably fine for a
+#'     personal computer, but some environments are only
+#'     able to use fewer. Ask your admins if you are unsure.
+#' @param geno One of two possible inputs:
+#'     \itemize{
+#'       \item{A matrix of genotypes (allele dosages). The rows index the
+#'             SNPs and the columns index the individuals. That is,
+#'             \code{genomat[i, j]} is the allele dosage for individual
+#'             \code{j} in SNP \code{i}. When \code{type = "comp"}, the
+#'             dosages are allowed to be continuous (e.g. posterior
+#'             mean genotypes).}
+#'       \item{A three-way array of genotype \emph{log}-likelihoods.
+#'             The first dimension indexes the SNPs, the second dimension
+#'             indexes the individuals, and the third dimension indexes
+#'             the genotypes. That is, \code{genolike_array[i, j, k]}
+#'             is the genotype log-likelihood at SNP \code{i} for
+#'             individual \code{j} and dosage \code{k - 1}.}
+#'     }
+#'
+#' @author David Gerard
+#'
+#' @export
+mldest <- function(geno,
+                   K,
+                   nc = 1,
+                   type = c("hap", "comp"),
+                   pen = 2) {
+
+  if (length(dim(geno)) == 2) {
+    outdf <- mldest_geno(genomat = geno, K = K, nc = nc, pen = pen)
+  } else if (length(dim(geno)) == 3) {
+    outdf <- mldest_genolike(genoarray = geno, nc = nc, pen = pen)
+  } else {
+    stop("mldest: geno needs to either be a matrix or a three-way array.")
+  }
+  return(outdf)
+}
+
+#' Estimate all pair-wise LD's in a collection of SNPs using the genotypes.
+#'
+#' This function will run \code{\link{ldest}()} iteratively over
+#' all possible pairs of SNPs provided. Support is provided for parallelization
+#' through the doParallel and foreach packages.
+#'
+#' @inheritParams mldest
+#' @param genomat A matrix of genotypes (allele dosages). The rows index the
+#'     SNPs and the columns index the individuals. That is, \code{genomat[i, j]}
+#'     is the allele dosage for individual \code{j} in SNP \code{i}.
+#' @param K The ploidy of the species. Assumed to be the same for all
+#'     individuals at all SNPs
+#' @param pen The penalty to be applied to the likelihood. You can think about
+#'     this as the prior sample size.
+#'
+#' @author David Gerard
+#'
+#' @examples
+#' set.seed(1)
+#' ## Simulate genotypes when true correlation is 0
+#' nloci <- 5
+#' nind  <- 100
+#' K <- 6
+#' nc <- 1
+#' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
+#'
+#' ## Haplotypic LD estimates
+#' rdf_hap <- mldest_geno(genomat = genomat,
+#'                        K = K,
+#'                        nc = nc,
+#'                        type = "hap")
+#'
+#' ## Composite LD estimates
+#' rdf_comp <- mldest_geno(genomat = genomat,
+#'                         K = K,
+#'                         nc = nc,
+#'                         type = "comp")
+#'
+#' ## Haplotypic and Composite LD are both close to 0.
+#' ## But composite is more variable.
+#' Dmat <- cbind(Haplotypic = rdf_hap$D, Composite = rdf_comp$D)
+#' boxplot(Dmat,
+#'         main = "Estimates of D",
+#'         ylab = "D Estimate",
+#'         xlab = "Type")
+#' abline(h = 0, lty = 2, col = 2)
+#'
+#'
+#' @export
+mldest_geno <- function(genomat,
+                        K,
+                        nc = 1,
+                        type = c("hap", "comp"),
+                        pen = 2) {
+  type <- match.arg(type)
+  stopifnot(is.matrix(genomat))
+  nloci <- nrow(genomat)
+
+  ## Register workers ----------------------------------------------------------
+  if (nc == 1) {
+    foreach::registerDoSEQ()
+  } else {
+    cl = parallel::makeCluster(nc)
+    doParallel::registerDoParallel(cl = cl)
+    if (foreach::getDoParWorkers() == 1) {
+      stop(paste0("mldest_geno: nc > 1 ",
+                  "but only one core registered from ",
+                  "foreach::getDoParWorkers()."))
+    }
+  }
+
+  i <- 1
+  outmat <- foreach::foreach(i = seq_len(nloci - 1),
+                             .combine = rbind,
+                             .export = c("ldest")) %dopar% {
+
+                               for (j in (i + 1):nloci) {
+                                 ldout <- ldest(ga = genomat[i, ],
+                                                gb = genomat[j, ],
+                                                K = K,
+                                                type = type,
+                                                pen = pen)
+                                 if (j == i + 1) {
+                                   estmat <- matrix(NA_real_,
+                                                    nrow = nloci - i,
+                                                    ncol = length(ldout) + 2)
+                                 }
+                                 estmat[j - i, 1] <- i
+                                 estmat[j - i, 2] <- j
+                                 estmat[j - i, -c(1, 2)] <- ldout
+
+                               }
+                               colnames(estmat) <- c("i", "j", names(ldout))
+                               estmat
+                             }
+
+  if (nc > 1) {
+    parallel::stopCluster(cl)
+  }
+
+  outmat <- as.data.frame(outmat)
+  class(outmat) <- c("lddf", "data.frame")
+  return(outmat)
+}
+
+#' Estimate all pair-wise LD's in a collection of SNPs using the genotype
+#' likleihoods.
+#'
+#' This function will run \code{\link{ldest}()} iteratively over
+#' all possible pairs of SNPs provided. Support is provided for parallelization
+#' through the doParallel and foreach packages.
+#'
+#' @inheritParams mldest
+#' @param genoarray A three-way array of genotype \emph{log}-likelihoods.
+#'     The first dimension indexes the SNPs, the second dimension indexes
+#'     the individuals, and the third dimension indexes the genotypes.
+#'     That is, \code{genolike_array[i, j, k]} is the genotype log-likelihood
+#'     at SNP \code{i} for individual \code{j} and dosage \code{k - 1}.
+#'     The ploidy (assumed to be the same for all individuals) is assumed to
+#'     be one minus the size of the third dimension.
+#' @param pen The penalty to be applied to the likelihood. You can think about
+#'     this as the prior sample size.
+#'
+#' @author David Gerard
+#'
+#' @examples
+#' set.seed(1)
+#' ## Simulate some data with true correlation of 0
+#' nloci <- 5
+#' nind  <- 100
+#' K <- 6
+#' nc <- 1
+#' genovec <- sample(0:K, nind * nloci, TRUE)
+#' genomat <- matrix(genovec, nrow = nloci)
+#' genoarray <- array(sapply(genovec,
+#'                           stats::dnorm,
+#'                           x = 0:K,
+#'                           sd = 1,
+#'                           log = TRUE),
+#'                    dim = c(K + 1, nloci, nind))
+#' genoarray <- aperm(genoarray, c(2, 3, 1)) ## loci, individuals, dosages
+#'
+#' ## Verify simulation
+#' locnum <- sample(seq_len(nloci), 1)
+#' indnum <- sample(seq_len(nind), 1)
+#' genoarray[locnum, indnum, ]
+#' stats::dnorm(x = 0:K, mean = genomat[locnum, indnum], sd = 1, log = TRUE)
+#'
+#' ## Haplotypic LD estimates
+#' rdf_hap <- mldest_genolike(genoarray = genoarray,
+#'                            nc = nc,
+#'                            type = "hap")
+#'
+#' ## Composite LD estimates
+#' rdf_comp <- mldest_genolike(genoarray = genoarray,
+#'                             nc = nc,
+#'                             type = "comp")
+#'
+#' ## Haplotypic and Composite LD are both close to 0.
+#' ## But composite is more variable.
+#' Dmat <- cbind(Haplotypic = rdf_hap$D, Composite = rdf_comp$D)
+#' boxplot(Dmat,
+#'         main = "Estimates of D",
+#'         ylab = "D Estimate",
+#'         xlab = "Type")
+#' abline(h = 0, lty = 2, col = 2)
+#'
+#' @export
+mldest_genolike <- function(genoarray,
+                            nc = 1,
+                            type = c("hap", "comp"),
+                            pen = 2) {
+  type <- match.arg(type)
+  stopifnot(is.array(genoarray))
+  stopifnot(length(dim(genoarray)) == 3)
+  nloci <- dim(genoarray)[[1]]
+  nind <- dim(genoarray)[[2]]
+  K <- dim(genoarray)[[3]] - 1
+
+  ## Register workers ----------------------------------------------------------
+  if (nc == 1) {
+    foreach::registerDoSEQ()
+  } else {
+    cl = parallel::makeCluster(nc)
+    doParallel::registerDoParallel(cl = cl)
+    if (foreach::getDoParWorkers() == 1) {
+      stop(paste0("mldest_geno: nc > 1 ",
+                  "but only one core registered from ",
+                  "foreach::getDoParWorkers()."))
+    }
+  }
+
+  i <- 1
+  outmat <- foreach::foreach(i = seq_len(nloci - 1),
+                             .combine = rbind,
+                             .export = c("ldest")) %dopar% {
+
+                               for (j in (i + 1):nloci) {
+                                 ldout <- ldest(ga = genoarray[i, , ],
+                                                gb = genoarray[j, , ],
+                                                K = K,
+                                                type = type,
+                                                pen = pen)
+                                 if (j == i + 1) {
+                                   estmat <- matrix(NA_real_,
+                                                    nrow = nloci - i,
+                                                    ncol = length(ldout) + 2)
+                                   colnames(estmat) <- c("i", "j", names(ldout))
+                                 }
+                                 estmat[j - i, 1] <- i
+                                 estmat[j - i, 2] <- j
+                                 estmat[j - i, -c(1, 2)] <- ldout
+                               }
+                               estmat
+                             }
+
+  if (nc > 1) {
+    parallel::stopCluster(cl)
+  }
+
+  outmat <- as.data.frame(outmat)
+  class(outmat) <- c("lddf", "data.frame")
+  return(outmat)
+}

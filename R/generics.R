@@ -1,0 +1,123 @@
+#' Tests if an argument is a \code{lddf} object.
+#'
+#' @param x Anything.
+#'
+#' @return A logical. \code{TRUE} if \code{x} is a \code{lddf} object,
+#'     and \code{FALSE} otherwise.
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+#' @examples
+#' is.lddf("anything")
+#' # FALSE
+#'
+is.lddf <- function(x) {
+  inherits(x, "lddf")
+}
+
+#' Plot the output of \code{\link{mldest_geno}()} or
+#' \code{\link{mldest_genolike}()} using \code{\link[corrplot]{corrplot}()}
+#'
+#' Uses the \code{\link[corrplot]{corrplot}} R package to visualize
+#' correlation estimates.
+#'
+#' @param x An object of class \code{lddf}, usually created using
+#'     either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
+#' @param element Which element of \code{x} should be plot?
+#' @param type Character, \code{"full"},
+#'     \code{"upper"} (default) or \code{"lower"}, display
+#'     full matrix, lower triangular or upper
+#'     triangular matrix.
+#' @param diag Logical, whether display the correlation coefficients
+#'     on the principal diagonal.
+#' @param ... Additional arguments to pass to
+#'     \code{\link[corrplot]{corrplot}()}. See the documentation of that
+#'     function for options.
+#'
+#' @author David Gerard
+#'
+#' @export
+plot.lddf <- function(x,
+                      element = c("z",
+                                  "z_se",
+                                  "D",
+                                  "D_se",
+                                  "Dprime",
+                                  "Dprime_se",
+                                  "r2",
+                                  "r2_se",
+                                  "r",
+                                  "r_se",
+                                  "p_ab",
+                                  "p_Ab",
+                                  "p_aB",
+                                  "p_AB"),
+                      type = c("upper", "full", "lower"),
+                      diag = FALSE,
+                      ...) {
+  type <- match.arg(type)
+  stopifnot(is.logical(diag))
+  element <- match.arg(element)
+  cormat <- format_lddf(obj = x, element = element)
+
+  if (diag) {
+    diag(cormat) <- 1
+  }
+  if (type != "upper") {
+    cormat[lower.tri(cormat)] <- t(cormat)[lower.tri(cormat)]
+  }
+  if (element %in% c("z", "z_se")) {
+    is.corr <- FALSE
+  } else {
+    is.corr <- TRUE
+  }
+  corrplot::corrplot(corr = cormat,
+                     type = type,
+                     diag = diag,
+                     is.corr = is.corr,
+                     ...)
+}
+
+
+#' Format an element of \code{\link{mldest_geno}()} or
+#' \code{\link{mldest_genolike}()} into an
+#' upper-triangular matrix.
+#'
+#' Formats the correlation estimates and standard errors output
+#' from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
+#' into a more conventional upper-triangular matrix.
+#'
+#' @param obj An object of class \code{lddf}, usually output from
+#'     running either \code{\link{mldest_geno}()} or
+#'     \code{\link{mldest_genolike}()}.
+#' @param element Which element in \code{obj} should we format into an
+#'     upper-triangular matrix?
+#'
+#' @author David Gerard
+#'
+#' @export
+format_lddf <- function(obj,
+                        element = c("z",
+                                    "z_se",
+                                    "D",
+                                    "D_se",
+                                    "Dprime",
+                                    "Dprime_se",
+                                    "r2",
+                                    "r2_se",
+                                    "r",
+                                    "r_se",
+                                    "p_ab",
+                                    "p_Ab",
+                                    "p_aB",
+                                    "p_AB")) {
+  stopifnot(is.lddf(obj))
+  element <- match.arg(element)
+  nloci <- max(max(obj$i), max(obj$j))
+  cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
+  cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
+  return(cormat)
+}
+

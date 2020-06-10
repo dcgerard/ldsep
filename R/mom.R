@@ -24,15 +24,15 @@
 #'
 #' @author David Gerard
 #'
-#' @export
+#' @noRd
 #'
 ldsimp <- function(ga, gb, K) {
   n     <- length(ga)
   pA    <- mean(ga) / K
   pB    <- mean(gb) / K
   D     <- stats::cov(ga, gb) / K
-  vara   <- stats::var(ga)
-  varb   <- stats::var(gb)
+  vara  <- stats::var(ga)
+  varb  <- stats::var(gb)
   D_se  <- sqrt(vara * varb / K ^ 2 + D ^ 2) / sqrt(n)
   if (D < 0) {
     Dmax <- min(pA * pB, (1 - pA) * (1 - pB))
@@ -75,7 +75,7 @@ ldsimp <- function(ga, gb, K) {
 }
 
 
-#' Estimates of composite LD based either on genotype estimates or
+#' Estimates of composite pairwise LD based either on genotype estimates or
 #' genotype likelihoods.
 #'
 #' This function will estimate the composite LD between two loci, either
@@ -90,19 +90,39 @@ ldsimp <- function(ga, gb, K) {
 #'
 #' @examples
 #' set.seed(1)
-#' n <- 100
-#' K <- 6
+#' n <- 100 # sample size
+#' K <- 6 # ploidy
+#'
+#' ## generate some fake genotypes when LD = 0.
 #' ga <- stats::rbinom(n = n, size = K, prob = 0.5)
 #' gb <- stats::rbinom(n = n, size = K, prob = 0.5)
-#' ga <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
-#' gb <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
-#' pen <- 2
+#' head(ga)
+#' head(gb)
+#'
+#' ## generate some fake genotype likelihoods when LD = 0.
+#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' head(gamat)
+#' head(gbmat)
+#'
+#' ## Composite LD with genotypes
+#' ldout1 <- ldest_comp(ga = ga,
+#'                      gb = gb,
+#'                      K = K)
+#' head(ldout1)
+#'
+#' ## Composite LD with genotype likelihoods
+#' ldout2 <- ldest_comp(ga = gamat,
+#'                      gb = gbmat,
+#'                      K = K)
+#' head(ldout2)
 #'
 #' @export
-compldest <- function(ga,
-                      gb,
-                      K,
-                      pen = 2) {
+ldest_comp <- function(ga,
+                       gb,
+                       K,
+                       pen = 2) {
+  stopifnot(pen > 1)
   if (is.vector(ga) & is.vector(gb)) {
     stopifnot(length(ga) == length(gb))
     stopifnot(ga >= 0, ga <= K)

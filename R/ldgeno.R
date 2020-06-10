@@ -3,6 +3,221 @@
 ###################
 
 
+#' Pairwise LD estimation in polyploids.
+#'
+#' Estimates either haplotypic or composite measures of LD using either
+#' genotypes are genotype likelihoods. The usual measures of LD are
+#' estimated (D, D', and r^2) along with the Fisher-z transformation of
+#' r (called "z"). All estimates are returned with standard errors.
+#'
+#' @section Haplotypic LD:
+#'
+#' This section describes the methods used when \code{type = "hap"} is
+#' selected.
+#'
+#' Haplotypic LD (sometimes called "gametic" LD) measures the association
+#' between two loci on the same gamete. When haplotypes are known, estimating
+#' haplotypic LD is simple using just the haplotypic frequencies.
+#'
+#' When haplotypes are not known, we can still estimate haplotypic frequencies
+#' using the genotypes or genotype likelihoods
+#' \emph{as long as Hardy-Weinberg equilibrium (HWE) is satisfied}. We do
+#' this via maximum likelihood using gradient ascent. Gradient ascent is
+#' performed over the unconstrained parameterization of the 3-simplex from
+#' Betancourt (2012). The estimated haplotype fequencies are then used to
+#' estimate haplotypic LD.
+#'
+#' Standard errors are provided using standard maximum likelihood theory.
+#' In brief, the Hessian matrix of the log-likelihood is calculated at
+#' the MLE's of the haplotype frequencies. The negative inverse of this
+#' Hessian matrix is approximately the covariance matrix of the MLE's of the
+#' haplotype frequencies. Since all haplotypic LD measures are functions
+#' of the haplotype frequencies, we use the delta-method to obtain
+#' the standard errors for each LD estimate.
+#'
+#' A Dirichlet(2,2,2,2) prior is placed over the frequencies of
+#' haplotypes 00, 01, 10, and 11. This corresponds to the "add two" rule
+#' of Agresti (1998). You can change this prior via the \code{pen} argument.
+#'
+#' When HWE is \emph{not} satisfied, the estimates using \code{type = "hap"}
+#' are non-sensical. However, the composite measures of LD are still
+#' applicable (see below).
+#'
+#' @section Composite LD:
+#'
+#' This section describes the methods used when \code{type = "comp"} is
+#' selected.
+#'
+#' When HWE is not satisfied, haplotype frequencies are not estimable. However,
+#' measures of association between two loci are still estimable. These
+#' associations may be caused by LD either on the same gamete or between
+#' different gametes. Cockerham and Weir (1977) thus called such measures
+#' "composite" measures of LD.
+#'
+#' When the genotypes are known, these composite measures have simple
+#' correspondences to well-known statistical measures of association.
+#' D is the covariance of genotypes between loci divided by the ploidy.
+#' r is the Pearson correlation of genotypes. D' is D divided by a
+#' term that involves only mean genotypes.
+#'
+#' When genotype are not known, we estimate the joint genotype frequencies
+#' and use these to estimate the composite measures of LD using
+#' genotype likelihoods.
+#'
+#' These estimates of composite measures of LD estimate the haplotypic
+#' measures of LD when HWE is fulfilled, but are still applicable when HWE
+#' is not fulfilled. A penalty is also placed on the joint genotype
+#' frequencies.
+#'
+#' When genotype are known, standard errors are calculated using standard
+#' moment-based approaches. When genotypes are not known, standard
+#' errors are calculated using standard maximum likelihood theory,
+#' same as for the haplotypic LD estimates (see above).
+#'
+#' @param ga One of two possible inputs: (i) A vector of counts, containing
+#'     the genotypes for each individual at the first locus; or (ii)
+#'     A matrix of genotype log-likelihoods at the first locus. The rows
+#'     index the individuals and the columns index the genotypes.
+#'     That is \code{ga[i, j]} is the genotype likelihood of individual
+#'     \code{i} for genotype \code{j}. When \code{type = "comp"}, the
+#'     vector of genotypes may be continuous (e.g. the posterior mean
+#'     genotype).
+#' @param gb One of two possible inputs: (i) A vector of counts, containing
+#'     the genotypes for each individual at the second locus; or (ii) A
+#'     matrix of genotype log-likelihoods at the second locus. The rows
+#'     index the individuals and the columns index the genotypes.
+#'     That is \code{ga[i, j]} is the genotype likelihood of individual
+#'     \code{i} for genotype \code{j}. When \code{type = "comp"}, the
+#'     vector of genotypes may be continuous (e.g. the posterior mean
+#'     genotype).
+#' @param K The ploidy of the species. Assumed the same for all individuals.
+#' @param type The type of LD to calculate. The available types are
+#'     haplotypic LD (\code{type = "hap"}) or composite LD
+#'     (\code{type = "comp"}). Haplotypic LD is only appropriate when
+#'     the individuals are in HWE. The composite
+#'     measures of LD are always applicable, and consistently estimate the
+#'     usual measures of LD when HWE is fulfilled. However, when HWE
+#'     is not fulfilled, interpreting the composite measures of LD
+#'     could be a little tricky.
+#' @param pen The penalty to be applied to the likelihood. You can think about
+#'     this as the prior sample size. Should be greater than 1.
+#'
+#' @return A vector with some or all of the following elements:
+#' \describe{
+#'   \item{\code{D}}{The estimate of the LD coefficient.}
+#'   \item{\code{D_se}}{The standard error of the estimate of
+#'       the LD coefficient.}
+#'   \item{\code{r2}}{The estimate of the squared Pearson correlation.}
+#'   \item{\code{r2_se}}{The standard error of the estimate of the
+#'       squared Pearson correlation.}
+#'   \item{\code{r}}{The estimate of the Pearson correlation.}
+#'   \item{\code{r_se}}{The standard error of the estimate of the
+#'       Pearson correlation.}
+#'   \item{\code{Dprime}}{The estimate of the standardized LD
+#'       coefficient.}
+#'   \item{\code{Dprime_se}}{The standard error of the estimate of the
+#'       standardized LD coefficient.}
+#'   \item{\code{z}}{The Fisher-z transformation of \code{r}.}
+#'   \item{\code{z_se}}{The standard error of the Fisher-z
+#'       transformation of \code{r}.}
+#'   \item{\code{p_ab}}{The estimated haplotype frequency of ab.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{p_aB}}{The estimated haplotype frequency of aB.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{p_AB}}{The estimated haplotype frequency of AB.
+#'       Only returned if estimating the haplotypic LD.}
+#'   \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
+#'       and genotpe j at locus 2. Only returned if estimating the
+#'       composite LD.}
+#' }
+#'
+#' @examples
+#' set.seed(1)
+#' n <- 100 # sample size
+#' K <- 6 # ploidy
+#'
+#' ## generate some fake genotypes when LD = 0.
+#' ga <- stats::rbinom(n = n, size = K, prob = 0.5)
+#' gb <- stats::rbinom(n = n, size = K, prob = 0.5)
+#' head(ga)
+#' head(gb)
+#'
+#' ## generate some fake genotype likelihoods when LD = 0.
+#' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
+#' head(gamat)
+#' head(gbmat)
+#'
+#' ## Haplotypic LD with genotypes
+#' ldout1 <- ldest(ga = ga,
+#'                 gb = gb,
+#'                 K = K,
+#'                 type = "hap")
+#' head(ldout1)
+#'
+#' ## Haplotypic LD with genotype likelihoods
+#' ldout2 <- ldest(ga = gamat,
+#'                 gb = gbmat,
+#'                 K = K,
+#'                 type = "hap")
+#' head(ldout2)
+#'
+#' ## Composite LD with genotypes
+#' ldout3 <- ldest(ga = ga,
+#'                 gb = gb,
+#'                 K = K,
+#'                 type = "comp")
+#' head(ldout3)
+#'
+#' ## Composite LD with genotype likelihoods
+#' ldout4 <- ldest(ga = gamat,
+#'                 gb = gbmat,
+#'                 K = K,
+#'                 type = "comp")
+#' head(ldout4)
+#'
+#' ldout1[["D"]]
+#' ldout2[["D"]]
+#' ldout3[["D"]]
+#' ldout4[["D"]]
+#'
+#' @author David Gerard
+#'
+#' @seealso
+#' \describe{
+#'   \item{\code{\link{ldest_hap}()}}{For the function that directly estiamtes
+#'       haplotypic LD when HWE is fulfilled.}
+#'   \item{\code{\link{ldest_comp}()}}{For the function that directly
+#'       estimates composite LD.}
+#' }
+#'
+#' @references
+#' \itemize{
+#'   \item{Agresti, Alan, and Brent A. Coull. "Approximate is better than "exact" for interval estimation of binomial proportions." The American Statistician 52, no. 2 (1998): 119-126.}
+#'   \item{Betancourt, Michael. "Cruising the simplex: Hamiltonian Monte Carlo and the Dirichlet distribution." In AIP Conference Proceedings 31st, vol. 1443, no. 1, pp. 157-164. American Institute of Physics, 2012.}
+#'   \item{Cockerham, C. Clark, and B. S. Weir. "Digenic descent measures for finite populations." Genetics Research 30, no. 2 (1977): 121-147.}
+#' }
+#'
+#' @export
+ldest <- function(ga,
+                  gb,
+                  K,
+                  type = c("hap", "comp"),
+                  pen = 2) {
+  type <- match.arg(type)
+
+  if (type == "hap") {
+    retvec <- ldest_hap(ga = ga, gb = gb, K = K, pen = pen)
+  } else {
+    pen <- pen / K + 1
+    retvec <- ldest_comp(ga = ga, gb = gb, K = K, pen = pen)
+  }
+
+  return(retvec)
+}
+
 
 #' Wrapper for optim() conditional on input
 #'
@@ -75,8 +290,8 @@ find_mle <- function(ga,
                            method  = "BFGS",
                            control = list(fnscale = -1, reltol = reltol),
                            hessian = TRUE,
-                           pgA      = ga,
-                           pgB      = gb,
+                           pgA     = ga,
+                           pgB     = gb,
                            alpha   = rep(pen, 4))
     }
     if (oout$value > oldlike) {
@@ -130,7 +345,7 @@ convert_ld <- function(phat) {
   return(retvec)
 }
 
-#' Estimate pair-wise LD using either genotypes or genotype likelihoods.
+#' Estimate haplotypic pair-wise LD using either genotypes or genotype likelihoods.
 #'
 #' Given genotype (allele dosage) or genotype likelihood data
 #' for each individual at a pair of loci, this function will
@@ -176,17 +391,7 @@ convert_ld <- function(phat) {
 #' (\code{pA %in% c(0, 1)} or \code{pB %in% c(0, 1)}), this function
 #' will return LD estimates of \code{0}.
 #'
-#' @param ga One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
-#'     at the first locus; or (ii) A matrix of genotype log-likelihoods
-#'     at the second locus. The rows index the individuals and the columns
-#'     index the genotypes. That is \code{ga[i, j]} is the genotype
-#'     likelihood of individual \code{i} for genotype \code{j}.
-#' @param gb One of two possible inputs: (i) A vector of counts, containing the genotypes for each individual
-#'     at the second locus; or (ii) A matrix of genotype log-likelihoods at
-#'     the second locus. The rows index the individuals and the columns
-#'     index the genotypes. That is \code{ga[i, j]} is the genotype
-#'     likelihood of individual \code{i} for genotype \code{j}.
-#' @param K The ploidy of the species. Assumed the same for all individuals.
+#' @inheritParams ldest
 #' @param reltol The relative tolerance for the stopping criterion.
 #' @param nboot Sometimes, the MLE standard errors don't exist. So we use
 #'     the bootstrap as a backup. \code{nboot} specifies the number
@@ -194,8 +399,6 @@ convert_ld <- function(phat) {
 #' @param useboot A logical. Optionally, you may always use the bootstrap
 #'     to estimate the standard errors (\code{TRUE}). These will be more
 #'     accurate but also much slower, so this defaults to \code{FALSE}.
-#' @param pen The penalty to be applied to the likelihood. You can think about
-#'     this as the prior sample size.
 #' @param grid_init A logical. Should we initialize the gradient ascent
 #'     at a grid of initial values (\code{TRUE}) or just initialize
 #'     at one value corresponding to the simplex point
@@ -203,72 +406,46 @@ convert_ld <- function(phat) {
 #'
 #' @author David Gerard
 #'
-#' @return A vector with some or all of the following elements:
-#' \describe{
-#'   \item{\code{D}}{The MLE of D.}
-#'   \item{\code{D_se}}{The standard error of the estimate of D.}
-#'   \item{\code{r2}}{The MLE of the squared Pearson correlation.}
-#'   \item{\code{r2_se}}{The standard error of the estimate of the
-#'       squared Pearson correlation.}
-#'   \item{\code{r}}{The MLE of the Pearson correlation.}
-#'   \item{\code{r_se}}{The standard error of the estimate of the
-#'       Pearson correlation.}
-#'   \item{\code{z}}{The Fisher-z transformation of \code{r}.}
-#'   \item{\code{z_se}}{The standard error of the Fisher-z
-#'       transformation of \code{r}.}
-#'   \item{\code{p_ab}}{The estimated haplotype frequency of ab.}
-#'   \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.}
-#'   \item{\code{p_aB}}{The estimated haplotype frequency of aB.}
-#'   \item{\code{p_AB}}{The estimated haplotype frequency of AB.}
-#' }
+#' @inherit ldest return
 #'
 #' @examples
 #' set.seed(1)
-#' n <- 100
-#' K <- 6
+#' n <- 100 # sample size
+#' K <- 6 # ploidy
 #'
-#' ## If you give ldest() vectors,
-#' ## it assumes you are using genotypes.
+#' ## generate some fake genotypes when LD = 0.
 #' ga <- stats::rbinom(n = n, size = K, prob = 0.5)
 #' gb <- stats::rbinom(n = n, size = K, prob = 0.5)
 #' head(ga)
 #' head(gb)
-#' ldout1 <- ldest(ga = ga,
-#'                 gb = gb,
-#'                 K = K,
-#'                 grid_init = FALSE)
-#' ldout1
 #'
-#' ## Use bootstap for standard errors instead:
-#' ldout2 <- ldest(ga = ga,
-#'                 gb = gb,
-#'                 K = K,
-#'                 useboot = TRUE,
-#'                 grid_init = FALSE)
-#' ldout2
-#'
-#' ## Standard error estimates are similar for D, r, and z
-#' ldout1[c("D_se", "r2_se", "r_se", "z_se")]
-#' ldout2[c("D_se", "r2_se", "r_se", "z_se")]
-#'
-#' ## If you give ldest() matrices,
-#' ## it assumes you are using genotype likelihoods.
+#' ## generate some fake genotype likelihoods when LD = 0.
 #' gamat <- t(sapply(ga, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 #' gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 #' head(gamat)
 #' head(gbmat)
-#' ldout3 <- ldest(ga = gamat, gb = gbmat, K = K)
-#' ldout3
+#'
+#' ## Haplotypic LD with genotypes
+#' ldout1 <- ldest_hap(ga = ga,
+#'                     gb = gb,
+#'                     K = K)
+#' head(ldout1)
+#'
+#' ## Haplotypic LD with genotype likelihoods
+#' ldout2 <- ldest_hap(ga = gamat,
+#'                     gb = gbmat,
+#'                     K = K)
+#' head(ldout2)
 #'
 #' @export
-ldest <- function(ga,
-                  gb,
-                  K,
-                  reltol  = 10^-8,
-                  nboot   = 100,
-                  useboot = FALSE,
-                  pen     = 2,
-                  grid_init = FALSE) {
+ldest_hap <- function(ga,
+                      gb,
+                      K,
+                      reltol  = 10^-8,
+                      nboot   = 100,
+                      useboot = FALSE,
+                      pen     = 2,
+                      grid_init = FALSE) {
 
   stopifnot(length(K) == 1,
             length(nboot) == 1,
@@ -397,323 +574,3 @@ ldest <- function(ga,
 
   return(retvec)
 }
-
-
-#' Estimate all pair-wise LD's in a collection of SNPs using the genotypes.
-#'
-#' This function will run \code{\link{ldest}()} iteratively over
-#' all possible pairs of SNPs provided. Support is provided for parallelization
-#' through the doParallel and foreach packages.
-#'
-#' @param genomat A matrix of genotypes (allele dosages). The rows index the
-#'     SNPs and the columns index the individuals. That is, \code{genomat[i, j]}
-#'     is the allele dosage for individual \code{j} in SNP \code{i}.
-#' @param K The ploidy of the species. Assumed to be the same for all
-#'     individuals at all SNPs
-#' @param nc The number of computing cores to use. This should never be
-#'     more than the number of cores available in your computing environment.
-#'     You can determine the maximum number of available cores by running
-#'     \code{parallel::detectCores()} in R. This is probably fine for a
-#'     personal computer, but some environments are only
-#'     able to use fewer. Ask your admins if you are unsure.
-#' @param reltol The relative tolerance for the stopping criterion.
-#' @param pen The penalty to be applied to the likelihood. You can think about
-#'     this as the prior sample size.
-#'
-#' @author David Gerard
-#'
-#' @examples
-#' ## Simulate genotypes when true correlation is 0
-#' nloci <- 5
-#' nind  <- 100
-#' K <- 6
-#' nc <- 1
-#' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
-#'
-#' ## Estimate LD
-#' rdf <- mldest_geno(genomat = genomat, K = K, nc = nc)
-#'
-#' @export
-mldest_geno <- function(genomat, K, nc = 1, reltol = 10^-8, pen = 2) {
-  stopifnot(is.matrix(genomat))
-  nloci <- nrow(genomat)
-
-  ## Register workers ----------------------------------------------------------
-  if (nc == 1) {
-    foreach::registerDoSEQ()
-  } else {
-    cl = parallel::makeCluster(nc)
-    doParallel::registerDoParallel(cl = cl)
-    if (foreach::getDoParWorkers() == 1) {
-      stop(paste0("mldest_geno: nc > 1 ",
-                  "but only one core registered from ",
-                  "foreach::getDoParWorkers()."))
-    }
-  }
-
-  i <- 1
-  outmat <- foreach::foreach(i = seq_len(nloci - 1),
-                             .combine = rbind,
-                             .export = c("ldest")) %dopar% {
-
-                               for (j in (i + 1):nloci) {
-                                 ldout <- ldest(ga = genomat[i, ],
-                                                gb = genomat[j, ],
-                                                K = K,
-                                                reltol = reltol,
-                                                pen = pen)
-                                 if (j == i + 1) {
-                                   estmat <- matrix(NA_real_,
-                                                    nrow = nloci - i,
-                                                    ncol = length(ldout) + 2)
-                                 }
-                                 estmat[j - i, 1] <- i
-                                 estmat[j - i, 2] <- j
-                                 estmat[j - i, -c(1, 2)] <- ldout
-
-                               }
-                               colnames(estmat) <- c("i", "j", names(ldout))
-                               estmat
-                             }
-
-  if (nc > 1) {
-    parallel::stopCluster(cl)
-  }
-
-  outmat <- as.data.frame(outmat)
-  class(outmat) <- c("lddf", "data.frame")
-  return(outmat)
-}
-
-
-#' Estimate all pair-wise LD's in a collection of SNPs using the genotype
-#' likleihoods.
-#'
-#' This function will run \code{\link{ldest}()} iteratively over
-#' all possible pairs of SNPs provided. Support is provided for parallelization
-#' through the doParallel and foreach packages.
-#'
-#' @param genoarray An three-way array of genotype \emph{log}-likelihoods.
-#'     The first dimension indexes the SNPs, the second dimension indexes
-#'     the individuals, and the third dimension indexes the genotypes.
-#'     That is, \code{genolike_array[i, j, k]} is the genotype log-likelihood
-#'     at SNP \code{i} for individual \code{j} and dosage \code{k - 1}.
-#'     The ploidy (assumed to be the same for all individuals) is assumed to
-#'     be one minus the size of the third dimension.
-#' @param nc The number of computing cores to use. This should never be
-#'     more than the number of cores available in your computing environment.
-#'     You can determine the maximum number of available cores by running
-#'     \code{parallel::detectCores()} in R. This is probably fine for a
-#'     personal computer, but some environments are only
-#'     able to use fewer. Ask your admins if you are unsure.
-#' @param reltol The relative tolerance for the stopping criterion.
-#' @param pen The penalty to be applied to the likelihood. You can think about
-#'     this as the prior sample size.
-#'
-#' @author David Gerard
-#'
-#' @examples
-#' ## Simulate some data with true correlation of 0
-#' nloci <- 10
-#' nind  <- 100
-#' K <- 6
-#' genovec <- sample(0:K, nind * nloci, TRUE)
-#' genomat <- matrix(genovec, nrow = nloci)
-#' genoarray <- array(sapply(genovec,
-#'                           stats::dnorm,
-#'                           x = 0:K,
-#'                           sd = 1,
-#'                           log = TRUE),
-#'                    dim = c(K + 1, nloci, nind))
-#' genoarray <- aperm(genoarray, c(2, 3, 1)) ## loci, individuals, dosages
-#'
-#' ## Verify simulation
-#' locnum <- sample(seq_len(nloci), 1)
-#' indnum <- sample(seq_len(nind), 1)
-#' genoarray[locnum, indnum, ]
-#' stats::dnorm(x = 0:K, mean = genomat[locnum, indnum], sd = 1, log = TRUE)
-#'
-#' ## Find pairwise LD between all loci
-#' nc <- 1
-#' rdf <- mldest_genolike(genoarray = genoarray, nc = nc)
-#' rdf
-#'
-#' @export
-mldest_genolike <- function(genoarray, nc = 1, reltol = 10^-8, pen = 2) {
-  stopifnot(is.array(genoarray))
-  stopifnot(length(dim(genoarray)) == 3)
-  nloci <- dim(genoarray)[[1]]
-  nind <- dim(genoarray)[[2]]
-  K <- dim(genoarray)[[3]] - 1
-
-  ## Register workers ----------------------------------------------------------
-  if (nc == 1) {
-    foreach::registerDoSEQ()
-  } else {
-    cl = parallel::makeCluster(nc)
-    doParallel::registerDoParallel(cl = cl)
-    if (foreach::getDoParWorkers() == 1) {
-      stop(paste0("mldest_geno: nc > 1 ",
-                  "but only one core registered from ",
-                  "foreach::getDoParWorkers()."))
-    }
-  }
-
-  i <- 1
-  outmat <- foreach::foreach(i = seq_len(nloci - 1),
-                             .combine = rbind,
-                             .export = c("ldest")) %dopar% {
-
-                               for (j in (i + 1):nloci) {
-                                 ldout <- ldest(ga = genoarray[i, , ],
-                                                gb = genoarray[j, , ],
-                                                K = K,
-                                                reltol = reltol,
-                                                pen = pen)
-                                 if (j == i + 1) {
-                                   estmat <- matrix(NA_real_,
-                                                    nrow = nloci - i,
-                                                    ncol = length(ldout) + 2)
-                                   colnames(estmat) <- c("i", "j", names(ldout))
-                                 }
-                                 estmat[j - i, 1] <- i
-                                 estmat[j - i, 2] <- j
-                                 estmat[j - i, -c(1, 2)] <- ldout
-                               }
-                               estmat
-                             }
-
-  if (nc > 1) {
-    parallel::stopCluster(cl)
-  }
-
-  outmat <- as.data.frame(outmat)
-  class(outmat) <- c("lddf", "data.frame")
-  return(outmat)
-}
-
-
-#' Tests if an argument is a \code{lddf} object.
-#'
-#' @param x Anything.
-#'
-#' @return A logical. \code{TRUE} if \code{x} is a \code{lddf} object,
-#'     and \code{FALSE} otherwise.
-#'
-#' @author David Gerard
-#'
-#' @export
-#'
-#' @examples
-#' is.lddf("anything")
-#' # FALSE
-#'
-is.lddf <- function(x) {
-  inherits(x, "lddf")
-}
-
-#' Plot the output of \code{\link{mldest_geno}()} or
-#' \code{\link{mldest_genolike}()} using \code{\link[corrplot]{corrplot}()}
-#'
-#' Uses the \code{\link[corrplot]{corrplot}} R package to visualize
-#' correlation estimates.
-#'
-#' @param x An object of class \code{lddf}, usually created using
-#'     either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
-#' @param element Which element of \code{x} should be plot?
-#' @param type Character, \code{"full"},
-#'     \code{"upper"} (default) or \code{"lower"}, display
-#'     full matrix, lower triangular or upper
-#'     triangular matrix.
-#' @param diag Logical, whether display the correlation coefficients
-#'     on the principal diagonal.
-#' @param ... Additional arguments to pass to
-#'     \code{\link[corrplot]{corrplot}()}. See the documentation of that
-#'     function for options.
-#'
-#' @author David Gerard
-#'
-#' @export
-plot.lddf <- function(x,
-                      element = c("z",
-                                  "z_se",
-                                  "D",
-                                  "D_se",
-                                  "Dprime",
-                                  "Dprime_se",
-                                  "r2",
-                                  "r2_se",
-                                  "r",
-                                  "r_se",
-                                  "p_ab",
-                                  "p_Ab",
-                                  "p_aB",
-                                  "p_AB"),
-                      type = c("upper", "full", "lower"),
-                      diag = FALSE,
-                      ...) {
-  type <- match.arg(type)
-  stopifnot(is.logical(diag))
-  element <- match.arg(element)
-  cormat <- format_lddf(obj = x, element = element)
-
-  if (diag) {
-    diag(cormat) <- 1
-  }
-  if (type != "upper") {
-    cormat[lower.tri(cormat)] <- t(cormat)[lower.tri(cormat)]
-  }
-  if (element %in% c("z", "z_se")) {
-    is.corr <- FALSE
-  } else {
-    is.corr <- TRUE
-  }
-  corrplot::corrplot(corr = cormat,
-                     type = type,
-                     diag = diag,
-                     is.corr = is.corr,
-                     ...)
-}
-
-
-#' Format an element of \code{\link{mldest_geno}()} or
-#' \code{\link{mldest_genolike}()} into an
-#' upper-triangular matrix.
-#'
-#' Formats the correlation estimates and standard errors output
-#' from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
-#' into a more conventional upper-triangular matrix.
-#'
-#' @param obj An object of class \code{lddf}, usually output from
-#'     running either \code{\link{mldest_geno}()} or
-#'     \code{\link{mldest_genolike}()}.
-#' @param element Which element in \code{obj} should we format into an
-#'     upper-triangular matrix?
-#'
-#' @author David Gerard
-#'
-#' @export
-format_lddf <- function(obj,
-                        element = c("z",
-                                    "z_se",
-                                    "D",
-                                    "D_se",
-                                    "Dprime",
-                                    "Dprime_se",
-                                    "r2",
-                                    "r2_se",
-                                    "r",
-                                    "r_se",
-                                    "p_ab",
-                                    "p_Ab",
-                                    "p_aB",
-                                    "p_AB")) {
-  stopifnot(is.lddf(obj))
-  element <- match.arg(element)
-  nloci <- max(max(obj$i), max(obj$j))
-  cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
-  cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
-  return(cormat)
-}
-
-

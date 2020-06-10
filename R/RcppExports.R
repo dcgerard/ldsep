@@ -183,8 +183,7 @@ simplex_proj <- function(y) {
 #'
 #' @author David Gerard
 #'
-#' @export
-#'
+#' @noRd
 genolike_em <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.0001, verbose = FALSE, square = FALSE) {
     .Call(`_ldsep_genolike_em`, p, pgA, pgB, alpha, maxit, tol, verbose, square)
 }
@@ -209,7 +208,7 @@ genolike_em <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.0001, verbose 
 #'
 #' @author David Gerard
 #'
-#' @export
+#' @noRd
 #'
 em_jointgeno <- function(p, pgA, pgB, alpha, maxit = 500L, tol = 0.01, verbose = FALSE) {
     .Call(`_ldsep_em_jointgeno`, p, pgA, pgB, alpha, maxit, tol, verbose)

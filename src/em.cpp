@@ -170,8 +170,7 @@ arma::vec simplex_proj(arma::vec y) {
 //'
 //' @author David Gerard
 //'
-//' @export
-//'
+//' @noRd
 // [[Rcpp::export]]
 arma::vec genolike_em(arma::vec p,
                        const arma::mat &pgA,
@@ -283,7 +282,7 @@ arma::vec genolike_em(arma::vec p,
 //'
 //' @author David Gerard
 //'
-//' @export
+//' @noRd
 //'
 // [[Rcpp::export]]
 arma::mat em_jointgeno(arma::mat p,
