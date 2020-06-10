@@ -1,17 +1,20 @@
 Package: ldsep
 Title: Linkage Disequilibrium Shrinkage Estimation for Polyploids
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: 
     person(given = "David",
            family = "Gerard",
            role = c("aut", "cre"),
            email = "gerard.1787@gmail.com",
            comment = c(ORCID = "0000-0001-9450-5023"))
-Description: Estimates pairwise linkage disequilibrium (LD), using either
-    genotype estimates or genotype likelihoods. Functions are then provided
-    for shrinkage estimation using multidimensional scaling and adaptive
-    shrinkage. The idea is to expand this to allow for a sliding window
-    estimation procedure for genome-wise LD estimation.
+Description: Estimate haplotypic or component pairwise linkage disequilibrium
+    (LD), using either genotypes or genotype likelihoods. Support is
+    provided to estimate the popular measures of LD: the LD coefficient D, 
+    the standardized LD coefficient D', and the Pearson correlation 
+    coefficient r. All estimates are returned with corresponding 
+    standard errors. These estimates and standard errors can then be used
+    for shrinkage estimation. The main functions are ldest(), mldest(),
+    plot.lddf(), format_lddf(), and ldshrink().
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
