@@ -92,12 +92,22 @@ mldest <- function(geno,
                    K,
                    nc = 1,
                    type = c("hap", "comp"),
-                   pen = 2) {
+                   pen = ifelse(type == "hap", 2, 1),
+                   se = TRUE) {
 
   if (length(dim(geno)) == 2) {
-    outdf <- mldest_geno(genomat = geno, K = K, nc = nc, pen = pen, type = type)
+    outdf <- mldest_geno(genomat = geno,
+                         K = K,
+                         nc = nc,
+                         pen = pen,
+                         type = type,
+                         se = se)
   } else if (length(dim(geno)) == 3) {
-    outdf <- mldest_genolike(genoarray = geno, nc = nc, pen = pen, type = type)
+    outdf <- mldest_genolike(genoarray = geno,
+                             nc = nc,
+                             pen = pen,
+                             type = type,
+                             se = se)
   } else {
     stop("mldest: geno needs to either be a matrix or a three-way array.")
   }
@@ -160,9 +170,11 @@ mldest_geno <- function(genomat,
                         K,
                         nc = 1,
                         type = c("hap", "comp"),
-                        pen = 2) {
+                        pen = ifelse(type == "hap", 2, 1),
+                        se = TRUE) {
   type <- match.arg(type)
   stopifnot(is.matrix(genomat))
+  stopifnot(is.logical(se))
   nloci <- nrow(genomat)
 
   ## Register workers ---------------------------------------------------------
@@ -188,7 +200,8 @@ mldest_geno <- function(genomat,
                                                 gb = genomat[j, ],
                                                 K = K,
                                                 type = type,
-                                                pen = pen)
+                                                pen = pen,
+                                                se = se)
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,
@@ -266,7 +279,8 @@ mldest_geno <- function(genomat,
 #' ## Composite LD estimates
 #' rdf_comp <- mldest_genolike(genoarray = genoarray,
 #'                             nc = nc,
-#'                             type = "comp")
+#'                             type = "comp",
+#'                             se = FALSE)
 #'
 #' ## Haplotypic and Composite LD are both close to 0.
 #' ## But composite is more variable.
@@ -281,8 +295,10 @@ mldest_geno <- function(genomat,
 mldest_genolike <- function(genoarray,
                             nc = 1,
                             type = c("hap", "comp"),
-                            pen = 2) {
+                            pen = ifelse(type == "hap", 2, 1),
+                            se = TRUE) {
   type <- match.arg(type)
+  stopifnot(is.logical(se))
   stopifnot(is.array(genoarray))
   stopifnot(length(dim(genoarray)) == 3)
   nloci <- dim(genoarray)[[1]]
@@ -312,7 +328,8 @@ mldest_genolike <- function(genoarray,
                                                 gb = genoarray[j, , ],
                                                 K = K,
                                                 type = type,
-                                                pen = pen)
+                                                pen = pen,
+                                                se = se)
                                  if (j == i + 1) {
                                    estmat <- matrix(NA_real_,
                                                     nrow = nloci - i,

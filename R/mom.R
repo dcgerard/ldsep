@@ -75,6 +75,28 @@ ldsimp <- function(ga, gb, K) {
 }
 
 
+ld_from_gmat <- function(gmat) {
+  stopifnot(ncol(gmat) == nrow(gmat))
+  K <- ncol(gmat) - 1
+  D <- Dfromg(gmat = gmat)
+  r2 <- r2fromg(gmat = gmat)
+  r <- sqrt(r2) * sign(D)
+  z <- atanh(r)
+
+  distA <- rowSums(gmat)
+  distB <- colSums(gmat)
+  egA <- sum((0:K) * distA)
+  egB <- sum((0:K) * distB)
+  if (D < 0) {
+    Dmax <- min(egA * egB, (K - egA) * (K - egB)) / K^2
+  } else {
+    Dmax <- min(egA * (K - egB), (K - egA) * egB) / K^2
+  }
+  Dprime <- D / Dmax
+
+  return(c(D = D, r2 = r2, r = r, z = z, Dprime = Dprime, Dmax = Dmax))
+}
+
 #' Estimates of composite pairwise LD based either on genotype estimates or
 #' genotype likelihoods.
 #'
@@ -83,6 +105,10 @@ ldsimp <- function(ga, gb, K) {
 #' measures of LD are generalizations of Burrow's "composite" LD measure.
 #'
 #' @inheritParams ldest
+#' @param useboot Should we use bootstrap standard errors \code{TRUE} or not
+#'     \code{FALSE}? Only applicable if using genotype likelihoods.
+#' @param nboot The number of bootstrap iterations to use is
+#'     \code{boot = TRUE}.
 #'
 #' @inherit ldest return
 #'
@@ -114,15 +140,22 @@ ldsimp <- function(ga, gb, K) {
 #' ## Composite LD with genotype likelihoods
 #' ldout2 <- ldest_comp(ga = gamat,
 #'                      gb = gbmat,
-#'                      K = K)
+#'                      K = K,
+#'                      se = FALSE)
 #' head(ldout2)
 #'
 #' @export
 ldest_comp <- function(ga,
                        gb,
                        K,
-                       pen = 2) {
-  stopifnot(pen > 1)
+                       pen = 1,
+                       useboot = TRUE,
+                       nboot = 50,
+                       se = TRUE) {
+  TOL <- sqrt(.Machine$double.eps)
+  stopifnot(pen >= 1)
+  stopifnot(is.logical(useboot))
+  stopifnot(is.logical(se))
   if (is.vector(ga) & is.vector(gb)) {
     stopifnot(length(ga) == length(gb))
     stopifnot(ga >= 0, ga <= K)
@@ -147,40 +180,65 @@ ldest_comp <- function(ga,
                          pgA = ga,
                          pgB = gb,
                          alpha = alphamat)
-    D <- Dfromg(gmat = gout)
-    r2 <- r2fromg(gmat = gout)
-    r <- sqrt(r2) * sign(D)
-    z <- atanh(r)
+    ld_current <- ld_from_gmat(gmat = gout)
+    D <- ld_current[["D"]]
+    r2 <- ld_current[["r2"]]
+    r <- ld_current[["r"]]
+    z <- ld_current[["z"]]
+    Dprime <- ld_current[["Dprime"]]
+    Dmax <- ld_current[["Dmax"]]
 
-    distA <- rowSums(gout)
-    distB <- colSums(gout)
-    egA <- sum((0:K) * distA)
-    egB <- sum((0:K) * distB)
-    if (D < 0) {
-      Dmax <- min(egA * egB, (K - egA) * (K - egB)) / K^2
+    ## get asymptotic covariance ----
+    if ((useboot | any(gout < TOL)) & se) {
+      rboot <- rep(NA_real_, nboot)
+      dboot <- rep(NA_real_, nboot)
+      r2boot <- rep(NA_real_, nboot)
+      zboot <- rep(NA_real_, nboot)
+      Dprimeboot <- rep(NA_real_, nboot)
+
+      for (bindex in seq_len(nboot)) {
+        ga_boot <- ga[sample(seq_len(nrow(ga)), size = nrow(ga), replace = TRUE), ]
+        gb_boot <- gb[sample(seq_len(nrow(ga)), size = nrow(ga), replace = TRUE), ]
+        gout_boot <- em_jointgeno(p = pinit,
+                             pgA = ga_boot,
+                             pgB = gb_boot,
+                             alpha = alphamat)
+        ld_current <- ld_from_gmat(gmat = gout_boot)
+        dboot[[bindex]] <- ld_current[["D"]]
+        r2boot[[bindex]] <- ld_current[["r2"]]
+        rboot[[bindex]] <- ld_current[["r"]]
+        zboot[[bindex]] <- ld_current[["z"]]
+        Dprimeboot[[bindex]] <- ld_current[["Dprime"]]
+      }
+      D_se <- stats::sd(dboot)
+      r2_se <- stats::sd(r2boot)
+      Dprime_se <- stats::sd(Dprimeboot)
+      r_se <- stats::sd(rboot)
+      z_se <- stats::sd(zboot)
+
+    } else if (se) {
+      ## MLE SE's
+      Hmat <- hessian_jointgeno(p = gout, pgA = ga, pgB = gb, alpha = alphamat)
+      finfo <- -solve(
+        Hmat
+      )
+      ## Standard errors ----
+      grad_dq <- dD_dqlm(p = gout)
+      grad_r2q <- dr2_dqlm(p = gout, dgrad = grad_dq, D = D)
+      grad_dprimeq <- ddprime_dqlm(p = gout, dgrad = grad_dq, D = D, Dm = Dmax)
+      ## Delta method ----
+      D_se <- sqrt(c(t(grad_dq) %*% finfo %*% grad_dq))
+      r2_se <- sqrt(c(t(grad_r2q) %*% finfo %*% grad_r2q))
+      Dprime_se <- sqrt(c(t(grad_dprimeq) %*% finfo %*% grad_dprimeq))
+      r_se <- r2_se / sqrt(4 * r2)
+      z_se <- r_se / (1 - r2)
     } else {
-      Dmax <- min(egA * (K - egB), (K - egA) * egB) / K^2
+      D_se <- NA_real_
+      r2_se <- NA_real_
+      r_se <- NA_real_
+      Dprime_se <- NA_real_
+      z_se <- NA_real_
     }
-    Dprime <- D / Dmax
-
-    ## get asymptotic covaraince ----
-    finfo <- -solve(
-      hessian_jointgeno(p = gout, pgA = ga, pgB = gb, alpha = alphamat)
-    )
-
-    ## Standard errors ----
-    grad_dq <- dD_dqlm(p = gout)
-    D_se <- sqrt(c(t(grad_dq) %*% finfo %*% grad_dq))
-
-    grad_r2q <- dr2_dqlm(p = gout, dgrad = grad_dq, D = D)
-    r2_se <- sqrt(c(t(grad_r2q) %*% finfo %*% grad_r2q))
-
-    grad_dprimeq <- ddprime_dqlm(p = gout, dgrad = grad_dq, D = D, Dm = Dmax)
-    Dprime_se <- sqrt(c(t(grad_dprimeq) %*% finfo %*% grad_dprimeq))
-
-    r_se <- r2_se / sqrt(4 * r2)
-
-    z_se <- r_se / (1 - r2)
 
     ## set up retvec ----
     retvec <- c(D         = D,

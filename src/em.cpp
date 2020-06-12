@@ -336,7 +336,15 @@ arma::mat em_jointgeno(arma::mat p,
 
     // EM-iteration -----------------------------------------------------------
     wmat.fill(-arma::datum::inf);
-    lval = arma::accu((alpha - 1.0) % lp);
+    double lval = 0.0;
+    for (int i = 0; i <= K; i++) {
+      for (int j = 0; j <= K; j++) {
+        if (p(i, j) > TOL) {
+          lval += (alpha(i, j) - 1.0) * lp(i, j);
+        }
+      }
+    }
+
     for (int ell = 0; ell < n; ell++) {
       for (int i = 0; i <= K; i++) {
         for (int j = 0; j <= K; j++) {
@@ -386,7 +394,16 @@ double llike_jointgeno(arma::mat p,
   int n = pgA.n_rows; // number of individuals
   arma::mat lp = arma::log(p);
   arma::mat ellmat(K + 1, K + 1);
-  double lval = arma::accu((alpha - 1.0) % lp);
+
+  double lval = 0.0;
+  for (int i = 0; i <= K; i++) {
+    for (int j = 0; j <= K; j++) {
+      if (p(i, j) > TOL) {
+        lval += (alpha(i, j) - 1.0) * lp(i, j);
+      }
+    }
+  }
+
   for (int ell = 0; ell < n; ell++) {
     for (int i = 0; i <= K; i++) {
       for (int j = 0; j <= K; j++) {

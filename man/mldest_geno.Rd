@@ -4,7 +4,14 @@
 \alias{mldest_geno}
 \title{Estimate all pair-wise LD's in a collection of SNPs using the genotypes.}
 \usage{
-mldest_geno(genomat, K, nc = 1, type = c("hap", "comp"), pen = 2)
+mldest_geno(
+  genomat,
+  K,
+  nc = 1,
+  type = c("hap", "comp"),
+  pen = ifelse(type == "hap", 2, 1),
+  se = TRUE
+)
 }
 \arguments{
 \item{genomat}{A matrix of genotypes (allele dosages). The rows index the
@@ -32,6 +39,11 @@ could be a little tricky.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
 this as the prior sample size.}
+
+\item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
+not (\code{FALSE}). Calculating standard errors can be really slow
+when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
+standard error calculations should be pretty fast.}
 }
 \value{
 A data frame of class \code{c("lddf", "data.frame")}

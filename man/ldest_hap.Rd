@@ -13,7 +13,8 @@ ldest_hap(
   nboot = 100,
   useboot = FALSE,
   pen = 2,
-  grid_init = FALSE
+  grid_init = FALSE,
+  se = TRUE
 )
 }
 \arguments{
@@ -45,7 +46,8 @@ of bootstrap iterations.}
 
 \item{useboot}{A logical. Optionally, you may always use the bootstrap
 to estimate the standard errors (\code{TRUE}). These will be more
-accurate but also much slower, so this defaults to \code{FALSE}.}
+accurate but also much slower, so this defaults to \code{FALSE}. Only
+applicable if using genotype likelihoods.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
 this as the prior sample size. Should be greater than 1.}
@@ -54,6 +56,11 @@ this as the prior sample size. Should be greater than 1.}
 at a grid of initial values (\code{TRUE}) or just initialize
 at one value corresponding to the simplex point
 \code{rep(0.25, 4)} (\code{FALSE})?}
+
+\item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
+not (\code{FALSE}). Calculating standard errors can be really slow
+when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
+standard error calculations should be pretty fast.}
 }
 \value{
 A vector with some or all of the following elements:

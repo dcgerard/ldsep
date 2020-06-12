@@ -101,6 +101,10 @@
 #'     could be a little tricky.
 #' @param pen The penalty to be applied to the likelihood. You can think about
 #'     this as the prior sample size. Should be greater than 1.
+#' @param se A logical. Should we calculate standard errors (\code{TRUE}) or
+#'     not (\code{FALSE}). Calculating standard errors can be really slow
+#'     when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
+#'     standard error calculations should be pretty fast.
 #'
 #' @return A vector with some or all of the following elements:
 #' \describe{
@@ -175,7 +179,8 @@
 #' ldout4 <- ldest(ga = gamat,
 #'                 gb = gbmat,
 #'                 K = K,
-#'                 type = "comp")
+#'                 type = "comp",
+#'                 se = FALSE)
 #' head(ldout4)
 #'
 #' ldout1[["D"]]
@@ -211,15 +216,16 @@
 ldest <- function(ga,
                   gb,
                   K,
+                  se = TRUE,
                   type = c("hap", "comp"),
-                  pen = 2) {
+                  pen = ifelse(type == "hap", 2, 1)) {
   type <- match.arg(type)
+  stopifnot(is.logical(se))
 
   if (type == "hap") {
-    retvec <- ldest_hap(ga = ga, gb = gb, K = K, pen = pen)
+    retvec <- ldest_hap(ga = ga, gb = gb, K = K, pen = pen, se = se)
   } else {
-    pen <- pen / K + 1
-    retvec <- ldest_comp(ga = ga, gb = gb, K = K, pen = pen)
+    retvec <- ldest_comp(ga = ga, gb = gb, K = K, pen = pen, se = se)
   }
 
   return(retvec)
@@ -406,7 +412,8 @@ convert_ld <- function(phat) {
 #'     of bootstrap iterations.
 #' @param useboot A logical. Optionally, you may always use the bootstrap
 #'     to estimate the standard errors (\code{TRUE}). These will be more
-#'     accurate but also much slower, so this defaults to \code{FALSE}.
+#'     accurate but also much slower, so this defaults to \code{FALSE}. Only
+#'     applicable if using genotype likelihoods.
 #' @param grid_init A logical. Should we initialize the gradient ascent
 #'     at a grid of initial values (\code{TRUE}) or just initialize
 #'     at one value corresponding to the simplex point
@@ -453,8 +460,10 @@ ldest_hap <- function(ga,
                       nboot   = 100,
                       useboot = FALSE,
                       pen     = 2,
-                      grid_init = FALSE) {
+                      grid_init = FALSE,
+                      se = TRUE) {
 
+  stopifnot(is.logical(se))
   stopifnot(length(K) == 1,
             length(nboot) == 1,
             length(reltol) == 1,
@@ -503,7 +512,7 @@ ldest_hap <- function(ga,
 
   ## test for singularity
   eval <- eigen(Hy)
-  if (any(abs(eval$values) < sqrt(.Machine$double.eps)) || useboot) {
+  if ((any(abs(eval$values) < sqrt(.Machine$double.eps)) || useboot) & se) {
     ## Bootstrap SE
     if (using == "genotypes") {
       nind <- length(ga)
@@ -539,7 +548,7 @@ ldest_hap <- function(ga,
     Dprime_se <- sevec[["Dprime"]]
     z_se      <- sevec[["z"]]
     r_se      <- sevec[["r"]]
-  } else {
+  } else if (se) {
     ## MLE theory
 
     ## jacobian converting from simplex to real. The last is just a column of
@@ -563,6 +572,12 @@ ldest_hap <- function(ga,
 
     # g <- log(-log(r2))
     # g_se <- r2_se / abs(r2 * log(r2))
+  } else {
+    D_se <- NA_real_
+    r2_se <- NA_real_
+    r_se <- NA_real_
+    Dprime_se <- NA_real_
+    z_se <- NA_real_
   }
 
   retvec <- c(D         = D,

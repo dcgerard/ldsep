@@ -5,7 +5,7 @@
 \title{Estimates of composite pairwise LD based either on genotype estimates or
 genotype likelihoods.}
 \usage{
-ldest_comp(ga, gb, K, pen = 2)
+ldest_comp(ga, gb, K, pen = 1, useboot = TRUE, nboot = 50, se = TRUE)
 }
 \arguments{
 \item{ga}{One of two possible inputs: (i) A vector of counts, containing
@@ -30,6 +30,17 @@ genotype).}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
 this as the prior sample size. Should be greater than 1.}
+
+\item{useboot}{Should we use bootstrap standard errors \code{TRUE} or not
+\code{FALSE}? Only applicable if using genotype likelihoods.}
+
+\item{nboot}{The number of bootstrap iterations to use is
+\code{boot = TRUE}.}
+
+\item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
+not (\code{FALSE}). Calculating standard errors can be really slow
+when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
+standard error calculations should be pretty fast.}
 }
 \value{
 A vector with some or all of the following elements:
@@ -94,7 +105,8 @@ head(ldout1)
 ## Composite LD with genotype likelihoods
 ldout2 <- ldest_comp(ga = gamat,
                      gb = gbmat,
-                     K = K)
+                     K = K,
+                     se = FALSE)
 head(ldout2)
 
 }

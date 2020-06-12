@@ -4,7 +4,14 @@
 \alias{ldest}
 \title{Pairwise LD estimation in polyploids.}
 \usage{
-ldest(ga, gb, K, type = c("hap", "comp"), pen = 2)
+ldest(
+  ga,
+  gb,
+  K,
+  se = TRUE,
+  type = c("hap", "comp"),
+  pen = ifelse(type == "hap", 2, 1)
+)
 }
 \arguments{
 \item{ga}{One of two possible inputs: (i) A vector of counts, containing
@@ -26,6 +33,11 @@ vector of genotypes may be continuous (e.g. the posterior mean
 genotype).}
 
 \item{K}{The ploidy of the species. Assumed the same for all individuals.}
+
+\item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
+not (\code{FALSE}). Calculating standard errors can be really slow
+when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
+standard error calculations should be pretty fast.}
 
 \item{type}{The type of LD to calculate. The available types are
 haplotypic LD (\code{type = "hap"}) or composite LD
@@ -187,7 +199,8 @@ head(ldout3)
 ldout4 <- ldest(ga = gamat,
                 gb = gbmat,
                 K = K,
-                type = "comp")
+                type = "comp",
+                se = FALSE)
 head(ldout4)
 
 ldout1[["D"]]
