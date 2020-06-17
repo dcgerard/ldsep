@@ -270,7 +270,7 @@ dr2_dqlm <- function(p, dgrad, D) {
     .Call(`_ldsep_dr2_dqlm`, p, dgrad, D)
 }
 
-#' Gradient of standardized component LD coefficient with respect to the qlm's
+#' Gradient of standardized composite LD coefficient with respect to the qlm's
 #'
 #' @param p Element (i, j) is the probability of genotype i at locus 1
 #'     and genotype j at locus 2.

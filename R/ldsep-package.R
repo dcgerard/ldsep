@@ -1,6 +1,6 @@
 #' Linkage Disequilibrium Shrinkage Estimation for Polyploids
 #'
-#' Estimate haplotypic or component pairwise linkage disequilibrium
+#' Estimate haplotypic or composite pairwise linkage disequilibrium
 #' (LD), using either genotypes or genotype likelihoods. Support is
 #' provided to estimate the popular measures of LD: the LD coefficient D,
 #' the standardized LD coefficient D', and the Pearson correlation

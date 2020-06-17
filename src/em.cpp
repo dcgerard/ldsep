@@ -572,7 +572,7 @@ arma::vec dr2_dqlm(arma::mat p, arma::vec dgrad, double D) {
 }
 
 
-//' Gradient of standardized component LD coefficient with respect to the qlm's
+//' Gradient of standardized composite LD coefficient with respect to the qlm's
 //'
 //' @param p Element (i, j) is the probability of genotype i at locus 1
 //'     and genotype j at locus 2.
