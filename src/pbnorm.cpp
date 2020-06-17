@@ -66,7 +66,7 @@ arma::mat pbnorm_dist(arma::vec mu, arma::mat sigma, int K, bool log = false) {
     Rcpp::stop("dpbnorm: sigma should be a 2-by-2 matrix.");
   }
   if (!sigma.is_sympd()) {
-    Rcpp::stop("dmvnorm: sigma must be symmetic positive definite.");
+    Rcpp::stop("pbnorm_dist: sigma must be symmetic positive definite.");
   }
 
   arma::mat distmat(K + 1, K + 1);
