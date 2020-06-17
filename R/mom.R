@@ -75,6 +75,15 @@ ldsimp <- function(ga, gb, K) {
 }
 
 
+#' LD estimates from distribution of genotypes
+#'
+#'
+#' @param gmat Element (i,j) is the probability of genotype i-1 at locus 1
+#'     and genotype j-1 at locus 2.
+#'
+#' @author David Gerard
+#'
+#' @noRd
 ld_from_gmat <- function(gmat) {
   stopifnot(ncol(gmat) == nrow(gmat))
   K <- ncol(gmat) - 1
@@ -97,6 +106,28 @@ ld_from_gmat <- function(gmat) {
   return(c(D = D, r2 = r2, r = r, z = z, Dprime = Dprime, Dmax = Dmax))
 }
 
+#' LD estimates from parameterization of pbnorm
+#'
+#'
+#' @param par A vector of length 5. The first two elements are \code{mu}. The
+#'     last three elements are c(l11, l12, l22), the lower three elements of
+#'     the cholesky decomposition of sigma.
+#' @param K The ploidy of the species.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+ld_from_pbnorm <- function(par, K) {
+  mu <- par[1:2]
+  L <- matrix(data = c(par[3], par[4], 0, par[5]),
+              nrow = 2,
+              ncol = 2,
+              byrow = FALSE)
+  sigma <- L %*% t(L)
+  distmat <- pbnorm_dist(mu = mu, sigma = sigma, K = K, log = FALSE)
+  return(ld_from_gmat(gmat = distmat))
+}
+
 #' Estimates of composite pairwise LD based either on genotype estimates or
 #' genotype likelihoods.
 #'
@@ -106,9 +137,15 @@ ld_from_gmat <- function(gmat) {
 #'
 #' @inheritParams ldest
 #' @param useboot Should we use bootstrap standard errors \code{TRUE} or not
-#'     \code{FALSE}? Only applicable if using genotype likelihoods.
+#'     \code{FALSE}? Only applicable if using genotype likelihoods and
+#'     \code{model = "flex"}
 #' @param nboot The number of bootstrap iterations to use is
-#'     \code{boot = TRUE}.
+#'     \code{boot = TRUE}. Only applicable if using genotype likelihoods and
+#'     \code{model = "flex"}.
+#' @param model Should we assume the class of joint genotype distributions
+#'     is from the proportional bivariate normal (\code{model = "norm"})
+#'     or from the general categorical distribution (\code{model = "flex"}).
+#'     Only applicable if using genotype likelihoods.
 #'
 #' @inherit ldest return
 #'
@@ -141,8 +178,16 @@ ld_from_gmat <- function(gmat) {
 #' ldout2 <- ldest_comp(ga = gamat,
 #'                      gb = gbmat,
 #'                      K = K,
-#'                      se = FALSE)
+#'                      se = FALSE,
+#'                      model = "flex")
 #' head(ldout2)
+#'
+#' ## Composite LD with genotype likelihoods and proportional bivariate normal
+#' ldout3 <- ldest_comp(ga = gamat,
+#'                      gb = gbmat,
+#'                      K = K,
+#'                      model = "norm")
+#' head(ldout3)
 #'
 #' @export
 ldest_comp <- function(ga,
@@ -151,8 +196,10 @@ ldest_comp <- function(ga,
                        pen = 1,
                        useboot = TRUE,
                        nboot = 50,
-                       se = TRUE) {
+                       se = TRUE,
+                       model = c("norm", "flex")) {
   TOL <- sqrt(.Machine$double.eps)
+  model <- match.arg(model)
   stopifnot(pen >= 1)
   stopifnot(is.logical(useboot))
   stopifnot(is.logical(se))
@@ -171,7 +218,7 @@ ldest_comp <- function(ga,
 
   if (using == "genotypes") {
     retvec <- ldsimp(ga = ga, gb = gb, K = K)
-  } else {
+  } else if (model == "flex") {
     alphamat <- matrix(data = pen, nrow = K + 1, ncol = K + 1)
     pma <- factor(apply(X = ga, MARGIN = 1, FUN = which.max) - 1, levels = 0:K)
     pmb <- factor(apply(X = gb, MARGIN = 1, FUN = which.max) - 1, levels = 0:K)
@@ -199,10 +246,10 @@ ldest_comp <- function(ga,
       for (bindex in seq_len(nboot)) {
         ga_boot <- ga[sample(seq_len(nrow(ga)), size = nrow(ga), replace = TRUE), ]
         gb_boot <- gb[sample(seq_len(nrow(ga)), size = nrow(ga), replace = TRUE), ]
-        gout_boot <- em_jointgeno(p = pinit,
-                             pgA = ga_boot,
-                             pgB = gb_boot,
-                             alpha = alphamat)
+        gout_boot <- em_jointgeno(p = gout,
+                                  pgA = ga_boot,
+                                  pgB = gb_boot,
+                                  alpha = alphamat)
         ld_current <- ld_from_gmat(gmat = gout_boot)
         dboot[[bindex]] <- ld_current[["D"]]
         r2boot[[bindex]] <- ld_current[["r2"]]
@@ -256,6 +303,83 @@ ldest_comp <- function(ga,
     inddf <- expand.grid(i = 0:K, j = 0:K)
     names(qvec) <- paste0("q", inddf$i, inddf$j)
     retvec <- c(retvec, qvec)
+  } else {
+    ega <- rowSums(sweep(x = exp(ga), MARGIN = 2, STATS = 0:K, FUN = `*`))
+    egb <- rowSums(sweep(x = exp(gb), MARGIN = 2, STATS = 0:K, FUN = `*`))
+    mu_init <- c(mean(ega), mean(egb))
+    sigma_init <- stats::cov(cbind(ega, egb))
+    L <- t(chol(x = sigma_init))
+    par <- c(mu_init, L[lower.tri(L, diag = TRUE)])
+
+    oout <- stats::optim(par = par,
+                         fn = obj_pbnorm_genolike,
+                         method = "L-BFGS-B",
+                         lower = c(-Inf, -Inf, 0, -Inf, 0),
+                         upper = rep(Inf, 5),
+                         control = list(fnscale = -1),
+                         hessian = TRUE,
+                         pgA = ga,
+                         pgB = gb)
+
+    mu <- oout$par[1:2]
+    L[1, 1] <- oout$par[3]
+    L[2, 1] <- oout$par[4]
+    L[2, 2] <- oout$par[5]
+    L[1, 2] <- 0
+    sigma <- L %*% t(L)
+
+    distmat <- pbnorm_dist(mu = mu, sigma = sigma, K = K, log = FALSE)
+
+    ld_current <- ld_from_pbnorm(par = oout$par, K = K)
+
+    D <- ld_current[["D"]]
+    r2 <- ld_current[["r2"]]
+    r <- ld_current[["r"]]
+    z <- ld_current[["z"]]
+    Dprime <- ld_current[["Dprime"]]
+
+    ## standard errors via numerical gradients --------------------------------
+    if (se) {
+      myenv <- new.env()
+      assign(x = "par", value = oout$par, envir = myenv)
+      assign(x = "K", value = K, envir = myenv)
+      nout <- stats::numericDeriv(expr = quote(ld_from_pbnorm(par = par, K = K)),
+                                  theta = "par",
+                                  rho = myenv)
+      gradval <- attr(nout, which = "gradient")
+      rownames(gradval) <- names(ld_current)
+
+      sevec <- sqrt(diag(gradval %*% -solve(oout$hessian) %*% t(gradval)))
+
+      D_se <- sevec[["D"]]
+      r2_se <- sevec[["r2"]]
+      r_se <- sevec[["r"]]
+      z_se <- sevec[["z"]]
+      Dprime_se <- sevec[["Dprime"]]
+    } else {
+      D_se <- NA_real_
+      r2_se <- NA_real_
+      r_se <- NA_real_
+      Dprime_se <- NA_real_
+      z_se <- NA_real_
+    }
+
+    ## set up retvec ----------------------------------------------------------
+    retvec <- c(D         = D,
+                D_se      = D_se,
+                r2        = r2,
+                r2_se     = r2_se,
+                r         = r,
+                r_se      = r_se,
+                Dprime    = Dprime,
+                Dprime_se = Dprime_se,
+                z         = z,
+                z_se      = z_se)
+
+    qvec <- c(distmat)
+    inddf <- expand.grid(i = 0:K, j = 0:K)
+    names(qvec) <- paste0("q", inddf$i, inddf$j)
+    retvec <- c(retvec, qvec)
   }
 
   return(retvec)
@@ -285,6 +409,8 @@ Dfromg <- function(gmat) {
           FUN = `*`)) / K -
     sum(0:K * rowSums(gmat)) * sum(0:K * colSums(gmat)) / K
 }
+
+
 
 #' Obtain r^2 measure of LD from joint genotype frequencies.
 #'

@@ -5,42 +5,69 @@
 \title{Estimates of composite pairwise LD based either on genotype estimates or
 genotype likelihoods.}
 \usage{
-ldest_comp(ga, gb, K, pen = 1, useboot = TRUE, nboot = 50, se = TRUE)
+ldest_comp(
+  ga,
+  gb,
+  K,
+  pen = 1,
+  useboot = TRUE,
+  nboot = 50,
+  se = TRUE,
+  model = c("norm", "flex")
+)
 }
 \arguments{
-\item{ga}{One of two possible inputs: (i) A vector of counts, containing
-the genotypes for each individual at the first locus; or (ii)
-A matrix of genotype log-likelihoods at the first locus. The rows
-index the individuals and the columns index the genotypes.
-That is \code{ga[i, j]} is the genotype likelihood of individual
-\code{i} for genotype \code{j}. When \code{type = "comp"}, the
-vector of genotypes may be continuous (e.g. the posterior mean
-genotype).}
+\item{ga}{One of two possible inputs:
+\enumerate{
+\item{A vector of counts, containing the genotypes for each
+individual at the first locus. When \code{type = "comp"},
+the vector of genotypes may be continuous (e.g. the
+posterior mean genotype).}
+\item{A matrix of genotype log-likelihoods at the first locus.
+The rows index the individuals and the columns index
+the genotypes. That is \code{ga[i, j]} is the genotype
+likelihood of individual \code{i} for genotype \code{j-1}.}
+}}
 
-\item{gb}{One of two possible inputs: (i) A vector of counts, containing
-the genotypes for each individual at the second locus; or (ii) A
-matrix of genotype log-likelihoods at the second locus. The rows
-index the individuals and the columns index the genotypes.
-That is \code{ga[i, j]} is the genotype likelihood of individual
-\code{i} for genotype \code{j}. When \code{type = "comp"}, the
-vector of genotypes may be continuous (e.g. the posterior mean
-genotype).}
+\item{gb}{One of two possible inputs:
+\enumerate{
+\item{A vector of counts, containing the genotypes for each
+individual at the second locus. When \code{type = "comp"},
+the vector of genotypes may be continuous (e.g. the
+posterior mean genotype).}
+\item{A matrix of genotype log-likelihoods at the second locus.
+The rows index the individuals and the columns index
+the genotypes. That is \code{gb[i, j]} is the genotype
+likelihood of individual \code{i} for genotype \code{j-1}.}
+}}
 
-\item{K}{The ploidy of the species. Assumed the same for all individuals.}
+\item{K}{The ploidy of the species. Assumed to bethe same for all
+individuals.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
-this as the prior sample size. Should be greater than 1.}
+this as the prior sample size. Should be greater than 1. Does not
+apply if \code{model = "norm"}, \code{type = "comp"}, and using
+genotype likelihoods. Also does not apply when \code{type = "comp"}
+and using genotypes.}
 
 \item{useboot}{Should we use bootstrap standard errors \code{TRUE} or not
-\code{FALSE}? Only applicable if using genotype likelihoods.}
+\code{FALSE}? Only applicable if using genotype likelihoods and
+\code{model = "flex"}}
 
 \item{nboot}{The number of bootstrap iterations to use is
-\code{boot = TRUE}.}
+\code{boot = TRUE}. Only applicable if using genotype likelihoods and
+\code{model = "flex"}.}
 
 \item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
 not (\code{FALSE}). Calculating standard errors can be really slow
-when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
-standard error calculations should be pretty fast.}
+when \code{type = "comp"}, \code{model = "flex"}, and when using
+gentoype likelihoods. Otherwise, standard error calculations
+should be pretty fast.}
+
+\item{model}{Should we assume the class of joint genotype distributions
+is from the proportional bivariate normal (\code{model = "norm"})
+or from the general categorical distribution (\code{model = "flex"}).
+Only applicable if using genotype likelihoods.}
 }
 \value{
 A vector with some or all of the following elements:
@@ -106,8 +133,16 @@ head(ldout1)
 ldout2 <- ldest_comp(ga = gamat,
                      gb = gbmat,
                      K = K,
-                     se = FALSE)
+                     se = FALSE,
+                     model = "flex")
 head(ldout2)
+
+## Composite LD with genotype likelihoods and proportional bivariate normal
+ldout3 <- ldest_comp(ga = gamat,
+                     gb = gbmat,
+                     K = K,
+                     model = "norm")
+head(ldout3)
 
 }
 \author{

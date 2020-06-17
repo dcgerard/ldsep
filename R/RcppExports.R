@@ -474,6 +474,81 @@ llike_geno <- function(par, gA, gB, K, alpha) {
     .Call(`_ldsep_llike_geno`, par, gA, gB, K, alpha)
 }
 
+#' Derivative of \code{\link{dmvnorm}()} (not log) with respect to \code{R}
+#' where \code{sigma = solve(R) \%*\% solve(t(R))}
+#'
+#'
+#' @inheritParams dmvnorm
+#' @param R The inverse of the cholesky square root of sigma.
+#'     \code{sigma = solve(R) \%*\% solve(t(R))}
+#'
+#' @noRd
+NULL
+
+#' Density function of the multivariate normal distribution
+#'
+#' @param x A vector containing the quantile.
+#' @param mu A vector containing the mean.
+#' @param sigma A positive definite covariance matrix
+#' @param log A logical. If \code{TRUE}, log probabilities are returned.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+dmvnorm <- function(x, mu, sigma, log = FALSE) {
+    .Call(`_ldsep_dmvnorm`, x, mu, sigma, log)
+}
+
+#' Returns distribution of proportional bivariate normal.
+#'
+#' @param mu A vector of length 2 containing the mean.
+#' @param sigma A 2-by-2 positive definite covariance matrix
+#' @param K The ploidy of the individual.
+#' @param log A logical. If \code{TRUE}, log probabilities are returned.
+#'
+#' @return A matrix. Element (i,j) is the (log) probability of genotype
+#'     i-1 at locus 1 and j-1 at locus 2.
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+pbnorm_dist <- function(mu, sigma, K, log = FALSE) {
+    .Call(`_ldsep_pbnorm_dist`, mu, sigma, K, log)
+}
+
+#' Log-likelihood for joint genotype distribution when using a proportional
+#' normal model.
+#'
+#' @inheritParams pbnorm_dist
+#' @param pgA The matrix of genotype log-likelihoods for locus 1.
+#'     The rows index the individuals and the columns index the genotypes.
+#' @param pgB The matrix of genotype log-likelihoods for locus 2.
+#'     The rows index the individuals and the columns index the genotypes.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+llike_pbnorm_genolike <- function(pgA, pgB, mu, sigma) {
+    .Call(`_ldsep_llike_pbnorm_genolike`, pgA, pgB, mu, sigma)
+}
+
+#' Wrapper for \code{\link{llike_pbnorm_genolike}()} that tkaes
+#' a vector of parameters as input for optim().
+#'
+#' @inheritParams llike_pbnorm_genolike
+#' @param par A vector of length 5. The first two elements are \code{mu}. The
+#'     last three elements are c(l11, l12, l22), the lower three elements of
+#'     the cholesky decomposition of sigma.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+#'
+obj_pbnorm_genolike <- function(par, pgA, pgB) {
+    .Call(`_ldsep_obj_pbnorm_genolike`, par, pgA, pgB)
+}
+
 #' Prior probability for haplotype frequencies.
 #'
 #' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).

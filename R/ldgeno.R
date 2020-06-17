@@ -21,7 +21,7 @@
 #'
 #' When haplotypes are not known, we can still estimate haplotypic frequencies
 #' using the genotypes or genotype likelihoods
-#' \emph{as long as Hardy-Weinberg equilibrium (HWE) is satisfied}. We do
+#' \emph{in autopolyploids as long as Hardy-Weinberg equilibrium (HWE) is satisfied}. We do
 #' this via maximum likelihood using gradient ascent. Gradient ascent is
 #' performed over the unconstrained parameterization of the 3-simplex from
 #' Betancourt (2012). The estimated haplotype frequencies are then used to
@@ -39,7 +39,8 @@
 #' haplotypes 00, 01, 10, and 11. This corresponds to the "add two" rule
 #' of Agresti (1998). You can change this prior via the \code{pen} argument.
 #'
-#' When HWE is \emph{not} satisfied, the estimates using \code{type = "hap"}
+#' When you either do not have autopolypoloids or when HWE is \emph{not}
+#' satisfied, then the estimates using \code{type = "hap"}
 #' are nonsensical. However, the composite measures of LD are still
 #' applicable (see below).
 #'
@@ -62,49 +63,68 @@
 #'
 #' When genotype are not known, we estimate the joint genotype frequencies
 #' and use these to estimate the composite measures of LD using
-#' genotype likelihoods.
+#' genotype likelihoods. The distribution of genotypes is assumed to
+#' either follow a proportional bivariate normal model (by default) or
+#' a general categorical model.
 #'
 #' These estimates of composite measures of LD estimate the haplotypic
 #' measures of LD when HWE is fulfilled, but are still applicable when HWE
-#' is not fulfilled. A penalty is also placed on the joint genotype
-#' frequencies.
+#' is not fulfilled.
 #'
 #' When genotype are known, standard errors are calculated using standard
 #' moment-based approaches. When genotypes are not known, standard
 #' errors are calculated using standard maximum likelihood theory,
-#' same as for the haplotypic LD estimates (see above).
+#' same as for the haplotypic LD estimates (see above), or using
+#' a bootstrap.
 #'
-#' @param ga One of two possible inputs: (i) A vector of counts, containing
-#'     the genotypes for each individual at the first locus; or (ii)
-#'     A matrix of genotype log-likelihoods at the first locus. The rows
-#'     index the individuals and the columns index the genotypes.
-#'     That is \code{ga[i, j]} is the genotype likelihood of individual
-#'     \code{i} for genotype \code{j}. When \code{type = "comp"}, the
-#'     vector of genotypes may be continuous (e.g. the posterior mean
-#'     genotype).
-#' @param gb One of two possible inputs: (i) A vector of counts, containing
-#'     the genotypes for each individual at the second locus; or (ii) A
-#'     matrix of genotype log-likelihoods at the second locus. The rows
-#'     index the individuals and the columns index the genotypes.
-#'     That is \code{ga[i, j]} is the genotype likelihood of individual
-#'     \code{i} for genotype \code{j}. When \code{type = "comp"}, the
-#'     vector of genotypes may be continuous (e.g. the posterior mean
-#'     genotype).
-#' @param K The ploidy of the species. Assumed the same for all individuals.
+#' @param ga One of two possible inputs:
+#'     \enumerate{
+#'         \item{A vector of counts, containing the genotypes for each
+#'               individual at the first locus. When \code{type = "comp"},
+#'               the vector of genotypes may be continuous (e.g. the
+#'               posterior mean genotype).}
+#'         \item{A matrix of genotype log-likelihoods at the first locus.
+#'               The rows index the individuals and the columns index
+#'               the genotypes. That is \code{ga[i, j]} is the genotype
+#'               likelihood of individual \code{i} for genotype \code{j-1}.}
+#'         }
+#' @param gb One of two possible inputs:
+#'     \enumerate{
+#'         \item{A vector of counts, containing the genotypes for each
+#'               individual at the second locus. When \code{type = "comp"},
+#'               the vector of genotypes may be continuous (e.g. the
+#'               posterior mean genotype).}
+#'         \item{A matrix of genotype log-likelihoods at the second locus.
+#'               The rows index the individuals and the columns index
+#'               the genotypes. That is \code{gb[i, j]} is the genotype
+#'               likelihood of individual \code{i} for genotype \code{j-1}.}
+#'         }
+#' @param K The ploidy of the species. Assumed to bethe same for all
+#'     individuals.
 #' @param type The type of LD to calculate. The available types are
 #'     haplotypic LD (\code{type = "hap"}) or composite LD
-#'     (\code{type = "comp"}). Haplotypic LD is only appropriate when
-#'     the individuals are in HWE. The composite
+#'     (\code{type = "comp"}). Haplotypic LD is only appropriate for
+#'     autopolyploids when the individuals are in Hardy-Weinberg
+#'     equilibrium (HWE). The composite
 #'     measures of LD are always applicable, and consistently estimate the
-#'     usual measures of LD when HWE is fulfilled. However, when HWE
-#'     is not fulfilled, interpreting the composite measures of LD
-#'     could be a little tricky.
+#'     usual measures of LD when HWE is fulfilled in autopolyploids.
+#'     However, when HWE is not fulfilled, interpreting the
+#'     composite measures of LD could be a little tricky.
+#' @param model When \code{type = "comp"} and using genotype likelihoods,
+#'     should we use the proportional
+#'     bivariate normal model to estimate the genotype distribution
+#'     (\code{model = "norm"}), or the general categorical distribution
+#'     (\code{model = "flex"})? Defaults to \code{"norm"}.
 #' @param pen The penalty to be applied to the likelihood. You can think about
-#'     this as the prior sample size. Should be greater than 1.
+#'     this as the prior sample size. Should be greater than 1. Does not
+#'     apply if \code{model = "norm"}, \code{type = "comp"}, and using
+#'     genotype likelihoods. Also does not apply when \code{type = "comp"}
+#'     and using genotypes.
 #' @param se A logical. Should we calculate standard errors (\code{TRUE}) or
 #'     not (\code{FALSE}). Calculating standard errors can be really slow
-#'     when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
-#'     standard error calculations should be pretty fast.
+#'     when \code{type = "comp"}, \code{model = "flex"}, and when using
+#'     gentoype likelihoods. Otherwise, standard error calculations
+#'     should be pretty fast.
 #'
 #' @return A vector with some or all of the following elements:
 #' \describe{
@@ -175,18 +195,28 @@
 #'                 type = "comp")
 #' head(ldout3)
 #'
-#' ## Composite LD with genotype likelihoods
+#' ## Composite LD with genotype likelihoods and normal model
 #' ldout4 <- ldest(ga = gamat,
 #'                 gb = gbmat,
 #'                 K = K,
 #'                 type = "comp",
-#'                 se = FALSE)
+#'                 model = "norm")
 #' head(ldout4)
+#'
+#' ## Composite LD with genotype likelihoods and general categorical model
+#' ldout5 <- ldest(ga = gamat,
+#'                 gb = gbmat,
+#'                 K = K,
+#'                 type = "comp",
+#'                 model = "flex",
+#'                 se = FALSE)
+#' head(ldout5)
 #'
 #' ldout1[["D"]]
 #' ldout2[["D"]]
 #' ldout3[["D"]]
 #' ldout4[["D"]]
+#' ldout5[["D"]]
 #'
 #' @author David Gerard
 #'
@@ -218,14 +248,25 @@ ldest <- function(ga,
                   K,
                   se = TRUE,
                   type = c("hap", "comp"),
+                  model = c("norm", "flex"),
                   pen = ifelse(type == "hap", 2, 1)) {
   type <- match.arg(type)
+  model <- match.arg(model)
   stopifnot(is.logical(se))
 
   if (type == "hap") {
-    retvec <- ldest_hap(ga = ga, gb = gb, K = K, pen = pen, se = se)
+    retvec <- ldest_hap(ga  = ga,
+                        gb  = gb,
+                        K   = K,
+                        pen = pen,
+                        se  = se)
   } else {
-    retvec <- ldest_comp(ga = ga, gb = gb, K = K, pen = pen, se = se)
+    retvec <- ldest_comp(ga    = ga,
+                         gb    = gb,
+                         K     = K,
+                         pen   = pen,
+                         se    = se,
+                         model = model)
   }
 
   return(retvec)

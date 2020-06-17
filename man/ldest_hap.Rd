@@ -18,25 +18,32 @@ ldest_hap(
 )
 }
 \arguments{
-\item{ga}{One of two possible inputs: (i) A vector of counts, containing
-the genotypes for each individual at the first locus; or (ii)
-A matrix of genotype log-likelihoods at the first locus. The rows
-index the individuals and the columns index the genotypes.
-That is \code{ga[i, j]} is the genotype likelihood of individual
-\code{i} for genotype \code{j}. When \code{type = "comp"}, the
-vector of genotypes may be continuous (e.g. the posterior mean
-genotype).}
+\item{ga}{One of two possible inputs:
+\enumerate{
+\item{A vector of counts, containing the genotypes for each
+individual at the first locus. When \code{type = "comp"},
+the vector of genotypes may be continuous (e.g. the
+posterior mean genotype).}
+\item{A matrix of genotype log-likelihoods at the first locus.
+The rows index the individuals and the columns index
+the genotypes. That is \code{ga[i, j]} is the genotype
+likelihood of individual \code{i} for genotype \code{j-1}.}
+}}
 
-\item{gb}{One of two possible inputs: (i) A vector of counts, containing
-the genotypes for each individual at the second locus; or (ii) A
-matrix of genotype log-likelihoods at the second locus. The rows
-index the individuals and the columns index the genotypes.
-That is \code{ga[i, j]} is the genotype likelihood of individual
-\code{i} for genotype \code{j}. When \code{type = "comp"}, the
-vector of genotypes may be continuous (e.g. the posterior mean
-genotype).}
+\item{gb}{One of two possible inputs:
+\enumerate{
+\item{A vector of counts, containing the genotypes for each
+individual at the second locus. When \code{type = "comp"},
+the vector of genotypes may be continuous (e.g. the
+posterior mean genotype).}
+\item{A matrix of genotype log-likelihoods at the second locus.
+The rows index the individuals and the columns index
+the genotypes. That is \code{gb[i, j]} is the genotype
+likelihood of individual \code{i} for genotype \code{j-1}.}
+}}
 
-\item{K}{The ploidy of the species. Assumed the same for all individuals.}
+\item{K}{The ploidy of the species. Assumed to bethe same for all
+individuals.}
 
 \item{reltol}{The relative tolerance for the stopping criterion.}
 
@@ -50,7 +57,10 @@ accurate but also much slower, so this defaults to \code{FALSE}. Only
 applicable if using genotype likelihoods.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
-this as the prior sample size. Should be greater than 1.}
+this as the prior sample size. Should be greater than 1. Does not
+apply if \code{model = "norm"}, \code{type = "comp"}, and using
+genotype likelihoods. Also does not apply when \code{type = "comp"}
+and using genotypes.}
 
 \item{grid_init}{A logical. Should we initialize the gradient ascent
 at a grid of initial values (\code{TRUE}) or just initialize
@@ -59,8 +69,9 @@ at one value corresponding to the simplex point
 
 \item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
 not (\code{FALSE}). Calculating standard errors can be really slow
-when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
-standard error calculations should be pretty fast.}
+when \code{type = "comp"}, \code{model = "flex"}, and when using
+gentoype likelihoods. Otherwise, standard error calculations
+should be pretty fast.}
 }
 \value{
 A vector with some or all of the following elements:

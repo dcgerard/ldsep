@@ -30,20 +30,22 @@ able to use fewer. Ask your admins if you are unsure.}
 
 \item{type}{The type of LD to calculate. The available types are
 haplotypic LD (\code{type = "hap"}) or composite LD
-(\code{type = "comp"}). Haplotypic LD is only appropriate when
-the individuals are in HWE. The composite
+(\code{type = "comp"}). Haplotypic LD is only appropriate for
+autopolyploids when the individuals are in Hardy-Weinberg
+equilibrium (HWE). The composite
 measures of LD are always applicable, and consistently estimate the
-usual measures of LD when HWE is fulfilled. However, when HWE
-is not fulfilled, interpreting the composite measures of LD
-could be a little tricky.}
+usual measures of LD when HWE is fulfilled in autopolyploids.
+However, when HWE is not fulfilled, interpreting the
+composite measures of LD could be a little tricky.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
 this as the prior sample size.}
 
 \item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
 not (\code{FALSE}). Calculating standard errors can be really slow
-when \code{type = "comp"} and when using gentoype likelihoods. Otherwise,
-standard error calculations should be pretty fast.}
+when \code{type = "comp"}, \code{model = "flex"}, and when using
+gentoype likelihoods. Otherwise, standard error calculations
+should be pretty fast.}
 }
 \value{
 A data frame of class \code{c("lddf", "data.frame")}
