@@ -304,8 +304,12 @@ ldest_comp <- function(ga,
     names(qvec) <- paste0("q", inddf$i, inddf$j)
     retvec <- c(retvec, qvec)
   } else {
-    ega <- rowSums(sweep(x = exp(ga), MARGIN = 2, STATS = 0:K, FUN = `*`))
-    egb <- rowSums(sweep(x = exp(gb), MARGIN = 2, STATS = 0:K, FUN = `*`))
+    postA <- exp(ga)
+    postA <- postA / rowSums(postA)
+    postB <- exp(gb)
+    postB <- postB / rowSums(postB)
+    ega <- rowSums(sweep(x = postA, MARGIN = 2, STATS = 0:K, FUN = `*`))
+    egb <- rowSums(sweep(x = postB, MARGIN = 2, STATS = 0:K, FUN = `*`))
     mu_init <- c(mean(ega), mean(egb))
     sigma_init <- stats::cov(cbind(ega, egb))
     L <- t(chol(x = sigma_init))
@@ -314,7 +318,7 @@ ldest_comp <- function(ga,
     oout <- stats::optim(par = par,
                          fn = obj_pbnorm_genolike,
                          method = "L-BFGS-B",
-                         lower = c(-Inf, -Inf, TOL, -Inf, TOL),
+                         lower = c(-Inf, -Inf, 0.01, -Inf, 0.01),
                          upper = rep(Inf, 5),
                          control = list(fnscale = -1),
                          hessian = TRUE,
@@ -374,7 +378,12 @@ ldest_comp <- function(ga,
                 Dprime    = Dprime,
                 Dprime_se = Dprime_se,
                 z         = z,
-                z_se      = z_se)
+                z_se      = z_se,
+                muA       = mu[1],
+                muB       = mu[2],
+                sigmaAA   = sigma[1, 1],
+                sigmaAB   = sigma[2, 1],
+                sigmaBB   = sigma[2, 2])
 
     qvec <- c(distmat)
     inddf <- expand.grid(i = 0:K, j = 0:K)

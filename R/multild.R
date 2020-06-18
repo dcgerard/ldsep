@@ -92,9 +92,11 @@ mldest <- function(geno,
                    K,
                    nc = 1,
                    type = c("hap", "comp"),
+                   model = c("norm", "flex"),
                    pen = ifelse(type == "hap", 2, 1),
                    se = TRUE) {
-
+  model <- match.arg(model)
+  type <- match.arg(type)
   if (length(dim(geno)) == 2) {
     outdf <- mldest_geno(genomat = geno,
                          K = K,
@@ -107,6 +109,7 @@ mldest <- function(geno,
                              nc = nc,
                              pen = pen,
                              type = type,
+                             model = model,
                              se = se)
   } else {
     stop("mldest: geno needs to either be a matrix or a three-way array.")
@@ -295,9 +298,11 @@ mldest_geno <- function(genomat,
 mldest_genolike <- function(genoarray,
                             nc = 1,
                             type = c("hap", "comp"),
+                            model = c("norm", "flex"),
                             pen = ifelse(type == "hap", 2, 1),
                             se = TRUE) {
   type <- match.arg(type)
+  model <- match.arg(model)
   stopifnot(is.logical(se))
   stopifnot(is.array(genoarray))
   stopifnot(length(dim(genoarray)) == 3)
@@ -328,6 +333,7 @@ mldest_genolike <- function(genoarray,
                                                 gb = genoarray[j, , ],
                                                 K = K,
                                                 type = type,
+                                                model = model,
                                                 pen = pen,
                                                 se = se)
                                  if (j == i + 1) {

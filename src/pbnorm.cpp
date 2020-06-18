@@ -20,6 +20,10 @@ double dmvnorm(arma::vec x, arma::vec mu, arma::mat sigma, bool log = false) {
     Rcpp::stop("dmvnorm: x and mu must have same length.");
   }
   if (!sigma.is_sympd()) {
+    Rcpp::Rcout << "Sigma:"
+                << std::endl
+                << sigma
+                << std::endl;
     Rcpp::stop("dmvnorm: sigma must be symmetic positive definite.");
   }
   if (x.n_elem != sigma.n_cols) {
@@ -66,6 +70,10 @@ arma::mat pbnorm_dist(arma::vec mu, arma::mat sigma, int K, bool log = false) {
     Rcpp::stop("dpbnorm: sigma should be a 2-by-2 matrix.");
   }
   if (!sigma.is_sympd()) {
+    Rcpp::Rcout << "Sigma:"
+                << std::endl
+                << sigma
+                << std::endl;
     Rcpp::stop("pbnorm_dist: sigma must be symmetic positive definite.");
   }
 
@@ -131,8 +139,31 @@ double llike_pbnorm_genolike(const arma::mat &pgA,
   return lval;
 }
 
+// [[Rcpp::export]]
+double prior_mu(arma::vec mu, int K) {
+  if (mu.n_elem != 2) {
+    Rcpp::stop("prior_mu: mu not of length 2.");
+  }
+  double lval = R::dnorm(mu(0), (double)K / 2.0, 2.0 * (double)K, true) +
+    R::dnorm(mu(1), (double)K / 2.0, 2.0 * (double)K, true);
+  return lval;
+}
+
+// [[Rcpp::export]]
+double prior_sigma(arma::vec lvec) {
+  if (lvec.n_elem != 3) {
+    Rcpp::stop("prior_sigma: lvec not of length 3.");
+  }
+  double lval = R::dchisq(lvec(0), 2, true) + std::log(2.0 * lvec(0)) +
+    R::dnorm(lvec(1), 0, 1, true) +
+    R::dchisq(lvec(2), 1, true) + std::log(2.0 * lvec(2));
+  return lval;
+}
+
 //' Wrapper for \code{\link{llike_pbnorm_genolike}()} that tkaes
 //' a vector of parameters as input for optim().
+//'
+//' Also includes prior probs
 //'
 //' @inheritParams llike_pbnorm_genolike
 //' @param par A vector of length 5. The first two elements are \code{mu}. The
@@ -150,6 +181,7 @@ double obj_pbnorm_genolike(const arma::vec &par,
   arma::vec mu(2);
   arma::mat sigma(2, 2);
   double lval;
+  int K = pgA.n_cols - 1;
 
   mu(0) = par(0);
   mu(1) = par(1);
@@ -160,7 +192,9 @@ double obj_pbnorm_genolike(const arma::vec &par,
 
   sigma = sigma * sigma.t();
 
-  lval = llike_pbnorm_genolike(pgA, pgB, mu, sigma);
+  lval = llike_pbnorm_genolike(pgA, pgB, mu, sigma) +
+    prior_mu(mu, K) +
+    prior_sigma(par.tail(3));
 
   return lval;
 }

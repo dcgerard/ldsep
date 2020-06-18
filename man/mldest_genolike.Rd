@@ -9,6 +9,7 @@ mldest_genolike(
   genoarray,
   nc = 1,
   type = c("hap", "comp"),
+  model = c("norm", "flex"),
   pen = ifelse(type == "hap", 2, 1),
   se = TRUE
 )
@@ -38,6 +39,12 @@ measures of LD are always applicable, and consistently estimate the
 usual measures of LD when HWE is fulfilled in autopolyploids.
 However, when HWE is not fulfilled, interpreting the
 composite measures of LD could be a little tricky.}
+
+\item{model}{When \code{type = "comp"} and using genotype likelihoods,
+should we use the proportional
+bivariate normal model to estimate the genotype distribution
+(\code{model = "norm"}), or the general categorical distribution
+(\code{model = "flex"})? Defaults to \code{"norm"}.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about
 this as the prior sample size.}

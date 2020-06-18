@@ -460,6 +460,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prior_mu
+double prior_mu(arma::vec mu, int K);
+RcppExport SEXP _ldsep_prior_mu(SEXP muSEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(prior_mu(mu, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// prior_sigma
+double prior_sigma(arma::vec lvec);
+RcppExport SEXP _ldsep_prior_sigma(SEXP lvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type lvec(lvecSEXP);
+    rcpp_result_gen = Rcpp::wrap(prior_sigma(lvec));
+    return rcpp_result_gen;
+END_RCPP
+}
 // obj_pbnorm_genolike
 double obj_pbnorm_genolike(const arma::vec& par, const arma::mat& pgA, const arma::mat& pgB);
 RcppExport SEXP _ldsep_obj_pbnorm_genolike(SEXP parSEXP, SEXP pgASEXP, SEXP pgBSEXP) {
@@ -659,6 +682,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dmvnorm", (DL_FUNC) &_ldsep_dmvnorm, 4},
     {"_ldsep_pbnorm_dist", (DL_FUNC) &_ldsep_pbnorm_dist, 4},
     {"_ldsep_llike_pbnorm_genolike", (DL_FUNC) &_ldsep_llike_pbnorm_genolike, 4},
+    {"_ldsep_prior_mu", (DL_FUNC) &_ldsep_prior_mu, 2},
+    {"_ldsep_prior_sigma", (DL_FUNC) &_ldsep_prior_sigma, 1},
     {"_ldsep_obj_pbnorm_genolike", (DL_FUNC) &_ldsep_obj_pbnorm_genolike, 3},
     {"_ldsep_lprior", (DL_FUNC) &_ldsep_lprior, 2},
     {"_ldsep_dlprior_dprob", (DL_FUNC) &_ldsep_dlprior_dprob, 2},

@@ -533,8 +533,18 @@ llike_pbnorm_genolike <- function(pgA, pgB, mu, sigma) {
     .Call(`_ldsep_llike_pbnorm_genolike`, pgA, pgB, mu, sigma)
 }
 
+prior_mu <- function(mu, K) {
+    .Call(`_ldsep_prior_mu`, mu, K)
+}
+
+prior_sigma <- function(lvec) {
+    .Call(`_ldsep_prior_sigma`, lvec)
+}
+
 #' Wrapper for \code{\link{llike_pbnorm_genolike}()} that tkaes
 #' a vector of parameters as input for optim().
+#'
+#' Also includes prior probs
 #'
 #' @inheritParams llike_pbnorm_genolike
 #' @param par A vector of length 5. The first two elements are \code{mu}. The

@@ -31,7 +31,9 @@ test_that("log-likelihoods for pbnorm work", {
   lval1 <- llike_pbnorm_genolike(pgA = pgA,
                                  pgB = pgB,
                                  mu = mu_init,
-                                 sigma = sigma_init)
+                                 sigma = sigma_init) +
+    prior_mu(mu = mu_init, K = K) +
+    prior_sigma(lvec = L[lower.tri(L, diag = TRUE)])
   lval2 <- obj_pbnorm_genolike(par = par, pgA = pgA, pgB = pgB)
   expect_equal(lval1, lval2)
 })
