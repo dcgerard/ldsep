@@ -504,6 +504,7 @@ ldest_hap <- function(ga,
                       grid_init = FALSE,
                       se = TRUE) {
 
+  TOL <- sqrt(.Machine$double.eps)
   stopifnot(is.logical(se))
   stopifnot(length(K) == 1,
             length(nboot) == 1,
@@ -525,6 +526,25 @@ ldest_hap <- function(ga,
     using = "likelihoods"
   } else {
     stop("ldest: ga and gb must either both be vectors or both be matrices.")
+  }
+
+  ## check for monoallelic SNPs -----------------------------------------------
+  if (using == "genotypes" & ((stats::sd(ga, na.rm = TRUE) < TOL) || (stats::sd(gb, na.rm = TRUE) < TOL))) {
+    retvec <- c(D         = NA_real_,
+                D_se      = NA_real_,
+                r2        = NA_real_,
+                r2_se     = NA_real_,
+                r         = NA_real_,
+                r_se      = NA_real_,
+                Dprime    = NA_real_,
+                Dprime_se = NA_real_,
+                z         = NA_real_,
+                z_se      = NA_real_,
+                p_ab      = NA_real_,
+                p_Ab      = NA_real_,
+                p_aB      = NA_real_,
+                p_AB      = NA_real_)
+    return(retvec)
   }
 
 

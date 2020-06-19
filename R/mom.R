@@ -27,6 +27,27 @@
 #' @noRd
 #'
 ldsimp <- function(ga, gb, K) {
+
+  TOL <- sqrt(.Machine$double.eps)
+  ## Check for monoallelic SNPs
+  if ((stats::sd(ga, na.rm = TRUE) < TOL) || (stats::sd(gb, na.rm = TRUE) < TOL)) {
+    retvec <- c(D         = NA_real_,
+                D_se      = NA_real_,
+                r2        = NA_real_,
+                r2_se     = NA_real_,
+                r         = NA_real_,
+                r_se      = NA_real_,
+                Dprime    = NA_real_,
+                Dprime_se = NA_real_,
+                z         = NA_real_,
+                z_se      = NA_real_)
+    inddf <- expand.grid(i = 0:K, j = 0:K)
+    qvec <- rep(NA_real_, length = nrow(inddf))
+    names(qvec) <- paste0("q", inddf$i, inddf$j)
+    retvec <- c(retvec, qvec)
+    return(retvec)
+  }
+
   n     <- length(ga)
   pA    <- mean(ga) / K
   pB    <- mean(gb) / K
@@ -205,8 +226,8 @@ ldest_comp <- function(ga,
   stopifnot(is.logical(se))
   if (is.vector(ga) & is.vector(gb)) {
     stopifnot(length(ga) == length(gb))
-    stopifnot(ga >= 0, ga <= K)
-    stopifnot(gb >= 0, gb <= K)
+    stopifnot(ga >= -TOL, ga <= K + TOL)
+    stopifnot(gb >= -TOL, gb <= K + TOL)
     using <- "genotypes"
   } else if (is.matrix(ga) & is.matrix(gb)) {
     stopifnot(dim(ga) == dim(gb))
@@ -343,7 +364,7 @@ ldest_comp <- function(ga,
     Dprime <- ld_current[["Dprime"]]
 
     ## standard errors via numerical gradients --------------------------------
-    if (se) {
+    if (se & is.finite(z)) {
       myenv <- new.env()
       assign(x = "par", value = oout$par, envir = myenv)
       assign(x = "K", value = K, envir = myenv)
