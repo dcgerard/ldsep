@@ -158,7 +158,8 @@ mldest <- function(geno,
 #'                         nc = nc,
 #'                         type = "comp")
 #'
-#' ## Haplotypic and Composite LD are both close to 0.
+#' ## Haplotypic and Composite LD are both close to 0
+#' ## (because HWE is fulfilled)
 #' ## But composite is more variable.
 #' Dmat <- cbind(Haplotypic = rdf_hap$D, Composite = rdf_comp$D)
 #' boxplot(Dmat,
@@ -198,21 +199,28 @@ mldest_geno <- function(genomat,
                              .combine = rbind,
                              .export = c("ldest")) %dopar% {
 
+                               if (type == "hap") {
+                                 ldnull <- nullvec_hap()
+                               } else {
+                                 ldnull <- nullvec_comp(K = K, model = "flex") ## stupid hack. "flex" otherwise you get slots for sigma and mu
+                               }
+                               estmat <- matrix(NA_real_,
+                                                nrow = nloci - i,
+                                                ncol = length(ldnull) + 2)
+                               colnames(estmat) <- c("i", "j", names(ldnull))
+
                                for (j in (i + 1):nloci) {
-                                 ldout <- ldest(ga = genomat[i, ],
-                                                gb = genomat[j, ],
-                                                K = K,
-                                                type = type,
-                                                pen = pen,
-                                                se = se)
-                                 if (j == i + 1) {
-                                   estmat <- matrix(NA_real_,
-                                                    nrow = nloci - i,
-                                                    ncol = length(ldout) + 2)
-                                 }
                                  estmat[j - i, 1] <- i
                                  estmat[j - i, 2] <- j
-                                 estmat[j - i, -c(1, 2)] <- ldout
+                                 tryCatch({
+                                   ldout <- ldest(ga = genomat[i, ],
+                                                  gb = genomat[j, ],
+                                                  K = K,
+                                                  type = type,
+                                                  pen = pen,
+                                                  se = se)
+                                   estmat[j - i, -c(1, 2)] <- ldout
+                                 }, error = function(e) NULL)
 
                                }
                                colnames(estmat) <- c("i", "j", names(ldout))
@@ -282,8 +290,7 @@ mldest_geno <- function(genomat,
 #' ## Composite LD estimates
 #' rdf_comp <- mldest_genolike(genoarray = genoarray,
 #'                             nc = nc,
-#'                             type = "comp",
-#'                             se = FALSE)
+#'                             type = "comp")
 #'
 #' ## Haplotypic and Composite LD are both close to 0.
 #' ## But composite is more variable.
@@ -328,23 +335,29 @@ mldest_genolike <- function(genoarray,
                              .combine = rbind,
                              .export = c("ldest")) %dopar% {
 
+                               if (type == "hap") {
+                                 ldnull <- nullvec_hap()
+                               } else {
+                                 ldnull <- nullvec_comp(K = K, model = model)
+                               }
+                               estmat <- matrix(NA_real_,
+                                                nrow = nloci - i,
+                                                ncol = length(ldnull) + 2)
+                               colnames(estmat) <- c("i", "j", names(ldnull))
+
                                for (j in (i + 1):nloci) {
-                                 ldout <- ldest(ga = genoarray[i, , ],
-                                                gb = genoarray[j, , ],
-                                                K = K,
-                                                type = type,
-                                                model = model,
-                                                pen = pen,
-                                                se = se)
-                                 if (j == i + 1) {
-                                   estmat <- matrix(NA_real_,
-                                                    nrow = nloci - i,
-                                                    ncol = length(ldout) + 2)
-                                   colnames(estmat) <- c("i", "j", names(ldout))
-                                 }
                                  estmat[j - i, 1] <- i
                                  estmat[j - i, 2] <- j
-                                 estmat[j - i, -c(1, 2)] <- ldout
+                                 tryCatch({
+                                   ldout <- ldest(ga = genoarray[i, , ],
+                                                  gb = genoarray[j, , ],
+                                                  K = K,
+                                                  type = type,
+                                                  model = model,
+                                                  pen = pen,
+                                                  se = se)
+                                   estmat[j - i, -c(1, 2)] <- ldout
+                                 }, error = function(e) NULL)
                                }
                                estmat
                              }

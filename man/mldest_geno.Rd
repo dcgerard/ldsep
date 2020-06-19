@@ -109,7 +109,8 @@ rdf_comp <- mldest_geno(genomat = genomat,
                         nc = nc,
                         type = "comp")
 
-## Haplotypic and Composite LD are both close to 0.
+## Haplotypic and Composite LD are both close to 0
+## (because HWE is fulfilled)
 ## But composite is more variable.
 Dmat <- cbind(Haplotypic = rdf_hap$D, Composite = rdf_comp$D)
 boxplot(Dmat,

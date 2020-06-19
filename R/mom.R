@@ -31,20 +31,7 @@ ldsimp <- function(ga, gb, K) {
   TOL <- sqrt(.Machine$double.eps)
   ## Check for monoallelic SNPs
   if ((stats::sd(ga, na.rm = TRUE) < TOL) || (stats::sd(gb, na.rm = TRUE) < TOL)) {
-    retvec <- c(D         = NA_real_,
-                D_se      = NA_real_,
-                r2        = NA_real_,
-                r2_se     = NA_real_,
-                r         = NA_real_,
-                r_se      = NA_real_,
-                Dprime    = NA_real_,
-                Dprime_se = NA_real_,
-                z         = NA_real_,
-                z_se      = NA_real_)
-    inddf <- expand.grid(i = 0:K, j = 0:K)
-    qvec <- rep(NA_real_, length = nrow(inddf))
-    names(qvec) <- paste0("q", inddf$i, inddf$j)
-    retvec <- c(retvec, qvec)
+    retvec <- nullvec_comp(K, model = "flex") ## stupid hack. "flex" because otherwise slots for sigma and mu
     return(retvec)
   }
 
@@ -92,6 +79,40 @@ ldsimp <- function(ga, gb, K) {
               z_se      = z_se)
   retvec <- c(retvec, qvec)
 
+  return(retvec)
+}
+
+#' The null return value when estimating composite LD
+#'
+#' @param K the ploidy of the species
+#'
+#' @author David Gerard
+#'
+#' @noRd
+nullvec_comp <- function(K, model = c("norm", "flex")) {
+  model <- match.arg(model)
+  retvec <- c(D         = NA_real_,
+              D_se      = NA_real_,
+              r2        = NA_real_,
+              r2_se     = NA_real_,
+              r         = NA_real_,
+              r_se      = NA_real_,
+              Dprime    = NA_real_,
+              Dprime_se = NA_real_,
+              z         = NA_real_,
+              z_se      = NA_real_)
+  if (model == "norm") {
+    retvec <- c(retvec,
+                muA     = NA_real_,
+                muB     = NA_real_,
+                sigmaAA = NA_real_,
+                sigmaAB = NA_real_,
+                sigmaBB = NA_real_)
+  }
+  inddf <- expand.grid(i = 0:K, j = 0:K)
+  qvec <- rep(NA_real_, length = nrow(inddf))
+  names(qvec) <- paste0("q", inddf$i, inddf$j)
+  retvec <- c(retvec, qvec)
   return(retvec)
 }
 
@@ -225,11 +246,17 @@ ldest_comp <- function(ga,
   stopifnot(is.logical(useboot))
   stopifnot(is.logical(se))
   if (is.vector(ga) & is.vector(gb)) {
+    which_bad <- is.na(ga) | is.na(gb)
+    ga <- ga[!which_bad]
+    gb <- gb[!which_bad]
     stopifnot(length(ga) == length(gb))
     stopifnot(ga >= -TOL, ga <= K + TOL)
     stopifnot(gb >= -TOL, gb <= K + TOL)
     using <- "genotypes"
   } else if (is.matrix(ga) & is.matrix(gb)) {
+    which_bad <- apply(ga, 1, function(x) any(is.na(x))) | apply(gb, 1, function(x) any(is.na(x)))
+    ga <- ga[!which_bad, , drop = FALSE]
+    gb <- gb[!which_bad, , drop = FALSE]
     stopifnot(dim(ga) == dim(gb))
     stopifnot(K + 1 == ncol(ga))
     using <- "likelihoods"

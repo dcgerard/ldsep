@@ -127,8 +127,7 @@ rdf_hap <- mldest_genolike(genoarray = genoarray,
 ## Composite LD estimates
 rdf_comp <- mldest_genolike(genoarray = genoarray,
                             nc = nc,
-                            type = "comp",
-                            se = FALSE)
+                            type = "comp")
 
 ## Haplotypic and Composite LD are both close to 0.
 ## But composite is more variable.

@@ -516,11 +516,17 @@ ldest_hap <- function(ga,
   stopifnot(is.logical(grid_init))
   stopifnot(reltol > 0, nboot > 0, K > 0)
   if (is.vector(ga) & is.vector(gb)) {
+    which_bad <- is.na(ga) | is.na(gb)
+    ga <- ga[!which_bad]
+    gb <- gb[!which_bad]
     stopifnot(length(ga) == length(gb))
     stopifnot(ga >= 0, ga <= K)
     stopifnot(gb >= 0, gb <= K)
     using = "genotypes"
   } else if (is.matrix(ga) & is.matrix(gb)) {
+    which_bad <- apply(ga, 1, function(x) any(is.na(x))) | apply(gb, 1, function(x) any(is.na(x)))
+    ga <- ga[!which_bad, , drop = FALSE]
+    gb <- gb[!which_bad, , drop = FALSE]
     stopifnot(dim(ga) == dim(gb))
     stopifnot(K + 1 == ncol(ga))
     using = "likelihoods"
@@ -530,20 +536,7 @@ ldest_hap <- function(ga,
 
   ## check for monoallelic SNPs -----------------------------------------------
   if (using == "genotypes" & ((stats::sd(ga, na.rm = TRUE) < TOL) || (stats::sd(gb, na.rm = TRUE) < TOL))) {
-    retvec <- c(D         = NA_real_,
-                D_se      = NA_real_,
-                r2        = NA_real_,
-                r2_se     = NA_real_,
-                r         = NA_real_,
-                r_se      = NA_real_,
-                Dprime    = NA_real_,
-                Dprime_se = NA_real_,
-                z         = NA_real_,
-                z_se      = NA_real_,
-                p_ab      = NA_real_,
-                p_Ab      = NA_real_,
-                p_aB      = NA_real_,
-                p_AB      = NA_real_)
+    retvec <- nullvec_hap()
     return(retvec)
   }
 
@@ -656,5 +649,30 @@ ldest_hap <- function(ga,
               p_aB      = phat[[3]],
               p_AB      = phat[[4]])
 
+  return(retvec)
+}
+
+#' The null return value when estimating haplotypic LD
+#'
+#' @param K the ploidy of the species
+#'
+#' @author David Gerard
+#'
+#' @noRd
+nullvec_hap <- function() {
+  retvec <- c(D         = NA_real_,
+              D_se      = NA_real_,
+              r2        = NA_real_,
+              r2_se     = NA_real_,
+              r         = NA_real_,
+              r_se      = NA_real_,
+              Dprime    = NA_real_,
+              Dprime_se = NA_real_,
+              z         = NA_real_,
+              z_se      = NA_real_,
+              p_ab      = NA_real_,
+              p_Ab      = NA_real_,
+              p_aB      = NA_real_,
+              p_AB      = NA_real_)
   return(retvec)
 }
