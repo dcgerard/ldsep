@@ -162,7 +162,22 @@ format_lddf <- function(obj,
   nloci <- max(max(obj$i), max(obj$j))
   cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
   cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
-  colnames(cormat) <- seq_len(nloci)
-  rownames(cormat) <- seq_len(nloci)
+
+  if (all(is.na(obj$snpi))) {
+    rownames(cormat) <- seq_len(nloci)
+  } else {
+    agdf <- aggregate(formula = snpi ~ i, data = obj, FUN = `unique`)
+    rownames(cormat) <- rep(NA_character_, length = nloci)
+    rownames(cormat)[agdf$i] <- agdf$snpi
+  }
+
+  if (all(is.na(obj$snpj))) {
+    colnames(cormat) <- seq_len(nloci)
+  } else {
+    agdf <- aggregate(formula = snpj ~ j, data = obj, FUN = `unique`)
+    colnames(cormat) <- rep(NA_character_, length = nloci)
+    colnames(cormat)[agdf$j] <- agdf$snpj
+  }
+
   return(cormat)
 }

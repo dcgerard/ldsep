@@ -206,8 +206,8 @@ mldest_geno <- function(genomat,
                                }
                                estmat <- matrix(NA_real_,
                                                 nrow = nloci - i,
-                                                ncol = length(ldnull) + 2)
-                               colnames(estmat) <- c("i", "j", names(ldnull))
+                                                ncol = length(ldnull) + 4)
+                               colnames(estmat) <- c("i", "j", "snpi", "snpj", names(ldnull))
 
                                for (j in (i + 1):nloci) {
                                  estmat[j - i, 1] <- i
@@ -219,11 +219,10 @@ mldest_geno <- function(genomat,
                                                   type = type,
                                                   pen = pen,
                                                   se = se)
-                                   estmat[j - i, -c(1, 2)] <- ldout
+                                   estmat[j - i, -(1:4)] <- ldout
                                  }, error = function(e) NULL)
 
                                }
-                               colnames(estmat) <- c("i", "j", names(ldout))
                                estmat
                              }
 
@@ -233,6 +232,14 @@ mldest_geno <- function(genomat,
 
   outmat <- as.data.frame(outmat)
   class(outmat) <- c("lddf", "data.frame")
+
+  ## Check for snp names ------------------------------------------------------
+  if (!is.null(rownames(genomat))) {
+    snpnamevec <- rownames(genomat)
+    outmat$snpi <- snpnamevec[outmat$i]
+    outmat$snpj <- snpnamevec[outmat$j]
+  }
+
   return(outmat)
 }
 
@@ -317,6 +324,8 @@ mldest_genolike <- function(genoarray,
   nind <- dim(genoarray)[[2]]
   K <- dim(genoarray)[[3]] - 1
 
+
+
   ## Register workers ---------------------------------------------------------
   if (nc == 1) {
     foreach::registerDoSEQ()
@@ -342,8 +351,8 @@ mldest_genolike <- function(genoarray,
                                }
                                estmat <- matrix(NA_real_,
                                                 nrow = nloci - i,
-                                                ncol = length(ldnull) + 2)
-                               colnames(estmat) <- c("i", "j", names(ldnull))
+                                                ncol = length(ldnull) + 4)
+                               colnames(estmat) <- c("i", "j", "snpi", "snpj", names(ldnull))
 
                                for (j in (i + 1):nloci) {
                                  estmat[j - i, 1] <- i
@@ -356,7 +365,7 @@ mldest_genolike <- function(genoarray,
                                                   model = model,
                                                   pen = pen,
                                                   se = se)
-                                   estmat[j - i, -c(1, 2)] <- ldout
+                                   estmat[j - i, -(1:4)] <- ldout
                                  }, error = function(e) NULL)
                                }
                                estmat
@@ -368,5 +377,13 @@ mldest_genolike <- function(genoarray,
 
   outmat <- as.data.frame(outmat)
   class(outmat) <- c("lddf", "data.frame")
+
+  ## Check for snp names ------------------------------------------------------
+  if (!is.null(dimnames(genoarray))) {
+    snpnamevec <- dimnames(genoarray)[[1]]
+    outmat$snpi <- snpnamevec[outmat$i]
+    outmat$snpj <- snpnamevec[outmat$j]
+  }
+
   return(outmat)
 }
