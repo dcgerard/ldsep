@@ -166,7 +166,7 @@ format_lddf <- function(obj,
   if (all(is.na(obj$snpi))) {
     rownames(cormat) <- seq_len(nloci)
   } else {
-    agdf <- aggregate(formula = snpi ~ i, data = obj, FUN = `unique`)
+    agdf <- stats::aggregate(formula = snpi ~ i, data = obj, FUN = `unique`)
     rownames(cormat) <- rep(NA_character_, length = nloci)
     rownames(cormat)[agdf$i] <- agdf$snpi
   }
@@ -174,7 +174,7 @@ format_lddf <- function(obj,
   if (all(is.na(obj$snpj))) {
     colnames(cormat) <- seq_len(nloci)
   } else {
-    agdf <- aggregate(formula = snpj ~ j, data = obj, FUN = `unique`)
+    agdf <- stats::aggregate(formula = snpj ~ j, data = obj, FUN = `unique`)
     colnames(cormat) <- rep(NA_character_, length = nloci)
     colnames(cormat)[agdf$j] <- agdf$snpj
   }
