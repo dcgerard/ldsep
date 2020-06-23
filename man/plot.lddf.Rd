@@ -2,21 +2,26 @@
 % Please edit documentation in R/generics.R
 \name{plot.lddf}
 \alias{plot.lddf}
-\title{Plot the output of \code{\link{mldest_geno}()} or
-\code{\link{mldest_genolike}()} using \code{\link[corrplot]{corrplot}()}}
+\title{Plot the output of \code{\link{mldest}()} or
+\code{\link{sldest}()} using \code{\link[corrplot]{corrplot}()}}
 \usage{
 \method{plot}{lddf}(
   x,
-  element = c("z", "z_se", "D", "D_se", "Dprime", "Dprime_se", "r2", "r2_se", "r",
-    "r_se", "p_ab", "p_Ab", "p_aB", "p_AB"),
+  element = c("r2", "r2_se", "D", "D_se", "Dprime", "Dprime_se", "r", "r_se", "z",
+    "z_se", "p_ab", "p_Ab", "p_aB", "p_AB"),
   type = c("upper", "full", "lower"),
+  method = c("color", "circle", "square", "ellipse", "number", "shade", "pie"),
   diag = FALSE,
+  is.corr = NULL,
+  tl.pos = "n",
+  title = NULL,
+  na.label = "square",
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{lddf}, usually created using
-either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.}
+either \code{\link{mldest}()} or \code{\link{sldest}()}.}
 
 \item{element}{Which element of \code{x} should be plot?}
 
@@ -25,8 +30,23 @@ either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.}
 full matrix, lower triangular or upper
 triangular matrix.}
 
+\item{method}{See \code{\link[corrplot]{corrplot}()} for available options.
+Default value is \code{"color"}.}
+
 \item{diag}{Logical, whether display the correlation coefficients
 on the principal diagonal.}
+
+\item{is.corr}{See \code{\link[corrplot]{corrplot}()}. Default behavior
+is \code{TRUE} if an element is theoretically constrained to be
+between -1 and 1 and \code{FALSE} otherwise.}
+
+\item{tl.pos}{See \code{\link[corrplot]{corrplot}()}. Default value
+is \code{"n"}.}
+
+\item{title}{What should the title be? Defaults to the element name.}
+
+\item{na.label}{See \code{\link[corrplot]{corrplot}()}. Default value
+is \code{"square"}.}
 
 \item{...}{Additional arguments to pass to
 \code{\link[corrplot]{corrplot}()}. See the documentation of that
@@ -36,8 +56,14 @@ function for options.}
 (Invisibly) returns a matrix of the selected elements.
 }
 \description{
-Uses the \code{\link[corrplot]{corrplot}} R package to visualize
-LD estimates.
+Formats the LD estimates in the form of a matrix and creates a heatmap of
+these estimates. This heatmap is created using the
+\code{\link[corrplot]{corrplot}} R package. I've adjusted a lot of the defaults
+to suit my visualization preferences.
+}
+\details{
+For greater plotting flexibility, see \code{\link[corrplot]{corrplot}()}
+for the parameter options.
 }
 \examples{
 set.seed(1)
@@ -50,10 +76,10 @@ nc <- 1
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 
 ## Haplotypic LD estimates
-lddf <- mldest_geno(genomat = genomat,
-                    K = K,
-                    nc = nc,
-                    type = "hap")
+lddf <- mldest(geno = genomat,
+               K = K,
+               nc = nc,
+               type = "hap")
 
 ## Plot estimates of z
 plot(lddf, element = "z")

@@ -46,16 +46,16 @@ zshrink <- function(zmat, smat) {
 }
 
 #' Obtain shrinkage estimates of correlation from output of
-#' \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
+#' \code{\link{mldest}()} or \code{\link{sldest}()}.
 #'
-#' This will take the output of either \code{\link{mldest_geno}()} or
-#' \code{\link{mldest_genolike}()}, shrink the Fisher-z transformed
+#' This will take the output of either \code{\link{mldest}()} or
+#' \code{\link{sldest}()}, shrink the Fisher-z transformed
 #' correlation estimates using \code{\link[ashr]{ash}()}, then return
 #' the corresponding correlation estimates. You can obtain estimates of
 #' r^2 by just squaring these estimates.
 #'
 #' @param obj An object of class \code{lddf}, usually created using
-#'     either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
+#'     either \code{\link{mldest}()} or \code{\link{sldest}()}.
 #'
 #' @return A correlation matrix.
 #'
@@ -68,56 +68,4 @@ ldshrink <- function(obj) {
   smat <- format_lddf(obj = obj, element = "z_se")
   cormat <- zshrink(zmat = zmat, smat = smat)
   return(cormat)
-}
-
-
-#' PDF of laplace distribution.
-#'
-#' @param x a numeric
-#' @param mean The mean
-#' @param scale The scale
-#' @param log Return on the log-scale (\code{TRUE}) or not (\code{FALSE})?
-#'
-#' @author David Gerard
-#'
-#' @noRd
-dlaplace <- function(x, mean = 0, scale = 1, log = FALSE) {
-  dval <- -abs(x - mean) / scale - log(2 * scale)
-  if (!log) {
-    dval <- exp(dval)
-  }
-  return(dval)
-}
-
-#' Likelihood for MDS for u and beta.
-#'
-#' @param zmat The matrix of Fisher-z transformed correlation estimates.
-#' @param smat The matrix of standard errors of \code{zmat}.
-#' @param uvec The vector latent genetic maps.
-#' @param xivec The vector of group memberships (one of two groups). Should
-#'     be a vector of -1's and 1's.
-#' @param beta The additional scaling parameter.
-#'
-#'
-#' @examples
-#' n <- 50
-#' p <- 25
-#' zmat <- atanh(stats::cor(matrix(stats::rnorm(n * p), ncol = p)))
-#' diag(zmat) <- 0
-#' smat <- matrix(1 / sqrt(n - 3), nrow = p, ncol = p)
-#' diag(smat) <- 0
-#' xivec <- sign(eigen(zmat)$vectors[, 1])
-#' uvec <- rnorm(p)
-#' beta <- 1
-#'
-#' @author David Gerard
-#'
-#' @noRd
-mds_laplace_like <- function(zmat, smat, uvec, xivec, beta) {
-  distmat <- as.matrix(stats::dist(uvec))
-  stopifnot(beta > 0)
-  thetamat <- atanh(exp(-beta * tanh(distmat)))
-  thetamat <- sweep(x = thetamat * xivec, MARGIN = 2, STATS = xivec, FUN = `*`)
-  sum(dlaplace(x = zmat, mean = thetamat, scale = smat, log = TRUE),
-      na.rm = TRUE)
 }

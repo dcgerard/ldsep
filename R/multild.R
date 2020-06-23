@@ -131,6 +131,9 @@ mldest <- function(geno,
 #'     individuals at all SNPs
 #' @param pen The penalty to be applied to the likelihood. You can think about
 #'     this as the prior sample size.
+#' @param win The window size. Pairwise LD will be estimated plus or minus
+#'     these many positions. Larger sizes significantly increase the
+#'     computational load.
 #'
 #' @author David Gerard
 #'
@@ -169,17 +172,24 @@ mldest <- function(geno,
 #' abline(h = 0, lty = 2, col = 2)
 #'
 #'
-#' @export
+#' @noRd
 mldest_geno <- function(genomat,
                         K,
                         nc = 1,
                         type = c("hap", "comp"),
                         pen = ifelse(type == "hap", 2, 1),
-                        se = TRUE) {
+                        se = TRUE,
+                        win = NULL) {
   type <- match.arg(type)
   stopifnot(is.matrix(genomat))
   stopifnot(is.logical(se))
   nloci <- nrow(genomat)
+  if (is.null(win)) {
+    win <- nloci
+  } else {
+    stopifnot(win > 0)
+    stopifnot(length(win) == 1)
+  }
 
   ## Register workers ---------------------------------------------------------
   if (nc == 1) {
@@ -204,12 +214,15 @@ mldest_geno <- function(genomat,
                                } else {
                                  ldnull <- nullvec_comp(K = K, model = "flex") ## stupid hack. "flex" otherwise you get slots for sigma and mu
                                }
+                               endit <- min(nloci, i + win)
+
                                estmat <- matrix(NA_real_,
-                                                nrow = nloci - i,
+                                                nrow = endit - i,
                                                 ncol = length(ldnull) + 4)
                                colnames(estmat) <- c("i", "j", "snpi", "snpj", names(ldnull))
 
-                               for (j in (i + 1):nloci) {
+
+                               for (j in (i + 1):endit) {
                                  estmat[j - i, 1] <- i
                                  estmat[j - i, 2] <- j
                                  tryCatch({
@@ -260,6 +273,9 @@ mldest_geno <- function(genomat,
 #'     be one minus the size of the third dimension.
 #' @param pen The penalty to be applied to the likelihood. You can think about
 #'     this as the prior sample size.
+#' @param win The window size. Pairwise LD will be estimated plus or minus
+#'     these many positions. Larger sizes significantly increase the
+#'     computational load.
 #'
 #' @author David Gerard
 #'
@@ -308,13 +324,14 @@ mldest_geno <- function(genomat,
 #'         xlab = "Type")
 #' abline(h = 0, lty = 2, col = 2)
 #'
-#' @export
+#' @noRd
 mldest_genolike <- function(genoarray,
                             nc = 1,
                             type = c("hap", "comp"),
                             model = c("norm", "flex"),
                             pen = ifelse(type == "hap", 2, 1),
-                            se = TRUE) {
+                            se = TRUE,
+                            win = NULL) {
   type <- match.arg(type)
   model <- match.arg(model)
   stopifnot(is.logical(se))
@@ -323,8 +340,12 @@ mldest_genolike <- function(genoarray,
   nloci <- dim(genoarray)[[1]]
   nind <- dim(genoarray)[[2]]
   K <- dim(genoarray)[[3]] - 1
-
-
+  if (is.null(win)) {
+    win <- nloci
+  } else {
+    stopifnot(win > 0)
+    stopifnot(length(win) == 1)
+  }
 
   ## Register workers ---------------------------------------------------------
   if (nc == 1) {
@@ -349,12 +370,14 @@ mldest_genolike <- function(genoarray,
                                } else {
                                  ldnull <- nullvec_comp(K = K, model = model)
                                }
+
+                               endit <- min(nloci, i + win)
                                estmat <- matrix(NA_real_,
-                                                nrow = nloci - i,
+                                                nrow = endit - i,
                                                 ncol = length(ldnull) + 4)
                                colnames(estmat) <- c("i", "j", "snpi", "snpj", names(ldnull))
 
-                               for (j in (i + 1):nloci) {
+                               for (j in (i + 1):endit) {
                                  estmat[j - i, 1] <- i
                                  estmat[j - i, 2] <- j
                                  tryCatch({

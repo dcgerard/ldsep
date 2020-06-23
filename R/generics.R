@@ -17,21 +17,36 @@ is.lddf <- function(x) {
   inherits(x, "lddf")
 }
 
-#' Plot the output of \code{\link{mldest_geno}()} or
-#' \code{\link{mldest_genolike}()} using \code{\link[corrplot]{corrplot}()}
+#' Plot the output of \code{\link{mldest}()} or
+#' \code{\link{sldest}()} using \code{\link[corrplot]{corrplot}()}
 #'
-#' Uses the \code{\link[corrplot]{corrplot}} R package to visualize
-#' LD estimates.
+#' Formats the LD estimates in the form of a matrix and creates a heatmap of
+#' these estimates. This heatmap is created using the
+#' \code{\link[corrplot]{corrplot}} R package. I've adjusted a lot of the defaults
+#' to suit my visualization preferences.
+#'
+#' For greater plotting flexibility, see \code{\link[corrplot]{corrplot}()}
+#' for the parameter options.
 #'
 #' @param x An object of class \code{lddf}, usually created using
-#'     either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.
+#'     either \code{\link{mldest}()} or \code{\link{sldest}()}.
 #' @param element Which element of \code{x} should be plot?
 #' @param type Character, \code{"full"},
 #'     \code{"upper"} (default) or \code{"lower"}, display
 #'     full matrix, lower triangular or upper
 #'     triangular matrix.
+#' @param method See \code{\link[corrplot]{corrplot}()} for available options.
+#'     Default value is \code{"color"}.
+#' @param is.corr See \code{\link[corrplot]{corrplot}()}. Default behavior
+#'     is \code{TRUE} if an element is theoretically constrained to be
+#'     between -1 and 1 and \code{FALSE} otherwise.
+#' @param tl.pos See \code{\link[corrplot]{corrplot}()}. Default value
+#'     is \code{"n"}.
+#' @param na.label See \code{\link[corrplot]{corrplot}()}. Default value
+#'     is \code{"square"}.
 #' @param diag Logical, whether display the correlation coefficients
 #'     on the principal diagonal.
+#' @param title What should the title be? Defaults to the element name.
 #' @param ... Additional arguments to pass to
 #'     \code{\link[corrplot]{corrplot}()}. See the documentation of that
 #'     function for options.
@@ -49,10 +64,10 @@ is.lddf <- function(x) {
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 #'
 #' ## Haplotypic LD estimates
-#' lddf <- mldest_geno(genomat = genomat,
-#'                     K = K,
-#'                     nc = nc,
-#'                     type = "hap")
+#' lddf <- mldest(geno = genomat,
+#'                K = K,
+#'                nc = nc,
+#'                type = "hap")
 #'
 #' ## Plot estimates of z
 #' plot(lddf, element = "z")
@@ -61,26 +76,57 @@ is.lddf <- function(x) {
 #'
 #' @export
 plot.lddf <- function(x,
-                      element = c("z",
-                                  "z_se",
+                      element = c("r2",
+                                  "r2_se",
                                   "D",
                                   "D_se",
                                   "Dprime",
                                   "Dprime_se",
-                                  "r2",
-                                  "r2_se",
                                   "r",
                                   "r_se",
+                                  "z",
+                                  "z_se",
                                   "p_ab",
                                   "p_Ab",
                                   "p_aB",
                                   "p_AB"),
-                      type = c("upper", "full", "lower"),
+                      type = c("upper",
+                               "full",
+                               "lower"),
+                      method = c("color",
+                                 "circle",
+                                 "square",
+                                 "ellipse",
+                                 "number",
+                                 "shade",
+                                 "pie"),
                       diag = FALSE,
+                      is.corr = NULL,
+                      tl.pos = "n",
+                      title = NULL,
+                      na.label = "square",
                       ...) {
   type <- match.arg(type)
   stopifnot(is.logical(diag))
   element <- match.arg(element)
+  method <- match.arg(method)
+  if (is.null(is.corr)) {
+    is.corr <- element %in% c("r2",
+                              "D",
+                              "Dprime",
+                              "r",
+                              "p_ab",
+                              "p_Ab",
+                              "p_aB",
+                              "p_AB")
+  }
+  if (is.null(title)) {
+    title <- element
+  } else {
+    stopifnot(is.character(title))
+    stopifnot(length(title) == 1)
+  }
+
   cormat <- format_lddf(obj = x, element = element)
 
   if (diag) {
@@ -89,30 +135,30 @@ plot.lddf <- function(x,
   if (type != "upper") {
     cormat[lower.tri(cormat)] <- t(cormat)[lower.tri(cormat)]
   }
-  if (element %in% c("z", "z_se")) {
-    is.corr <- FALSE
-  } else {
-    is.corr <- TRUE
-  }
+
   corrplot::corrplot(corr = cormat,
                      type = type,
                      diag = diag,
                      is.corr = is.corr,
+                     method = method,
+                     tl.pos = tl.pos,
+                     title = title,
+                     na.label = na.label,
                      ...)
 }
 
 
-#' Format an element of \code{\link{mldest_geno}()} or
-#' \code{\link{mldest_genolike}()} into an
+#' Format an element of \code{\link{mldest}()} or
+#' \code{\link{sldest}()} into an
 #' upper-triangular matrix.
 #'
 #' Formats the correlation estimates and standard errors output
-#' from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
+#' from running \code{\link{mldest}()} or \code{\link{sldest}()}
 #' into a more conventional upper-triangular matrix.
 #'
 #' @param obj An object of class \code{lddf}, usually output from
-#'     running either \code{\link{mldest_geno}()} or
-#'     \code{\link{mldest_genolike}()}.
+#'     running either \code{\link{mldest}()} or
+#'     \code{\link{sldest}()}.
 #' @param element Which element in \code{obj} should we format into an
 #'     upper-triangular matrix?
 #'
@@ -132,10 +178,10 @@ plot.lddf <- function(x,
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 #'
 #' ## Haplotypic LD estimates
-#' lddf <- mldest_geno(genomat = genomat,
-#'                     K = K,
-#'                     nc = nc,
-#'                     type = "hap")
+#' lddf <- mldest(geno = genomat,
+#'                K = K,
+#'                nc = nc,
+#'                type = "hap")
 #'
 #' ## Obtain the D estimates in matrix form
 #' Dmat <- format_lddf(obj = lddf, element = "D")

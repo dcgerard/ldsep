@@ -3,20 +3,20 @@
 \name{ldshrink}
 \alias{ldshrink}
 \title{Obtain shrinkage estimates of correlation from output of
-\code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.}
+\code{\link{mldest}()} or \code{\link{sldest}()}.}
 \usage{
 ldshrink(obj)
 }
 \arguments{
 \item{obj}{An object of class \code{lddf}, usually created using
-either \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}.}
+either \code{\link{mldest}()} or \code{\link{sldest}()}.}
 }
 \value{
 A correlation matrix.
 }
 \description{
-This will take the output of either \code{\link{mldest_geno}()} or
-\code{\link{mldest_genolike}()}, shrink the Fisher-z transformed
+This will take the output of either \code{\link{mldest}()} or
+\code{\link{sldest}()}, shrink the Fisher-z transformed
 correlation estimates using \code{\link[ashr]{ash}()}, then return
 the corresponding correlation estimates. You can obtain estimates of
 r^2 by just squaring these estimates.

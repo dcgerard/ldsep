@@ -2,8 +2,8 @@
 % Please edit documentation in R/generics.R
 \name{format_lddf}
 \alias{format_lddf}
-\title{Format an element of \code{\link{mldest_geno}()} or
-\code{\link{mldest_genolike}()} into an
+\title{Format an element of \code{\link{mldest}()} or
+\code{\link{sldest}()} into an
 upper-triangular matrix.}
 \usage{
 format_lddf(
@@ -14,8 +14,8 @@ format_lddf(
 }
 \arguments{
 \item{obj}{An object of class \code{lddf}, usually output from
-running either \code{\link{mldest_geno}()} or
-\code{\link{mldest_genolike}()}.}
+running either \code{\link{mldest}()} or
+\code{\link{sldest}()}.}
 
 \item{element}{Which element in \code{obj} should we format into an
 upper-triangular matrix?}
@@ -26,7 +26,7 @@ matrix is filled. The lower-triangle and the diagonal are \code{NA}'s.
 }
 \description{
 Formats the correlation estimates and standard errors output
-from running \code{\link{mldest_geno}()} or \code{\link{mldest_genolike}()}
+from running \code{\link{mldest}()} or \code{\link{sldest}()}
 into a more conventional upper-triangular matrix.
 }
 \examples{
@@ -40,10 +40,10 @@ nc <- 1
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 
 ## Haplotypic LD estimates
-lddf <- mldest_geno(genomat = genomat,
-                    K = K,
-                    nc = nc,
-                    type = "hap")
+lddf <- mldest(geno = genomat,
+               K = K,
+               nc = nc,
+               type = "hap")
 
 ## Obtain the D estimates in matrix form
 Dmat <- format_lddf(obj = lddf, element = "D")
