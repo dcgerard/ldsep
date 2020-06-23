@@ -163,20 +163,21 @@ format_lddf <- function(obj,
   cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
   cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]
 
-  if (all(is.na(obj$snpi))) {
+  if (all(is.na(obj$snpi)) & all(is.na(obj$snpj))) {
     rownames(cormat) <- seq_len(nloci)
-  } else {
-    agdf <- stats::aggregate(formula = snpi ~ i, data = obj, FUN = `unique`)
-    rownames(cormat) <- rep(NA_character_, length = nloci)
-    rownames(cormat)[agdf$i] <- agdf$snpi
-  }
-
-  if (all(is.na(obj$snpj))) {
     colnames(cormat) <- seq_len(nloci)
   } else {
-    agdf <- stats::aggregate(formula = snpj ~ j, data = obj, FUN = `unique`)
+    agdf1 <- stats::aggregate(formula = snpi ~ i, data = obj, FUN = `unique`)
+    agdf2 <- stats::aggregate(formula = snpj ~ j, data = obj, FUN = `unique`)
+    names(agdf2) <- c("i", "snpi")
+    agdf <- merge(x = agdf1,
+                  y = agdf2,
+                  by = c("i", "snpi"),
+                  all = TRUE)
+    rownames(cormat) <- rep(NA_character_, length = nloci)
     colnames(cormat) <- rep(NA_character_, length = nloci)
-    colnames(cormat)[agdf$j] <- agdf$snpj
+    rownames(cormat)[agdf$i] <- agdf$snpi
+    colnames(cormat)[agdf$i] <- agdf$snpi
   }
 
   return(cormat)
