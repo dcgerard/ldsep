@@ -1,3 +1,3 @@
-# ldsep 0.0.0.9004
+# ldsep 1.0.0
 
 * Initial release of package.

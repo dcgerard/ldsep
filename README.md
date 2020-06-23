@@ -17,18 +17,21 @@ status](https://www.r-pkg.org/badges/version/ldsep)](https://CRAN.R-project.org/
 v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
-Estimate haplotypic or composite pairwise linkage disequilibrium (LD),
-using either genotypes or genotype likelihoods. Support is provided to
-estimate the popular measures of LD: the LD coefficient \(D\), the
-standardized LD coefficient \(D'\), and the Pearson correlation
-coefficient \(r\). All estimates are returned with corresponding
-standard errors. These estimates and standard errors can then be used
-for shrinkage estimation. The methods are described in Gerard (2020).
+Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in
+polyploids, using either genotypes or genotype likelihoods. Support is
+provided to estimate the popular measures of LD: the LD coefficient
+\(D\), the standardized LD coefficient \(D'\), and the Pearson
+correlation coefficient \(r\). All estimates are returned with
+corresponding standard errors. These estimates and standard errors can
+then be used for shrinkage estimation. The methods are described in
+Gerard (2020).
 
 The main functions are:
 
   - `ldest()`: Estimates pairwise LD.
   - `mldest()`: Iteratively apply `ldest()` across many pairs of SNPs.
+  - `sldest()`: Iteratively apply `ldest()` along a sliding window of
+    fixed length.
   - `plot.lddf()`: Plot method for the output of `mldest()`.
   - `format_lddf()`: Format the output of `mldest()` into a matrix.
   - `ldshrink()`: Shrink correlation estimates using adaptive shrinkage
