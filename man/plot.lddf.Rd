@@ -7,8 +7,7 @@
 \usage{
 \method{plot}{lddf}(
   x,
-  element = c("r2", "r2_se", "D", "D_se", "Dprime", "Dprime_se", "r", "r_se", "z",
-    "z_se", "p_ab", "p_Ab", "p_aB", "p_AB"),
+  element = "r2",
   type = c("upper", "full", "lower"),
   method = c("color", "circle", "square", "ellipse", "number", "shade", "pie"),
   diag = FALSE,

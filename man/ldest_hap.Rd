@@ -103,6 +103,7 @@ Only returned if estimating the haplotypic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.}
+\item{\code{n}}{The number of individuals used to estimate pairwise LD.}
 }
 }
 \description{

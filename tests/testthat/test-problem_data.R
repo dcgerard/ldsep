@@ -1,12 +1,9 @@
-test_that("problem data for norm", {
+# test_that("problem data for norm", {
   ## these data result in correlation estimates of 1 --- on boundary.
-  pgA <- as.matrix(read.csv("./pgA.csv"))
-  pgB <- as.matrix(read.csv("./pgB.csv"))
-  K <- ncol(pgA) - 1
-  ldout <- ldest_comp(ga = pgA, gb = pgB, K = K)
-
-  expect_true(is.na(ldout[["D_se"]]))
-
+  # pgA <- as.matrix(read.csv("./pgA.csv"))
+  # pgB <- as.matrix(read.csv("./pgB.csv"))
+  # K <- ncol(pgA) - 1
+  # ldout <- ldest_comp(ga = pgA, gb = pgB, K = K)
   # postA <- exp(pgA)
   # postA <- postA / rowSums(postA)
   # postB <- exp(pgB)
@@ -27,7 +24,7 @@ test_that("problem data for norm", {
   #                      hessian = TRUE,
   #                      pgA = pgA,
   #                      pgB = pgB)
-})
+# })
 
 test_that("Monoallelic snps don't cause issues", {
   K <- 6
@@ -79,7 +76,6 @@ test_that("NA's don't cause issues", {
   expect_equal(names(ldnull_comp), names(ldcompout), names(ldcompout2))
   expect_equal(names(ldnull_comp_norm), names(ldcompout3))
 })
-
 
 
 

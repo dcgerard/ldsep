@@ -76,20 +76,7 @@ is.lddf <- function(x) {
 #'
 #' @export
 plot.lddf <- function(x,
-                      element = c("r2",
-                                  "r2_se",
-                                  "D",
-                                  "D_se",
-                                  "Dprime",
-                                  "Dprime_se",
-                                  "r",
-                                  "r_se",
-                                  "z",
-                                  "z_se",
-                                  "p_ab",
-                                  "p_Ab",
-                                  "p_aB",
-                                  "p_AB"),
+                      element = "r2",
                       type = c("upper",
                                "full",
                                "lower"),
@@ -108,17 +95,11 @@ plot.lddf <- function(x,
                       ...) {
   type <- match.arg(type)
   stopifnot(is.logical(diag))
-  element <- match.arg(element)
+  stopifnot(length(element) == 1)
+  stopifnot(element %in% names(x))
   method <- match.arg(method)
   if (is.null(is.corr)) {
-    is.corr <- element %in% c("r2",
-                              "D",
-                              "Dprime",
-                              "r",
-                              "p_ab",
-                              "p_Ab",
-                              "p_aB",
-                              "p_AB")
+    is.corr <- all((x[[element]] >= -1) & (x[[element]] <= 1), na.rm = TRUE)
   }
   if (is.null(title)) {
     title <- element
@@ -189,22 +170,10 @@ plot.lddf <- function(x,
 #'
 #' @export
 format_lddf <- function(obj,
-                        element = c("z",
-                                    "z_se",
-                                    "D",
-                                    "D_se",
-                                    "Dprime",
-                                    "Dprime_se",
-                                    "r2",
-                                    "r2_se",
-                                    "r",
-                                    "r_se",
-                                    "p_ab",
-                                    "p_Ab",
-                                    "p_aB",
-                                    "p_AB")) {
+                        element = "r2") {
   stopifnot(is.lddf(obj))
-  element <- match.arg(element)
+  stopifnot(length(element) == 1)
+  stopifnot(element %in% names(obj))
   nloci <- max(max(obj$i), max(obj$j))
   cormat <- matrix(NA_real_, ncol = nloci, nrow = nloci)
   cormat[as.matrix(obj[, c("i", "j")])] <- obj[[element]]

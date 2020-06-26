@@ -144,8 +144,8 @@ double prior_mu(arma::vec mu, int K) {
   if (mu.n_elem != 2) {
     Rcpp::stop("prior_mu: mu not of length 2.");
   }
-  double lval = R::dnorm(mu(0), (double)K / 2.0, 2.0 * (double)K, true) +
-    R::dnorm(mu(1), (double)K / 2.0, 2.0 * (double)K, true);
+  double lval = R::dnorm(mu(0), (double)K / 2.0, (double)K, true) +
+    R::dnorm(mu(1), (double)K / 2.0, (double)K, true);
   return lval;
 }
 
@@ -154,9 +154,11 @@ double prior_sigma(arma::vec lvec) {
   if (lvec.n_elem != 3) {
     Rcpp::stop("prior_sigma: lvec not of length 3.");
   }
-  double lval = R::dchisq(lvec(0), 2, true) + std::log(2.0 * lvec(0)) +
-    R::dnorm(lvec(1), 0, 1, true) +
-    R::dchisq(lvec(2), 1, true) + std::log(2.0 * lvec(2));
+  double cval = 1.5;
+  double lval = R::dchisq(lvec(0) / cval, 5.0, true) + std::log(2.0 * lvec(0) / cval) +
+    R::dnorm(lvec(1) / cval, 0.0, 1.0, true) +
+    R::dchisq(lvec(2) / cval, 4.0, true) + std::log(2.0 * lvec(2) / cval) -
+    3.0 * std::log(cval);
   return lval;
 }
 

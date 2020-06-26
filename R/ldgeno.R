@@ -155,6 +155,7 @@
 #'   \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 #'       and genotype j at locus 2. Only returned if estimating the
 #'       composite LD.}
+#'   \item{\code{n}}{The number of individuals used to estimate pairwise LD.}
 #' }
 #'
 #' @examples
@@ -634,6 +635,12 @@ ldest_hap <- function(ga,
     z_se <- NA_real_
   }
 
+  if (using == "genotypes") {
+    nind <- length(ga)
+  } else {
+    nind <- nrow(ga)
+  }
+
   retvec <- c(D         = D,
               D_se      = D_se,
               r2        = r2,
@@ -647,7 +654,8 @@ ldest_hap <- function(ga,
               p_ab      = phat[[1]],
               p_Ab      = phat[[2]],
               p_aB      = phat[[3]],
-              p_AB      = phat[[4]])
+              p_AB      = phat[[4]],
+              n         = nind)
 
   return(retvec)
 }
@@ -673,6 +681,7 @@ nullvec_hap <- function() {
               p_ab      = NA_real_,
               p_Ab      = NA_real_,
               p_aB      = NA_real_,
-              p_AB      = NA_real_)
+              p_AB      = NA_real_,
+              n         = NA_real_)
   return(retvec)
 }

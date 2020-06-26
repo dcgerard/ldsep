@@ -5,13 +5,15 @@
 \title{Shrinks Fisher-z transformed correlation estimates and returns resulting
 correlation estimates.}
 \usage{
-zshrink(zmat, smat)
+zshrink(zmat, smat, ...)
 }
 \arguments{
 \item{zmat}{The matrix of Fisher-z transformed correlation estimates.}
 
 \item{smat}{The matrix of standard errors of the Fisher-z transformed
 correlation estimates.}
+
+\item{...}{Additional arguments to pass to \code{\link[ashr]{ash}()}.}
 }
 \value{
 A matrix of correlation estimates. These are posterior means

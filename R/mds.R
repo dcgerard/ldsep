@@ -13,6 +13,7 @@
 #' @param zmat The matrix of Fisher-z transformed correlation estimates.
 #' @param smat The matrix of standard errors of the Fisher-z transformed
 #'     correlation estimates.
+#' @param ... Additional arguments to pass to \code{\link[ashr]{ash}()}.
 #'
 #' @return A matrix of correlation estimates. These are posterior means
 #'     of the correlation estimates after applying the CorShrink method
@@ -30,14 +31,21 @@
 #' @author David Gerard
 #'
 #' @export
-zshrink <- function(zmat, smat) {
+zshrink <- function(zmat, smat, ...) {
   stopifnot(dim(zmat) == dim(smat))
   betahat <- zmat[upper.tri(zmat)]
   sebetahat <- smat[upper.tri(smat)]
-  aout <- ashr::ash(betahat     = betahat,
-                    sebetahat   = sebetahat,
-                    mixcompdist = "uniform")
-  corvec <- tanh(ashr::get_pm(aout))
+
+  finite_beta <- is.finite(betahat)
+  aout <- ashr::ash(betahat     = betahat[finite_beta],
+                    sebetahat   = sebetahat[finite_beta],
+                    mixcompdist = "uniform",
+                    ...)
+  corvec <- rep(NA_real_, length(betahat))
+  if (any(!finite_beta)) {
+    corvec[!finite_beta] <- sign(betahat[!finite_beta])
+  }
+  corvec[finite_beta] <- tanh(ashr::get_pm(aout))
   cormat <- matrix(NA_real_, ncol = ncol(zmat), nrow = nrow(zmat))
   diag(cormat) <- 1
   cormat[upper.tri(cormat)] <- corvec
@@ -56,16 +64,17 @@ zshrink <- function(zmat, smat) {
 #'
 #' @param obj An object of class \code{lddf}, usually created using
 #'     either \code{\link{mldest}()} or \code{\link{sldest}()}.
+#' @param ... Additional arguments to pass to \code{\link[ashr]{ash}()}.
 #'
 #' @return A correlation matrix.
 #'
 #' @author David Gerard
 #'
 #' @export
-ldshrink <- function(obj) {
+ldshrink <- function(obj, ...) {
   stopifnot(is.lddf(obj))
   zmat <- format_lddf(obj = obj, element = "z")
   smat <- format_lddf(obj = obj, element = "z_se")
-  cormat <- zshrink(zmat = zmat, smat = smat)
+  cormat <- zshrink(zmat = zmat, smat = smat, ...)
   return(cormat)
 }

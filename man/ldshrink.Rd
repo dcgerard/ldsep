@@ -5,11 +5,13 @@
 \title{Obtain shrinkage estimates of correlation from output of
 \code{\link{mldest}()} or \code{\link{sldest}()}.}
 \usage{
-ldshrink(obj)
+ldshrink(obj, ...)
 }
 \arguments{
 \item{obj}{An object of class \code{lddf}, usually created using
 either \code{\link{mldest}()} or \code{\link{sldest}()}.}
+
+\item{...}{Additional arguments to pass to \code{\link[ashr]{ash}()}.}
 }
 \value{
 A correlation matrix.

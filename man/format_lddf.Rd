@@ -6,11 +6,7 @@
 \code{\link{sldest}()} into an
 upper-triangular matrix.}
 \usage{
-format_lddf(
-  obj,
-  element = c("z", "z_se", "D", "D_se", "Dprime", "Dprime_se", "r2", "r2_se", "r",
-    "r_se", "p_ab", "p_Ab", "p_aB", "p_AB")
-)
+format_lddf(obj, element = "r2")
 }
 \arguments{
 \item{obj}{An object of class \code{lddf}, usually output from

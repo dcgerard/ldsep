@@ -77,7 +77,7 @@ ldsimp <- function(ga, gb, K) {
               Dprime_se = Dprime_se,
               z         = z,
               z_se      = z_se)
-  retvec <- c(retvec, qvec)
+  retvec <- c(retvec, qvec, n = n)
 
   return(retvec)
 }
@@ -113,6 +113,7 @@ nullvec_comp <- function(K, model = c("norm", "flex")) {
   qvec <- rep(NA_real_, length = nrow(inddf))
   names(qvec) <- paste0("q", inddf$i, inddf$j)
   retvec <- c(retvec, qvec)
+  retvec <- c(retvec, n = NA_real_)
   return(retvec)
 }
 
@@ -439,6 +440,10 @@ ldest_comp <- function(ga,
     retvec <- c(retvec, qvec)
   }
 
+  if (using == "likelihoods") {
+    retvec <- c(retvec, n = nrow(ga))
+  }
+
   return(retvec)
 }
 
@@ -456,14 +461,7 @@ Dfromg <- function(gmat) {
   stopifnot(nrow(gmat) == ncol(gmat))
   stopifnot(abs(sum(gmat) - 1) < TOL)
   K <- ncol(gmat) - 1
-  sum(
-    sweep(x = sweep(x = gmat,
-                    MARGIN = 1,
-                    STATS = 0:K,
-                    FUN = `*`),
-          MARGIN = 2,
-          STATS = 0:K,
-          FUN = `*`)) / K -
+  sum(gmat * tcrossprod(0:K)) / K -
     sum(0:K * rowSums(gmat)) * sum(0:K * colSums(gmat)) / K
 }
 
