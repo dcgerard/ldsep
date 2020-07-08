@@ -370,16 +370,29 @@ get_dprobgeno_dprob_array <- function(K, prob) {
     .Call(`_ldsep_get_dprobgeno_dprob_array`, K, prob)
 }
 
-#' Get a matrix of log probabilities
+#' Obtain the distribution of genotypes given haplotype frequencies under HWE
 #'
-#' @param K the ploidy
-#' @param prob Haplotype frequencies in order (ab, Ab, aB, AB).
+#' This function will calculate the (log) probabilities for all genotype
+#' combinations at two loci given just the haplotype frequencies. This
+#' is under the assumptions of HWE.
+#'
+#' @param K The ploidy of the species.
+#' @param prob Haplotype frequencies in the order of (ab, Ab, aB, AB).
+#' @param log_p A logical. Should we return the log-probabilities (\code{TRUE})
+#'     or the probabilities (\code{FALSE}). Defaults to \code{TRUE}.
+#'
+#' @return Element (i, j) is the (log) probability of genotype i-1 at locus 1
+#'     and genotype j-1 at locus 2.
 #'
 #' @author David Gerard
 #'
-#' @noRd
-get_prob_array <- function(K, prob) {
-    .Call(`_ldsep_get_prob_array`, K, prob)
+#' @examples
+#' get_prob_array(K = 6, prob = c(0.1, 0.2, 0.3, 0.4), log_p = FALSE)
+#'
+#' @export
+#'
+get_prob_array <- function(K, prob, log_p = TRUE) {
+    .Call(`_ldsep_get_prob_array`, K, prob, log_p)
 }
 
 #' Gradient of \code{\link{probgenolike}()} with respect to \code{prob}.

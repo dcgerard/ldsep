@@ -3,6 +3,7 @@
 S3method(plot,lddf)
 export(Dprime)
 export(format_lddf)
+export(get_prob_array)
 export(is.lddf)
 export(ldest)
 export(ldest_comp)

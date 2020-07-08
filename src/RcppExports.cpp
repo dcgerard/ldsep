@@ -309,14 +309,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_prob_array
-arma::mat get_prob_array(int K, arma::vec prob);
-RcppExport SEXP _ldsep_get_prob_array(SEXP KSEXP, SEXP probSEXP) {
+arma::mat get_prob_array(int K, arma::vec prob, bool log_p);
+RcppExport SEXP _ldsep_get_prob_array(SEXP KSEXP, SEXP probSEXP, SEXP log_pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type prob(probSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_prob_array(K, prob));
+    Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_prob_array(K, prob, log_p));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -671,7 +672,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_proballgenolike", (DL_FUNC) &_ldsep_proballgenolike, 4},
     {"_ldsep_llike_genolike", (DL_FUNC) &_ldsep_llike_genolike, 4},
     {"_ldsep_get_dprobgeno_dprob_array", (DL_FUNC) &_ldsep_get_dprobgeno_dprob_array, 2},
-    {"_ldsep_get_prob_array", (DL_FUNC) &_ldsep_get_prob_array, 2},
+    {"_ldsep_get_prob_array", (DL_FUNC) &_ldsep_get_prob_array, 3},
     {"_ldsep_dprobgenolike_dprob", (DL_FUNC) &_ldsep_dprobgenolike_dprob, 3},
     {"_ldsep_dproballgenolike_dprob", (DL_FUNC) &_ldsep_dproballgenolike_dprob, 3},
     {"_ldsep_dllike_genolike_dpar", (DL_FUNC) &_ldsep_dllike_genolike_dpar, 4},
