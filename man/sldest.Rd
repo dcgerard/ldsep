@@ -32,7 +32,7 @@ is the genotype log-likelihood at SNP \code{i} for
 individual \code{j} and dosage \code{k - 1}.}
 }}
 
-\item{K}{The ploidy of the species. Assumed to bethe same for all
+\item{K}{The ploidy of the species. Assumed to be the same for all
 individuals.}
 
 \item{win}{The window size. Pairwise LD will be estimated plus or minus
@@ -110,7 +110,7 @@ composite LD.}
 }
 }
 \description{
-This funciton is a wrapper for \code{\link{ldest}()} for estimating LD
+This function is a wrapper for \code{\link{ldest}()} for estimating LD
 along a sliding window of a fixed size. Support is provided for parallelization through the
 foreach and doParallel packages.
 }

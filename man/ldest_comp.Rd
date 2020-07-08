@@ -41,7 +41,7 @@ the genotypes. That is \code{gb[i, j]} is the genotype
 likelihood of individual \code{i} for genotype \code{j-1}.}
 }}
 
-\item{K}{The ploidy of the species. Assumed to bethe same for all
+\item{K}{The ploidy of the species. Assumed to be the same for all
 individuals.}
 
 \item{pen}{The penalty to be applied to the likelihood. You can think about

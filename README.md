@@ -32,8 +32,10 @@ The main functions are:
   - `mldest()`: Iteratively apply `ldest()` across many pairs of SNPs.
   - `sldest()`: Iteratively apply `ldest()` along a sliding window of
     fixed length.
-  - `plot.lddf()`: Plot method for the output of `mldest()`.
-  - `format_lddf()`: Format the output of `mldest()` into a matrix.
+  - `plot.lddf()`: Plot method for the output of `mldest()` and
+    `sldest()`.
+  - `format_lddf()`: Format the output of `mldest()` and `sldest()` into
+    a matrix.
   - `ldshrink()`: Shrink correlation estimates using adaptive shrinkage
     (Stephens, 2017; Dey and Stephens, 2018).
 

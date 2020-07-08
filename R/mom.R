@@ -27,7 +27,7 @@
 #'     locus 1.
 #' @param gb Either the genotype at locus 2 or the posterior mean genotype at
 #'     locus 2.
-#' @param K The ploidy of hte species. Assumed to be the same for all
+#' @param K The ploidy of the species. Assumed to be the same for all
 #'     individuals.
 #'
 #' @inherit ldest return

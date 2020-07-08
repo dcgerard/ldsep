@@ -32,7 +32,7 @@ is the genotype log-likelihood at SNP \code{i} for
 individual \code{j} and dosage \code{k - 1}.}
 }}
 
-\item{K}{The ploidy of the species. Assumed to bethe same for all
+\item{K}{The ploidy of the species. Assumed to be the same for all
 individuals.}
 
 \item{nc}{The number of computing cores to use. This should never be

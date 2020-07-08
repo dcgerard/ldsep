@@ -6,7 +6,7 @@
 
 #' Sliding window LD estimation
 #'
-#' This funciton is a wrapper for \code{\link{ldest}()} for estimating LD
+#' This function is a wrapper for \code{\link{ldest}()} for estimating LD
 #' along a sliding window of a fixed size. Support is provided for parallelization through the
 #' foreach and doParallel packages.
 #'

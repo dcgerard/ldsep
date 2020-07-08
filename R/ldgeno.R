@@ -99,7 +99,7 @@
 #'               the genotypes. That is \code{gb[i, j]} is the genotype
 #'               likelihood of individual \code{i} for genotype \code{j-1}.}
 #'         }
-#' @param K The ploidy of the species. Assumed to bethe same for all
+#' @param K The ploidy of the species. Assumed to be the same for all
 #'     individuals.
 #' @param type The type of LD to calculate. The available types are
 #'     haplotypic LD (\code{type = "hap"}) or composite LD
