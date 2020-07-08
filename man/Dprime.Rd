@@ -4,7 +4,7 @@
 \alias{Dprime}
 \title{Get the standardized composite D'.}
 \usage{
-Dprime(qmat, type = c("geno", "allele"), constrain = FALSE)
+Dprime(qmat, type = c("allele", "geno"), constrain = FALSE)
 }
 \arguments{
 \item{qmat}{The observed joint genotype distribution.}

@@ -13,6 +13,16 @@
 #' particular, small sequencing depth, these estimates tend to be very
 #' biased.
 #'
+#' Dprimeg is estimated using sample genotype frequencies after rounding
+#' the provided genotypes to the nearest whole number. This can
+#' create signifant deviations from the moment-based estimates when
+#' there are a lot of fractional genotypes. Note that even when
+#' all genotypes are whole numbers, Dprimeg will be slightly larger
+#' (n / (n-1) times larger)
+#' than it would be if it were directly estimated from Dprime. This
+#' is because it is the MLE, rather than being based on the
+#' UMVUE.
+#'
 #' @param ga Either the genotype at locus 1 or the posterior mean genotype at
 #'     locus 1.
 #' @param gb Either the genotype at locus 2 or the posterior mean genotype at
@@ -56,27 +66,33 @@ ldsimp <- function(ga, gb, K) {
   r2    <- r ^ 2
   r2_se <- 2 * abs(r) * (1 - r ^ 2) / sqrt(n)
 
-  qvec <- c(
-    as.matrix(
-      prop.table(
-        table(factor(round(ga), levels = 0:K),
-              factor(round(gb), levels = 0:K))
-      )
+  qmat <-     as.matrix(
+    prop.table(
+      table(factor(round(ga), levels = 0:K),
+            factor(round(gb), levels = 0:K))
     )
   )
+
+  estofdeprimeg <- Dprime(qmat = qmat, type = "geno")
+  Dprimeg <- estofdeprimeg[["Dprime"]]
+  Dprimeg_se <- D_se / abs(estofdeprimeg[["Dmax"]])
+
+  qvec <- c(qmat)
   inddf <- expand.grid(i = 0:K, j = 0:K)
   names(qvec) <- paste0("q", inddf$i, inddf$j)
 
-  retvec <- c(D         = D,
-              D_se      = D_se,
-              r2        = r2,
-              r2_se     = r2_se,
-              r         = r,
-              r_se      = r_se,
-              Dprime    = Dprime,
-              Dprime_se = Dprime_se,
-              z         = z,
-              z_se      = z_se)
+  retvec <- c(D          = D,
+              D_se       = D_se,
+              r2         = r2,
+              r2_se      = r2_se,
+              r          = r,
+              r_se       = r_se,
+              Dprime     = Dprime,
+              Dprime_se  = Dprime_se,
+              Dprimeg    = Dprimeg,
+              Dprimeg_se = Dprimeg_se,
+              z          = z,
+              z_se       = z_se)
   retvec <- c(retvec, qvec, n = n)
 
   return(retvec)
@@ -91,16 +107,18 @@ ldsimp <- function(ga, gb, K) {
 #' @noRd
 nullvec_comp <- function(K, model = c("norm", "flex")) {
   model <- match.arg(model)
-  retvec <- c(D         = NA_real_,
-              D_se      = NA_real_,
-              r2        = NA_real_,
-              r2_se     = NA_real_,
-              r         = NA_real_,
-              r_se      = NA_real_,
-              Dprime    = NA_real_,
-              Dprime_se = NA_real_,
-              z         = NA_real_,
-              z_se      = NA_real_)
+  retvec <- c(D          = NA_real_,
+              D_se       = NA_real_,
+              r2         = NA_real_,
+              r2_se      = NA_real_,
+              r          = NA_real_,
+              r_se       = NA_real_,
+              Dprime     = NA_real_,
+              Dprime_se  = NA_real_,
+              Dprimeg    = NA_real_,
+              Dprimeg_se = NA_real_,
+              z          = NA_real_,
+              z_se       = NA_real_)
   if (model == "norm") {
     retvec <- c(retvec,
                 muA     = NA_real_,
@@ -135,18 +153,22 @@ ld_from_gmat <- function(gmat) {
   r <- sqrt(r2) * sign(D)
   z <- atanh(r)
 
-  distA <- rowSums(gmat)
-  distB <- colSums(gmat)
-  egA <- sum((0:K) * distA)
-  egB <- sum((0:K) * distB)
-  if (D < 0) {
-    Dmax <- min(egA * egB, (K - egA) * (K - egB)) / K^2
-  } else {
-    Dmax <- min(egA * (K - egB), (K - egA) * egB) / K^2
-  }
-  Dprime <- D / Dmax
+  estofdprime_a <- Dprime(qmat = gmat, type = "allele", constrain = FALSE)
+  Dprime <- estofdprime_a[["Dprime"]]
+  Dmax <- estofdprime_a[["Dmax"]]
 
-  return(c(D = D, r2 = r2, r = r, z = z, Dprime = Dprime, Dmax = Dmax))
+  estofdprime_g <- Dprime(qmat = gmat, type = "geno")
+  Dprimeg <- estofdprime_g[["Dprime"]]
+  Dmaxg <- estofdprime_g[["Dmax"]]
+
+  return(c(D = D,
+           r2 = r2,
+           r = r,
+           z = z,
+           Dprime = Dprime,
+           Dmax = Dmax,
+           Dprimeg = Dprimeg,
+           Dmaxg = Dmaxg))
 }
 
 #' LD estimates from parameterization of pbnorm
@@ -283,6 +305,8 @@ ldest_comp <- function(ga,
     z <- ld_current[["z"]]
     Dprime <- ld_current[["Dprime"]]
     Dmax <- ld_current[["Dmax"]]
+    Dprimeg <- ld_current[["Dprimeg"]]
+    Dmaxg <- ld_current[["Dmaxg"]]
 
     ## get asymptotic covariance ----
     if ((useboot | any(gout < TOL)) & se) {
@@ -291,6 +315,7 @@ ldest_comp <- function(ga,
       r2boot <- rep(NA_real_, nboot)
       zboot <- rep(NA_real_, nboot)
       Dprimeboot <- rep(NA_real_, nboot)
+      Dprimegboot <- rep(NA_real_, nboot)
 
       for (bindex in seq_len(nboot)) {
         ga_boot <- ga[sample(seq_len(nrow(ga)), size = nrow(ga), replace = TRUE), ]
@@ -305,10 +330,12 @@ ldest_comp <- function(ga,
         rboot[[bindex]] <- ld_current[["r"]]
         zboot[[bindex]] <- ld_current[["z"]]
         Dprimeboot[[bindex]] <- ld_current[["Dprime"]]
+        Dprimegboot[[bindex]] <- ld_current[["Dprimeg"]]
       }
       D_se <- stats::sd(dboot)
       r2_se <- stats::sd(r2boot)
       Dprime_se <- stats::sd(Dprimeboot)
+      Dprimeg_se <- stats::sd(Dprimegboot)
       r_se <- stats::sd(rboot)
       z_se <- stats::sd(zboot)
 
@@ -326,6 +353,7 @@ ldest_comp <- function(ga,
       D_se <- sqrt(c(t(grad_dq) %*% finfo %*% grad_dq))
       r2_se <- sqrt(c(t(grad_r2q) %*% finfo %*% grad_r2q))
       Dprime_se <- sqrt(c(t(grad_dprimeq) %*% finfo %*% grad_dprimeq))
+      Dprimeg_se <- D_se / Dmaxg
       r_se <- r2_se / sqrt(4 * r2)
       z_se <- r_se / (1 - r2)
     } else {
@@ -333,20 +361,23 @@ ldest_comp <- function(ga,
       r2_se <- NA_real_
       r_se <- NA_real_
       Dprime_se <- NA_real_
+      Dprimeg_se <- NA_real_
       z_se <- NA_real_
     }
 
     ## set up retvec ----
-    retvec <- c(D         = D,
-                D_se      = D_se,
-                r2        = r2,
-                r2_se     = r2_se,
-                r         = r,
-                r_se      = r_se,
-                Dprime    = Dprime,
-                Dprime_se = Dprime_se,
-                z         = z,
-                z_se      = z_se)
+    retvec <- c(D          = D,
+                D_se       = D_se,
+                r2         = r2,
+                r2_se      = r2_se,
+                r          = r,
+                r_se       = r_se,
+                Dprime     = Dprime,
+                Dprime_se  = Dprime_se,
+                Dprimeg    = Dprimeg,
+                Dprimeg_se = Dprimeg_se,
+                z          = z,
+                z_se       = z_se)
 
     qvec <- c(gout)
     inddf <- expand.grid(i = 0:K, j = 0:K)
@@ -390,6 +421,7 @@ ldest_comp <- function(ga,
     r <- ld_current[["r"]]
     z <- ld_current[["z"]]
     Dprime <- ld_current[["Dprime"]]
+    Dprimeg <- ld_current[["Dprimeg"]]
 
     ## standard errors via numerical gradients --------------------------------
     if (se & is.finite(z)) {
@@ -409,30 +441,34 @@ ldest_comp <- function(ga,
       r_se <- sevec[["r"]]
       z_se <- sevec[["z"]]
       Dprime_se <- sevec[["Dprime"]]
+      Dprimeg_se <- sevec[["Dprimeg"]]
     } else {
       D_se <- NA_real_
       r2_se <- NA_real_
       r_se <- NA_real_
       Dprime_se <- NA_real_
+      Dprimeg_se <- NA_real_
       z_se <- NA_real_
     }
 
     ## set up retvec ----------------------------------------------------------
-    retvec <- c(D         = D,
-                D_se      = D_se,
-                r2        = r2,
-                r2_se     = r2_se,
-                r         = r,
-                r_se      = r_se,
-                Dprime    = Dprime,
-                Dprime_se = Dprime_se,
-                z         = z,
-                z_se      = z_se,
-                muA       = mu[1],
-                muB       = mu[2],
-                sigmaAA   = sigma[1, 1],
-                sigmaAB   = sigma[2, 1],
-                sigmaBB   = sigma[2, 2])
+    retvec <- c(D          = D,
+                D_se       = D_se,
+                r2         = r2,
+                r2_se      = r2_se,
+                r          = r,
+                r_se       = r_se,
+                Dprime     = Dprime,
+                Dprime_se  = Dprime_se,
+                Dprimeg    = Dprimeg,
+                Dprimeg_se = Dprimeg_se,
+                z          = z,
+                z_se       = z_se,
+                muA        = mu[1],
+                muB        = mu[2],
+                sigmaAA    = sigma[1, 1],
+                sigmaAB    = sigma[2, 1],
+                sigmaBB    = sigma[2, 2])
 
     qvec <- c(distmat)
     inddf <- expand.grid(i = 0:K, j = 0:K)
@@ -440,7 +476,7 @@ ldest_comp <- function(ga,
     retvec <- c(retvec, qvec)
   }
 
-  if (using == "likelihoods") {
+  if (using == "likelihoods") { ## ldsimp() already returns n, so no need when using == "genotypes"
     retvec <- c(retvec, n = nrow(ga))
   }
 

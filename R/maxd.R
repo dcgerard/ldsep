@@ -161,7 +161,9 @@ maxq_from_allelef <- function(pA, pB, K, dir = c("max", "min")) {
 #' @author David Gerard
 #'
 #' @export
-Dprime <- function(qmat, type = c("geno", "allele"), constrain = FALSE) {
+Dprime <- function(qmat,
+                   type = c("allele", "geno"),
+                   constrain = FALSE) {
   TOL <- sqrt(.Machine$double.eps)
   stopifnot(abs(sum(qmat) - 1) < TOL)
   stopifnot(qmat > -TOL)
