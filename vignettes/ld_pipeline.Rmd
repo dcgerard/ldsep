@@ -9,10 +9,11 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+eval <- requireNamespace("updog", quietly = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = !!requireNamespace("updog", quietly = TRUE)
+  eval = eval
 )
 ```
 
