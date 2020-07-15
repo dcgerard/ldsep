@@ -1,6 +1,6 @@
 Package: ldsep
 Title: Linkage Disequilibrium Shrinkage Estimation for Polyploids
-Version: 0.0.0.9005
+Version: 0.0.1.0
 Authors@R: 
     person(given = "David",
            family = "Gerard",
@@ -32,4 +32,10 @@ Imports:
     lpSolve
 Suggests: 
     testthat,
-    covr
+    covr,
+    knitr,
+    rmarkdown,
+    updog
+Depends: 
+    R (>= 2.10)
+VignetteBuilder: knitr

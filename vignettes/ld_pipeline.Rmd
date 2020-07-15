@@ -1,0 +1,100 @@
+---
+title: "Example Pipeline for Estimating LD"
+author: David Gerard
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example Pipeline for Estimating LD}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = !!requireNamespace("updog", quietly = TRUE)
+)
+```
+
+# Abstract
+
+Here, we use the data from Uitdewilligen et. al. (2013) to demonstrate how to obtain LD estimates using the ldsep package. The R chunks are only evaluated if `updog` is installed.
+
+# Analysis
+
+We will first load the ldsep package. We will also need to load the updog R package [Gerard et. al., 2018; Gerard and Ferrão, 2020] for this vignette:
+```{r setup, warning=FALSE}
+library(ldsep)
+library(updog)
+```
+
+The data come from 10 (mostly arbitrary) SNPs from the tetraploid potato dataset of Uitdewilligen et. al. (2013). We genotyped these SNPs using the `multidog()` function from the updog R package. The `uit` object is the resulting output. 
+
+```{r}
+ploidy <- 4
+data("uit")
+class(uit)
+```
+
+In order to estimate LD, we need to extract the genotype likelihoods from the updog fits using `format_multidog()` from the updog package.
+
+```{r}
+genoarray <- format_multidog(x = uit, varname = paste0("logL_", 0:ploidy))
+dim(genoarray)
+```
+
+The array, `genoarray`, contains the genotype likelihoods with dimensions SNPs $\times$ individuals $\times$ dosage. So `genoarray[i, j, k]` contains the genotype likelihood of SNP `i` for individual `j` at dosage `k`.
+
+It is not necessary to use the genotype likelihoods from updog. There are many other genotyping methods that produce genotype likelihoods and these could be used instead, as long as you have formatted the genotype likelihoods in terms of an array as above.
+
+Let's estimate all pairwise LD using these genotype likelihoods:
+```{r}
+ldout <- mldest(geno = genoarray, K = ploidy, type = "hap")
+```
+
+We can visualize LD with `plot.lddf()`.
+
+```{r}
+plot(x = ldout, element = "D")
+plot(x = ldout, element = "Dprime")
+plot(x = ldout, element = "r")
+```
+
+We can also obtain these LD estimates in matrix form by using `format_lddf()`.
+
+```{r}
+format_lddf(obj = ldout, element = "D")
+```
+
+Though not generally recommended, we get very similar performance in this case when we use posterior mean genotypes to obtain LD estimates.
+
+```{r}
+pmmat <- format_multidog(x = uit, varname = "postmean")
+ld_pm <- mldest(geno = pmmat, K = ploidy, type = "comp")
+plot(x = ld_pm, element = "r")
+```
+
+```{r}
+r_hap <- format_lddf(obj = ldout, element = "r")
+r_pm  <- format_lddf(obj = ld_pm, element = "r")
+plot(x = r_hap, 
+     y = r_pm, 
+     xlab = expression(paste(hat(r), " Using Genotype Likelihoods")), 
+     ylab = expression(paste(hat(r), " Using Posterior Mean")))
+abline(0, 1, lty = 2, col = 2)
+```
+
+To estimate pairwise LD along a sliding window, use `sldest()`:
+
+```{r}
+slout <- sldest(geno = genoarray, K = ploidy, win = 3)
+plot(slout, element = "r")
+```
+
+
+# References
+
+- Gerard, David, Luís Felipe Ventorim Ferrão, Antonio Augusto Franco Garcia, and Matthew Stephens. "Genotyping polyploids from messy sequencing data." *Genetics* 210, no. 3 (2018): 789-807. [DOI:10.1534/genetics.118.301468](https://doi.org/10.1534/genetics.118.301468)
+- Gerard, David, and Luís Felipe Ventorim Ferrão. "Priors for genotyping polyploids." Bioinformatics 36, no. 6 (2020): 1795-1800. [DOI:10.1093/bioinformatics/btz852](https://doi.org/10.1093/bioinformatics/btz852)
+- Uitdewilligen, Jan GAML, Anne-Marie A. Wolters, B. Bjorn, Theo JA Borm, Richard GF Visser, and Herman J. Van Eck. "A next-generation sequencing method for genotyping-by-sequencing of highly heterozygous autotetraploid potato." *PloS one* 8, no. 5 (2013): e62355. [DOI:10.1371/journal.pone.0062355](https://doi.org/10.1371/journal.pone.0062355)
+

@@ -81,7 +81,7 @@ diploids and polyploids." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
       </span>
     </div>
 
@@ -95,6 +95,18 @@ diploids and polyploids." />
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -175,7 +187,7 @@ likelihood of individual <code>i</code> for genotype <code>j-1</code>.</p></li>
     </tr>
     <tr>
       <th>K</th>
-      <td><p>The ploidy of the species. Assumed to bethe same for all
+      <td><p>The ploidy of the species. Assumed to be the same for all
 individuals.</p></td>
     </tr>
     <tr>
@@ -250,6 +262,7 @@ Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>q_ij</code></dt><dd><p>The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.</p></dd>
+<dt><code>n</code></dt><dd><p>The number of individuals used to estimate pairwise LD.</p></dd>
 
 </dl>
 

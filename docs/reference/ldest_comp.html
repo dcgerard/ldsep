@@ -76,7 +76,7 @@ measures of LD are generalizations of Burrow's &quot;composite&quot; LD measure.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
       </span>
     </div>
 
@@ -90,6 +90,18 @@ measures of LD are generalizations of Burrow's &quot;composite&quot; LD measure.
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
@@ -164,7 +176,7 @@ likelihood of individual <code>i</code> for genotype <code>j-1</code>.</p></li>
     </tr>
     <tr>
       <th>K</th>
-      <td><p>The ploidy of the species. Assumed to bethe same for all
+      <td><p>The ploidy of the species. Assumed to be the same for all
 individuals.</p></td>
     </tr>
     <tr>
@@ -234,6 +246,7 @@ Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>q_ij</code></dt><dd><p>The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.</p></dd>
+<dt><code>n</code></dt><dd><p>The number of individuals used to estimate pairwise LD.</p></dd>
 
 </dl>
 
@@ -283,7 +296,7 @@ composite LD.</p></dd>
                      <span class='kw'>K</span> <span class='kw'>=</span> <span class='no'>K</span>,
                      <span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"norm"</span>)
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>ldout3</span>)</div><div class='output co'>#&gt;          D       D_se         r2      r2_se          r       r_se 
-#&gt; 0.02525294 0.01104545 0.76460813 0.16752831 0.87441874 0.09579410 </div><div class='input'>
+#&gt; 0.02582342 0.01216745 0.67448602 0.26764405 0.82127098 0.16294503 </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
