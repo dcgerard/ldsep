@@ -33,7 +33,7 @@ The data come from 10 (mostly arbitrary) SNPs from the tetraploid potato dataset
 
 ```{r}
 ploidy <- 4
-data("uit")
+data("uit", package = "ldsep")
 class(uit)
 ```
 
