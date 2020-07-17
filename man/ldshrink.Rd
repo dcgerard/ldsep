@@ -19,9 +19,19 @@ A correlation matrix.
 \description{
 This will take the output of either \code{\link{mldest}()} or
 \code{\link{sldest}()}, shrink the Fisher-z transformed
-correlation estimates using \code{\link[ashr]{ash}()}, then return
+correlation estimates using \code{\link[ashr]{ash}()}
+(Stephens, 2017; Dey and Stephens, 2018), then return
 the corresponding correlation estimates. You can obtain estimates of
 r^2 by just squaring these estimates.
+}
+\references{
+\itemize{
+\item{Stephens, Matthew. "False discovery rates: a new deal."
+Biostatistics 18, no. 2 (2017): 275-294.}
+\item{Dey, Kushal K., and Matthew Stephens. "CorShrink:
+Empirical Bayes shrinkage estimation of correlations,
+with applications." bioRxiv (2018): 368316.}
+}
 }
 \author{
 David Gerard

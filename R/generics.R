@@ -30,7 +30,7 @@ is.lddf <- function(x) {
 #'
 #' @param x An object of class \code{lddf}, usually created using
 #'     either \code{\link{mldest}()} or \code{\link{sldest}()}.
-#' @param element Which element of \code{x} should be plot?
+#' @param element Which element of \code{x} should we plot?
 #' @param type Character, \code{"full"},
 #'     \code{"upper"} (default) or \code{"lower"}, display
 #'     full matrix, lower triangular or upper
@@ -38,7 +38,7 @@ is.lddf <- function(x) {
 #' @param method See \code{\link[corrplot]{corrplot}()} for available options.
 #'     Default value is \code{"color"}.
 #' @param is.corr See \code{\link[corrplot]{corrplot}()}. Default behavior
-#'     is \code{TRUE} if an element is theoretically constrained to be
+#'     is \code{TRUE} if an element is constrained
 #'     between -1 and 1 and \code{FALSE} otherwise.
 #' @param tl.pos See \code{\link[corrplot]{corrplot}()}. Default value
 #'     is \code{"n"}.
@@ -63,11 +63,11 @@ is.lddf <- function(x) {
 #' nc <- 1
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 #'
-#' ## Haplotypic LD estimates
+#' ## Gametic LD estimates
 #' lddf <- mldest(geno = genomat,
 #'                K = K,
 #'                nc = nc,
-#'                type = "hap")
+#'                type = "gam")
 #'
 #' ## Plot estimates of z
 #' plot(lddf, element = "z")
@@ -133,7 +133,7 @@ plot.lddf <- function(x,
 #' \code{\link{sldest}()} into an
 #' upper-triangular matrix.
 #'
-#' Formats the correlation estimates and standard errors output
+#' Formats the LD estimates and standard errors output
 #' from running \code{\link{mldest}()} or \code{\link{sldest}()}
 #' into a more conventional upper-triangular matrix.
 #'
@@ -158,11 +158,11 @@ plot.lddf <- function(x,
 #' nc <- 1
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 #'
-#' ## Haplotypic LD estimates
+#' ## Gametic LD estimates
 #' lddf <- mldest(geno = genomat,
 #'                K = K,
 #'                nc = nc,
-#'                type = "hap")
+#'                type = "gam")
 #'
 #' ## Obtain the D estimates in matrix form
 #' Dmat <- format_lddf(obj = lddf, element = "D")

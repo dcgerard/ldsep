@@ -44,7 +44,7 @@ upper-triangular matrix. — format_lddf • ldsep</title>
 <meta property="og:title" content="Format an element of <code><a href='mldest.html'>mldest</a>()</code> or
 <code><a href='sldest.html'>sldest</a>()</code> into an
 upper-triangular matrix. — format_lddf" />
-<meta property="og:description" content="Formats the correlation estimates and standard errors output
+<meta property="og:description" content="Formats the LD estimates and standard errors output
 from running mldest() or sldest()
 into a more conventional upper-triangular matrix." />
 
@@ -78,7 +78,7 @@ into a more conventional upper-triangular matrix." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.1</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@ upper-triangular matrix.</h1>
     </div>
 
     <div class="ref-description">
-    <p>Formats the correlation estimates and standard errors output
+    <p>Formats the LD estimates and standard errors output
 from running <code><a href='mldest.html'>mldest</a>()</code> or <code><a href='sldest.html'>sldest</a>()</code>
 into a more conventional upper-triangular matrix.</p>
     </div>
@@ -170,11 +170,11 @@ matrix is filled. The lower-triangle and the diagonal are <code>NA</code>'s.</p>
 <span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>
 <span class='no'>genomat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span>:<span class='no'>K</span>, <span class='no'>nind</span> * <span class='no'>nloci</span>, <span class='fl'>TRUE</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nloci</span>)
 
-<span class='co'>## Haplotypic LD estimates</span>
+<span class='co'>## Gametic LD estimates</span>
 <span class='no'>lddf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mldest.html'>mldest</a></span>(<span class='kw'>geno</span> <span class='kw'>=</span> <span class='no'>genomat</span>,
                <span class='kw'>K</span> <span class='kw'>=</span> <span class='no'>K</span>,
                <span class='kw'>nc</span> <span class='kw'>=</span> <span class='no'>nc</span>,
-               <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"hap"</span>)
+               <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"gam"</span>)
 
 <span class='co'>## Obtain the D estimates in matrix form</span>
 <span class='no'>Dmat</span> <span class='kw'>&lt;-</span> <span class='fu'>format_lddf</span>(<span class='kw'>obj</span> <span class='kw'>=</span> <span class='no'>lddf</span>, <span class='kw'>element</span> <span class='kw'>=</span> <span class='st'>"D"</span>)

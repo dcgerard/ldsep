@@ -9,9 +9,9 @@ sldest(
   K,
   win = 50,
   nc = 1,
-  type = c("hap", "comp"),
+  type = c("gam", "comp"),
   model = c("norm", "flex"),
-  pen = ifelse(type == "hap", 2, 1),
+  pen = ifelse(type == "gam", 2, 1),
   se = TRUE
 )
 }
@@ -47,8 +47,8 @@ personal computer, but some environments are only
 able to use fewer. Ask your admins if you are unsure.}
 
 \item{type}{The type of LD to calculate. The available types are
-haplotypic LD (\code{type = "hap"}) or composite LD
-(\code{type = "comp"}). Haplotypic LD is only appropriate for
+gametic LD (\code{type = "gam"}) or composite LD
+(\code{type = "comp"}). Gametic LD is only appropriate for
 autopolyploids when the individuals are in Hardy-Weinberg
 equilibrium (HWE). The composite
 measures of LD are always applicable, and consistently estimate the
@@ -71,7 +71,7 @@ and using genotypes.}
 \item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
 not (\code{FALSE}). Calculating standard errors can be really slow
 when \code{type = "comp"}, \code{model = "flex"}, and when using
-gentoype likelihoods. Otherwise, standard error calculations
+genotype likelihoods. Otherwise, standard error calculations
 should be pretty fast.}
 }
 \value{
@@ -80,6 +80,10 @@ with some or all of the following elements:
 \describe{
 \item{\code{i}}{The index of the first SNP.}
 \item{\code{j}}{The index of the second SNP.}
+\item{\code{snpi}}{The row name corresponding to SNP \code{i}, if
+row names are provided.}
+\item{\code{snpj}}{The row name corresponding to SNP \code{j}, if
+row names are provided.}
 \item{\code{D}}{The estimate of the LD coefficient.}
 \item{\code{D_se}}{The standard error of the estimate of
 the LD coefficient.}
@@ -90,23 +94,28 @@ squared Pearson correlation.}
 \item{\code{r_se}}{The standard error of the estimate of the
 Pearson correlation.}
 \item{\code{Dprime}}{The estimate of the standardized LD
-coefficient.}
-\item{\code{Dprime_se}}{The standard error of the estimate of the
-standardized LD coefficient.}
+coefficient. When \code{type} = "comp", this corresponds
+to the standardization where we fix allele frequencies.}
+\item{\code{Dprime_se}}{The standard error of \code{Dprime}.}
+\item{\code{Dprimeg}}{The estimate of the standardized LD
+coefficient. This corresponds to the standardization where
+we fix genotype frequencies.}
+\item{\code{Dprimeg_se}}{The standard error of \code{Dprimeg}.}
 \item{\code{z}}{The Fisher-z transformation of \code{r}.}
 \item{\code{z_se}}{The standard error of the Fisher-z
 transformation of \code{r}.}
 \item{\code{p_ab}}{The estimated haplotype frequency of ab.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{p_aB}}{The estimated haplotype frequency of aB.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{p_AB}}{The estimated haplotype frequency of AB.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.}
+\item{\code{n}}{The number of individuals used to estimate pairwise LD.}
 }
 }
 \description{
@@ -137,6 +146,18 @@ lddf <- sldest(geno = genomat,
                type = "comp")
 plot(lddf, element = "z")
 
+}
+\seealso{
+\describe{
+\item{\code{\link{ldest}()}}{For the base function that estimates
+pairwise LD.}
+\item{\code{\link{mldest}()}}{For estimating pairwise LD between
+\emph{all} provided SNPs.}
+\item{\code{\link{format_lddf}()}}{For formatting the output of
+\code{sldest()} as a matrix.}
+\item{\code{\link{plot.lddf}()}}{For plotting the output of
+\code{sldest()}.}
+}
 }
 \author{
 David Gerard

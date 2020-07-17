@@ -22,7 +22,7 @@
 \item{x}{An object of class \code{lddf}, usually created using
 either \code{\link{mldest}()} or \code{\link{sldest}()}.}
 
-\item{element}{Which element of \code{x} should be plot?}
+\item{element}{Which element of \code{x} should we plot?}
 
 \item{type}{Character, \code{"full"},
 \code{"upper"} (default) or \code{"lower"}, display
@@ -36,7 +36,7 @@ Default value is \code{"color"}.}
 on the principal diagonal.}
 
 \item{is.corr}{See \code{\link[corrplot]{corrplot}()}. Default behavior
-is \code{TRUE} if an element is theoretically constrained to be
+is \code{TRUE} if an element is constrained
 between -1 and 1 and \code{FALSE} otherwise.}
 
 \item{tl.pos}{See \code{\link[corrplot]{corrplot}()}. Default value
@@ -74,11 +74,11 @@ K <- 6
 nc <- 1
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 
-## Haplotypic LD estimates
+## Gametic LD estimates
 lddf <- mldest(geno = genomat,
                K = K,
                nc = nc,
-               type = "hap")
+               type = "gam")
 
 ## Plot estimates of z
 plot(lddf, element = "z")

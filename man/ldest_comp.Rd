@@ -61,7 +61,7 @@ and using genotypes.}
 \item{se}{A logical. Should we calculate standard errors (\code{TRUE}) or
 not (\code{FALSE}). Calculating standard errors can be really slow
 when \code{type = "comp"}, \code{model = "flex"}, and when using
-gentoype likelihoods. Otherwise, standard error calculations
+genotype likelihoods. Otherwise, standard error calculations
 should be pretty fast.}
 
 \item{model}{Should we assume the class of joint genotype distributions
@@ -82,20 +82,24 @@ squared Pearson correlation.}
 \item{\code{r_se}}{The standard error of the estimate of the
 Pearson correlation.}
 \item{\code{Dprime}}{The estimate of the standardized LD
-coefficient.}
-\item{\code{Dprime_se}}{The standard error of the estimate of the
-standardized LD coefficient.}
+coefficient. When \code{type} = "comp", this corresponds
+to the standardization where we fix allele frequencies.}
+\item{\code{Dprime_se}}{The standard error of \code{Dprime}.}
+\item{\code{Dprimeg}}{The estimate of the standardized LD
+coefficient. This corresponds to the standardization where
+we fix genotype frequencies.}
+\item{\code{Dprimeg_se}}{The standard error of \code{Dprimeg}.}
 \item{\code{z}}{The Fisher-z transformation of \code{r}.}
 \item{\code{z_se}}{The standard error of the Fisher-z
 transformation of \code{r}.}
 \item{\code{p_ab}}{The estimated haplotype frequency of ab.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{p_aB}}{The estimated haplotype frequency of aB.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{p_AB}}{The estimated haplotype frequency of AB.
-Only returned if estimating the haplotypic LD.}
+Only returned if estimating the gametic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.}

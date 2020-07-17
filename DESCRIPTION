@@ -1,13 +1,13 @@
 Package: ldsep
 Title: Linkage Disequilibrium Shrinkage Estimation for Polyploids
-Version: 0.0.1.0
+Version: 0.0.1.1
 Authors@R: 
     person(given = "David",
            family = "Gerard",
            role = c("aut", "cre"),
            email = "gerard.1787@gmail.com",
            comment = c(ORCID = "0000-0001-9450-5023"))
-Description: Estimate haplotypic or composite pairwise linkage disequilibrium
+Description: Estimate gametic or composite pairwise linkage disequilibrium
     (LD) in polyploids, using either genotypes or genotype likelihoods. 
     Support is provided to estimate the popular measures of LD: the LD 
     coefficient D, the standardized LD coefficient D', and the Pearson 
@@ -35,7 +35,7 @@ Suggests:
     covr,
     knitr,
     rmarkdown,
-    updog
+    updog (>= 2.0.1)
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr

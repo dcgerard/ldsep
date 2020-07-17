@@ -17,7 +17,7 @@ status](https://www.r-pkg.org/badges/version/ldsep)](https://CRAN.R-project.org/
 v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
-Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in
+Estimate gametic or composite pairwise linkage disequilibrium (LD) in
 polyploids, using either genotypes or genotype likelihoods. Support is
 provided to estimate the popular measures of LD: the LD coefficient
 \(D\), the standardized LD coefficient \(D'\), and the Pearson

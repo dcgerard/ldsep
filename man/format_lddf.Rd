@@ -21,7 +21,7 @@ A matrix of the selected elements. Only the upper-triangle of the
 matrix is filled. The lower-triangle and the diagonal are \code{NA}'s.
 }
 \description{
-Formats the correlation estimates and standard errors output
+Formats the LD estimates and standard errors output
 from running \code{\link{mldest}()} or \code{\link{sldest}()}
 into a more conventional upper-triangular matrix.
 }
@@ -35,11 +35,11 @@ K <- 6
 nc <- 1
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 
-## Haplotypic LD estimates
+## Gametic LD estimates
 lddf <- mldest(geno = genomat,
                K = K,
                nc = nc,
-               type = "hap")
+               type = "gam")
 
 ## Obtain the D estimates in matrix form
 Dmat <- format_lddf(obj = lddf, element = "D")

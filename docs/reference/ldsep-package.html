@@ -40,15 +40,13 @@
 
 
 <meta property="og:title" content="Linkage Disequilibrium Shrinkage Estimation for Polyploids — ldsep-package" />
-<meta property="og:description" content="Estimate haplotypic or composite pairwise linkage disequilibrium
+<meta property="og:description" content="Estimate gametic or composite pairwise linkage disequilibrium
 (LD) in polyploids, using either genotypes or genotype likelihoods. Support is
 provided to estimate the popular measures of LD: the LD coefficient D,
 the standardized LD coefficient D', and the Pearson correlation
 coefficient r. All estimates are returned with corresponding
 standard errors. These estimates and standard errors can then be used
-for shrinkage estimation. The main functions are ldest(),
-mldest(), sldest(), plot.lddf(),
-format_lddf(), and ldshrink()." />
+for shrinkage estimation." />
 
 
 
@@ -80,7 +78,7 @@ format_lddf(), and ldshrink()." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.1</span>
       </span>
     </div>
 
@@ -132,19 +130,43 @@ format_lddf(), and ldshrink()." />
     </div>
 
     <div class="ref-description">
-    <p>Estimate haplotypic or composite pairwise linkage disequilibrium
+    <p>Estimate gametic or composite pairwise linkage disequilibrium
 (LD) in polyploids, using either genotypes or genotype likelihoods. Support is
 provided to estimate the popular measures of LD: the LD coefficient D,
 the standardized LD coefficient D', and the Pearson correlation
 coefficient r. All estimates are returned with corresponding
 standard errors. These estimates and standard errors can then be used
-for shrinkage estimation. The main functions are <code><a href='ldest.html'>ldest</a>()</code>,
-<code><a href='mldest.html'>mldest</a>()</code>, <code><a href='sldest.html'>sldest</a>()</code>, <code><a href='plot.lddf.html'>plot.lddf</a>()</code>,
-<code><a href='format_lddf.html'>format_lddf</a>()</code>, and <code><a href='ldshrink.html'>ldshrink</a>()</code>.</p>
+for shrinkage estimation.</p>
     </div>
 
 
 
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    
+
+
+<p>The main functions are:</p><dl'>
+<dt><code><a href='ldest.html'>ldest</a>()</code></dt><dd><p>Estimates pairwise LD.</p></dd>
+<dt><code><a href='mldest.html'>mldest</a>()</code></dt><dd><p>Iteratively apply <code><a href='ldest.html'>ldest</a>()</code>
+across many pairs of SNPs.</p></dd>
+<dt><code><a href='sldest.html'>sldest</a>()</code></dt><dd><p>Iteratively apply <code><a href='ldest.html'>ldest</a>()</code>
+along a sliding window of fixed length.</p></dd>
+<dt><code><a href='plot.lddf.html'>plot.lddf</a>()</code></dt><dd><p>Plot method for the output of
+<code><a href='mldest.html'>mldest</a>()</code> and <code><a href='sldest.html'>sldest</a>()</code>.</p></dd>
+<dt><code><a href='format_lddf.html'>format_lddf</a>()</code></dt><dd><p>Format the output of
+<code><a href='mldest.html'>mldest</a>()</code> and <code><a href='sldest.html'>sldest</a>()</code> into a matrix.</p></dd>
+<dt><code><a href='ldshrink.html'>ldshrink</a>()</code></dt><dd><p>Shrink correlation estimates
+using adaptive shrinkage (Stephens, 2017; Dey and Stephens, 2018).</p></dd>
+
+</dl>
+
+    <h2 class="hasAnchor" id="citation"><a class="anchor" href="#citation"></a>Citation</h2>
+
+    
+
+<p>If you find the methods in this package useful, please run the following
+in R for citation information: <code><a href='https://rdrr.io/r/utils/citation.html'>citation("ldsep")</a></code></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

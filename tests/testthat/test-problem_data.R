@@ -32,7 +32,7 @@ test_that("Monoallelic snps don't cause issues", {
   ga <- rep(K, n)
   gb <- sample(0:K, size = n, replace = TRUE)
 
-  ldhapout <- ldest_hap(ga = ga, gb = gb, K = K)
+  ldhapout <- ldest_gam(ga = ga, gb = gb, K = K)
 
   ldcompout <- ldest_comp(ga = ga, gb = gb, K = K)
 
@@ -55,8 +55,8 @@ test_that("NA's don't cause issues", {
   gbmat[1, 5] <- NA
   gamat[3, 2] <- NA
 
-  ldhapout <- ldest(ga = ga, gb = gb, K = K, type = "hap")
-  ldhapout2 <- ldest(ga = gamat, gb = gbmat, K = K, type = "hap")
+  ldhapout <- ldest(ga = ga, gb = gb, K = K, type = "gam")
+  ldhapout2 <- ldest(ga = gamat, gb = gbmat, K = K, type = "gam")
   ldcompout <- ldest(ga = ga, gb = gb, K = K, type = "comp")
   ldcompout2 <- ldest(ga = gamat, gb = gbmat, K = K, type = "comp", model = "flex", pen = 2)
   ldcompout3 <- ldest(ga = gamat, gb = gbmat, K = K, type = "comp", model = "norm")

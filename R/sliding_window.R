@@ -20,6 +20,18 @@
 #'
 #' @inherit mldest return
 #'
+#' @seealso
+#' \describe{
+#'   \item{\code{\link{ldest}()}}{For the base function that estimates
+#'       pairwise LD.}
+#'   \item{\code{\link{mldest}()}}{For estimating pairwise LD between
+#'       \emph{all} provided SNPs.}
+#'   \item{\code{\link{format_lddf}()}}{For formatting the output of
+#'       \code{sldest()} as a matrix.}
+#'   \item{\code{\link{plot.lddf}()}}{For plotting the output of
+#'       \code{sldest()}.}
+#' }
+#'
 #' @examples
 #' set.seed(1)
 #'
@@ -46,9 +58,9 @@ sldest <- function(geno,
                    K,
                    win = 50,
                    nc = 1,
-                   type = c("hap", "comp"),
+                   type = c("gam", "comp"),
                    model = c("norm", "flex"),
-                   pen = ifelse(type == "hap", 2, 1),
+                   pen = ifelse(type == "gam", 2, 1),
                    se = TRUE) {
   model <- match.arg(model)
   type <- match.arg(type)
