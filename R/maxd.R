@@ -1,5 +1,5 @@
 #################
-## Functions for detla' when maximizing covariance
+## Functions for delta' when maximizing covariance
 #################
 
 #' Find joint distribution that maximizes covariance conditional

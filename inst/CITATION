@@ -2,7 +2,7 @@ citHeader("To cite ldsep in publications use:")
 
 citEntry(
   entry    = "Article",
-  title    = "Pairwise Linkage Disequilibrium Estimation for Polyploids.",
+  title    = "Pairwise Linkage Disequilibrium Estimation for Polyploids",
   author   = "David Gerard",
   journal  = "Unpublished Manuscript",
   year     = "2020",

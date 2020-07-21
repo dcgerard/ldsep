@@ -11,7 +11,7 @@ vignette: >
 ```{r, include = FALSE}
 eval <- requireNamespace("updog", quietly = TRUE)
 if (eval) {
-  eval <- packageVersion("updog") >= "2.0.1"
+  eval <- packageVersion("updog") >= "2.0.2"
 }
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -22,11 +22,11 @@ knitr::opts_chunk$set(
 
 # Abstract
 
-Here, we use the data from Uitdewilligen et. al. (2013) to demonstrate how to obtain LD estimates using the ldsep package. The R chunks are only evaluated if updog (>= 2.0.1) is installed.
+We use the data from Uitdewilligen et. al. (2013) to demonstrate how to obtain LD estimates using the ldsep package. The R chunks are only evaluated if updog (>= 2.0.2) is installed.
 
 # Analysis
 
-We will first load the ldsep package. We will also need to load the updog [Gerard et. al., 2018; Gerard and Ferrão, 2020] and corrplot (Wei and Simko, 2017) R packages for this vignette:
+We will first load the ldsep package. We will also need to load the updog (Gerard et. al., 2018; Gerard and Ferrão, 2020) and corrplot (Wei and Simko, 2017) R packages for this vignette:
 ```{r setup, warning=FALSE, results='hide', message=FALSE}
 library(ldsep)
 library(updog)
@@ -44,11 +44,13 @@ class(uit)
 In order to estimate LD, we need to extract the genotype *log*-likelihoods from the updog fits using `format_multidog()` from the updog package.
 
 ```{r}
-genoarray <- format_multidog(x = uit, varname = paste0("logL_", 0:ploidy))
+vvec <- paste0("logL_", 0:ploidy)
+vvec
+genoarray <- format_multidog(x = uit, varname = vvec)
 dim(genoarray)
 ```
 
-The array, `genoarray`, contains the genotype log-likelihoods with dimensions SNPs $\times$ individuals $\times$ dosage. So `genoarray[i, j, k]` contains the genotype log-likelihood of SNP `i` for individual `j` at dosage `k-1`.
+The array, `genoarray`, contains the genotype log-likelihoods with dimensions (SNPs $\times$ individuals $\times$ dosage). So `genoarray[i, j, k]` contains the genotype log-likelihood of SNP `i` for individual `j` at dosage `k-1`.
 
 It is not necessary to use the genotype log-likelihoods from updog. There are many other genotyping methods that produce genotype log-likelihoods and these could be used instead, as long as you have formatted the genotype log-likelihoods in terms of an array as above.
 
@@ -68,7 +70,8 @@ plot(x = ldout, element = "r")
 We can also obtain these LD estimates in matrix form by using `format_lddf()`.
 
 ```{r}
-format_lddf(obj = ldout, element = "D")
+ldmat <- format_lddf(obj = ldout, element = "D")
+ldmat[1:4, 1:4]
 ```
 
 Though not generally recommended, we get very similar performance in this case when we use posterior mean genotypes to obtain LD estimates.
@@ -93,12 +96,12 @@ We can obtain shrunken LD estimates with `ldshrink()`. This shrinkage uses adapt
 
 ```{r}
 shrunkcor <- ldshrink(obj = ldout)
-corrplot(corr = shrunkcor, 
-         type = "upper", 
-         method = "color", 
-         diag = FALSE, 
+corrplot(corr    = shrunkcor, 
+         type    = "upper", 
+         method  = "color", 
+         diag    = FALSE, 
          is.corr = TRUE, 
-         tl.pos = "n")
+         tl.pos  = "n")
 ```
 
 To estimate pairwise LD along a sliding window, use `sldest()`:
