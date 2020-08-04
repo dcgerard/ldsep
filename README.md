@@ -68,6 +68,7 @@ By contributing to this project, you agree to abide by its terms.
     shrinkage estimation of correlations, with applications.” *bioRxiv*
     (2018): 368316.
   - Gerard, David. “Pairwise Linkage Disequilibrium Estimation for
-    Polyploids.” *Unpublished manuscript* (2020).
+    Polyploids.” *bioRxiv* (2020):
+    [doi:10.1101/2020.08.03.234476](https://doi.org/10.1101/2020.08.03.234476).
   - Stephens, Matthew. “False discovery rates: a new deal.”
     *Biostatistics* 18, no. 2 (2017): 275-294.

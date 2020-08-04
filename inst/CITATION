@@ -4,13 +4,14 @@ citEntry(
   entry    = "Article",
   title    = "Pairwise Linkage Disequilibrium Estimation for Polyploids",
   author   = "David Gerard",
-  journal  = "Unpublished Manuscript",
+  journal  = "bioRxiv",
   year     = "2020",
+  doi      = "10.1101/2020.08.03.234476",
   volume   = "",
   number   = "",
   pages    = "",
   url      = "",
   textVersion = paste(
-    "Gerard, David. \"Pairwise Linkage Disequilibrium Estimation for Polyploids.\" Unpublished manuscript (2020)."
+    "Gerard, David. 2020. \"Pairwise Linkage Disequilibrium Estimation for Polyploids.\" bioRxiv. https://doi.org/10.1101/2020.08.03.234476."
   )
 )

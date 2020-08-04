@@ -58,6 +58,6 @@ Please note that the ldsep project is released with a [Contributor Code of Condu
 ## References
 
 - Dey, Kushal K., and Matthew Stephens. "CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications." _bioRxiv_ (2018): 368316.
-- Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." _Unpublished manuscript_ (2020).
+- Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." _bioRxiv_ (2020): [doi:10.1101/2020.08.03.234476](https://doi.org/10.1101/2020.08.03.234476).
 - Stephens, Matthew. "False discovery rates: a new deal." _Biostatistics_ 18, no. 2 (2017): 275-294.
 

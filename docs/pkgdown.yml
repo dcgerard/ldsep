@@ -3,7 +3,7 @@ pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   ld_pipeline: ld_pipeline.html
-last_built: 2020-07-26T15:42Z
+last_built: 2020-08-04T18:10Z
 urls:
   reference: https://dcgerard.github.io/ldsep//reference
   article: https://dcgerard.github.io/ldsep//articles
