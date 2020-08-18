@@ -101,6 +101,70 @@ void ds_from_gp(arma::mat &ds, const arma::cube &gp) {
 }
 
 
+//' Calculate reliability ratio using just posterior moments
+//'
+//' @param gp The three-way array of posterior probabilities of dimension
+//'     SNPs by individuals by dosage.
+//' @param ds The matrix of posterior means of dimension individuals by SNPs
+//'
+//' @return A matrix of two columns. The first column contains the
+//'     estimated reliability ratios for the correlations, the second
+//'     column contains the estimated prior standard deviations.
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::mat post_rr(const arma::cube &gp, const arma::mat &ds) {
+  int nsnp = gp.n_rows;
+  int nind = gp.n_cols;
+
+  double mean_pv; // mean of posterior variances
+  double var_ds; // variance of posterior means
+  arma::vec pv(nind); // posterior variances
+  arma::mat rr(nsnp, 2); // reliability ratio
+  for (int i = 0; i < nsnp; i++) {
+    pv_from_gp(pv, gp, ds, i);
+    mean_pv = arma::mean(pv);
+    var_ds = arma::var(ds.col(i));
+    rr(i, 0) = std::sqrt((mean_pv + var_ds) / var_ds);
+    rr(i, 1) = std::sqrt(mean_pv + var_ds);
+  }
+  return rr;
+}
+
+
+//' Calculate reliability ratio using just posterior moments
+//'
+//' @param gp The three-way array of posterior probabilities of dimension
+//'     SNPs by individuals by dosage.
+//' @param ds The matrix of posterior means of dimension individuals by SNPs
+//' @param priorvar The vector of prior variances
+//'
+//' @return A matrix of two columns. The first column contains the
+//'     estimated reliability ratios for the correlations, the second
+//'     column contains the estimated prior standard deviations.
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::mat prior_rr(const arma::cube &gp, const arma::mat &ds, const arma::vec &priorvar) {
+  int nsnp = gp.n_rows;
+  int nind = gp.n_cols;
+
+  double mean_pv; // mean of posterior variances
+  arma::vec pv(nind); // posterior variances
+  arma::mat rr(nsnp, 2); // reliability ratio
+  for (int i = 0; i < nsnp; i++) {
+    pv_from_gp(pv, gp, ds, i);
+    mean_pv = arma::mean(pv);
+    rr(i, 0) = std::sqrt(1.0 / (1.0 - mean_pv / priorvar(i)));
+    rr(i, 1) = std::sqrt(priorvar(i));
+  }
+  return rr;
+}
+
 //' Calculate posterior variance from posterior probs and posterior mean
 //'
 //' @param pv The posterior variance vector to be filled

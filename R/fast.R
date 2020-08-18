@@ -70,6 +70,37 @@
 #'
 #' @export
 ldfast <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
+  stopifnot(inherits(gp, "array"))
+  stopifnot(length(dim(gp)) == 3)
+  type <- match.arg(type)
+  if (!is.null(pv)) {
+    stopifnot(inherits(pv, "numeric"))
+    stopifnot(length(pv) == dim(gp)[[1]])
+  }
+  ploidy <- dim(gp)[[3]] - 1
+
+  ds <- matrix(data = 0, nrow = dim(gp)[[2]], ncol = dim(gp)[[1]])
+  ds_from_gp(ds = ds, gp = gp)
+  if (is.null(pv)) {
+    rr <- post_rr(gp = gp, ds = ds)
+  } else {
+    rr <- prior_rr(gp = gp, ds = ds, priorvar = pv)
+  }
+  cmat <- sweep(x = rr[, 1] * coop::pcor(x = ds, use = "pairwise.complete.obs"), MARGIN = 2, STATS = rr[, 1], FUN = `*`)
+  cmat[cmat > 1] <- 1
+  cmat[cmat < -1] <- -1
+
+  if (type == "r2") {
+    cmat <- cmat ^ 2
+  } else if (type == "D") {
+    cmat <- sweep(x = rr[, 2] * cmat, MARGIN = 2, STATS = rr[, 2], FUN = `*`) / ploidy
+  }
+
+  return(list(cor = cmat, rr = rr[, 1]))
+}
+
+# alternate c++ based code
+ldfast_c <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
   stopifnot(length(dim(gp)) == 3)
   type <- match.arg(type)
   if (!is.null(pv)) {

@@ -599,6 +599,41 @@ ds_from_gp <- function(ds, gp) {
     invisible(.Call(`_ldsep_ds_from_gp`, ds, gp))
 }
 
+#' Calculate reliability ratio using just posterior moments
+#'
+#' @param gp The three-way array of posterior probabilities of dimension
+#'     SNPs by individuals by dosage.
+#' @param ds The matrix of posterior means of dimension individuals by SNPs
+#'
+#' @return A matrix of two columns. The first column contains the
+#'     estimated reliability ratios for the correlations, the second
+#'     column contains the estimated prior standard deviations.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+post_rr <- function(gp, ds) {
+    .Call(`_ldsep_post_rr`, gp, ds)
+}
+
+#' Calculate reliability ratio using just posterior moments
+#'
+#' @param gp The three-way array of posterior probabilities of dimension
+#'     SNPs by individuals by dosage.
+#' @param ds The matrix of posterior means of dimension individuals by SNPs
+#' @param priorvar The vector of prior variances
+#'
+#' @return A matrix of two columns. The first column contains the
+#'     estimated reliability ratios for the correlations, the second
+#'     column contains the estimated prior standard deviations.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+prior_rr <- function(gp, ds, priorvar) {
+    .Call(`_ldsep_prior_rr`, gp, ds, priorvar)
+}
+
 #' Calculate posterior variance from posterior probs and posterior mean
 #'
 #' @param pv The posterior variance vector to be filled

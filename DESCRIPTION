@@ -30,7 +30,8 @@ Imports:
     doParallel,
     ashr,
     corrplot,
-    lpSolve
+    lpSolve,
+    coop
 Suggests: 
     testthat,
     covr,

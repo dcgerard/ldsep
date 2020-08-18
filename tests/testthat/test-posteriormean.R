@@ -34,3 +34,12 @@ test_that("gl_to_gp works", {
   expect_true(all(abs(apply(X = gp2, MARGIN = c(1, 2), FUN = sum) - 1) < 10^-5))
   expect_true(all(apply(X = exp(glike) / gp2, MARGIN = c(1, 2), FUN = var) < 10^-5))
 })
+
+test_that("ldfast and ldfast_c are same", {
+  data("gp", package = "ldsep")
+  c1 <- ldfast(gp)
+  c2 <- ldfast_c(gp)
+  dimnames(c1$cor) <- NULL
+  dimnames(c2$cor) <- NULL
+  expect_equal(c1$cor, c2$cor, tolerance = 10^-5)
+})
