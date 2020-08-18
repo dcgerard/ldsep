@@ -572,6 +572,48 @@ obj_pbnorm_genolike <- function(par, pgA, pgB) {
     .Call(`_ldsep_obj_pbnorm_genolike`, par, pgA, pgB)
 }
 
+#' Fast bias-correction for LD
+#'
+#' This one does not assume any information about prior moments.
+#'
+#' @inheritParams ldfast
+#'
+#' @author David Gerard
+#'
+#' @noRd
+ldfast_post <- function(gp, type, priorvar_ = NULL) {
+    .Call(`_ldsep_ldfast_post`, gp, type, priorvar_)
+}
+
+#' Calculate posterior mean from posterior probs
+#'
+#' @param ds The matrix of posterior means to populate of dimension
+#'     ind by snp. This is non-standard dimension order and is for
+#'     armadillo to calculate covariance efficiently.
+#' @inheritParams ldfast_post
+#'
+#' @noRd
+#'
+#' @author David Gerard
+ds_from_gp <- function(ds, gp) {
+    invisible(.Call(`_ldsep_ds_from_gp`, ds, gp))
+}
+
+#' Calculate posterior variance from posterior probs and posterior mean
+#'
+#' @param pv The posterior variance vector to be filled
+#' @param ds The matrix of posterior means. TAKE NOTE:
+#'     Columns index SNPs and rows index individuals.
+#' @param i The current snp to look at.
+#' @inheritParams ldfast_post
+#'
+#' @author David Gerard
+#'
+#' @noRd
+pv_from_gp <- function(pv, gp, ds, i) {
+    invisible(.Call(`_ldsep_pv_from_gp`, pv, gp, ds, i))
+}
+
 #' Prior probability for haplotype frequencies.
 #'
 #' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).

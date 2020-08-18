@@ -497,6 +497,43 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ldfast_post
+List ldfast_post(const arma::cube& gp, char type, Nullable<Rcpp::NumericVector> priorvar_);
+RcppExport SEXP _ldsep_ldfast_post(SEXP gpSEXP, SEXP typeSEXP, SEXP priorvar_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
+    Rcpp::traits::input_parameter< char >::type type(typeSEXP);
+    Rcpp::traits::input_parameter< Nullable<Rcpp::NumericVector> >::type priorvar_(priorvar_SEXP);
+    rcpp_result_gen = Rcpp::wrap(ldfast_post(gp, type, priorvar_));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ds_from_gp
+void ds_from_gp(arma::mat& ds, const arma::cube& gp);
+RcppExport SEXP _ldsep_ds_from_gp(SEXP dsSEXP, SEXP gpSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type ds(dsSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
+    ds_from_gp(ds, gp);
+    return R_NilValue;
+END_RCPP
+}
+// pv_from_gp
+void pv_from_gp(arma::vec& pv, const arma::cube& gp, const arma::mat& ds, const int& i);
+RcppExport SEXP _ldsep_pv_from_gp(SEXP pvSEXP, SEXP gpSEXP, SEXP dsSEXP, SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec& >::type pv(pvSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type ds(dsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
+    pv_from_gp(pv, gp, ds, i);
+    return R_NilValue;
+END_RCPP
+}
 // lprior
 double lprior(const arma::vec prob, const arma::vec alpha);
 RcppExport SEXP _ldsep_lprior(SEXP probSEXP, SEXP alphaSEXP) {
@@ -686,6 +723,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_prior_mu", (DL_FUNC) &_ldsep_prior_mu, 2},
     {"_ldsep_prior_sigma", (DL_FUNC) &_ldsep_prior_sigma, 1},
     {"_ldsep_obj_pbnorm_genolike", (DL_FUNC) &_ldsep_obj_pbnorm_genolike, 3},
+    {"_ldsep_ldfast_post", (DL_FUNC) &_ldsep_ldfast_post, 3},
+    {"_ldsep_ds_from_gp", (DL_FUNC) &_ldsep_ds_from_gp, 2},
+    {"_ldsep_pv_from_gp", (DL_FUNC) &_ldsep_pv_from_gp, 4},
     {"_ldsep_lprior", (DL_FUNC) &_ldsep_lprior, 2},
     {"_ldsep_dlprior_dprob", (DL_FUNC) &_ldsep_dlprior_dprob, 2},
     {"_ldsep_lprior_par", (DL_FUNC) &_ldsep_lprior_par, 2},
