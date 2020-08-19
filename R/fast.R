@@ -83,10 +83,15 @@ ldfast <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
   ds_from_gp(ds = ds, gp = gp)
   if (is.null(pv)) {
     rr <- post_rr(gp = gp, ds = ds)
+    cmat <- rr[, 1] * coop::pcor(x = ds, use = "pairwise.complete.obs") * rep(rr[, 1], each = ncol(ds))
+    # cmat2 <- sweep(x = rr[, 1] * coop::pcor(x = ds, use = "pairwise.complete.obs"), MARGIN = 2, STATS = rr[, 1], FUN = `*`)
   } else {
     rr <- prior_rr(gp = gp, ds = ds, priorvar = pv)
+    cmat <- (rr[, 1]^2) * coop::covar(x = ds, use = "pairwise.complete.obs") * rep(rr[, 1]^2, each = ncol(ds))
+    # cmat2 <- sweep(x = (rr[, 1]^2) * coop::covar(x = ds, use = "pairwise.complete.obs"), MARGIN = 2, STATS = rr[, 1]^2, FUN = `*`)
+    diag(cmat) <- rr[, 2] ^ 2
+    cmat <- stats::cov2cor(cmat)
   }
-  cmat <- sweep(x = rr[, 1] * coop::pcor(x = ds, use = "pairwise.complete.obs"), MARGIN = 2, STATS = rr[, 1], FUN = `*`)
   cmat[cmat > 1] <- 1
   cmat[cmat < -1] <- -1
 
