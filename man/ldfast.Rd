@@ -36,6 +36,48 @@ Estimates the reliability ratios from posterior marginal moments and uses
 these to correct the biases in linkage disequilibrium estimation
 caused by genotype uncertainty.
 }
+\section{Details}{
+
+
+Sometimes, the reliability ratio results in a correlation greater than 1
+or less than -1 (due to sample variability). We truncate these occasions
+at 1 and -1, respectively.
+
+This won't work for missing data in \code{gp} yet, but the plan is to
+allow missing data in the future.
+}
+
+\section{Mathematical formulation}{
+
+Let
+\itemize{
+\item{\eqn{r} be the sample correlation of posterior mean genotypes
+between loci 1 and 2,}
+\item{\eqn{a1} be the sample variance of posterior means at locus 1,}
+\item{\eqn{a2} be the sample variance of posterior means at locus 2,}
+\item{\eqn{b1} be the sample mean of posterior variances at locus 1, and}
+\item{\eqn{b2} be the sample mean of posterior variances at locus 2.}
+}
+Then the estimated Pearson correlation between the genotypes at
+loci 1 and 2 is
+\deqn{[(a1 + b1)/a1][(a2 + b2)/a2]r.}
+This is the estimated LD when \code{pv = NULL}.
+
+Alternatively, suppose that we know the prior variances and we let
+\itemize{
+\item{\eqn{s1} be the prior variance at locus 1,}
+\item{\eqn{s2} be the prior variance at locus 2, and}
+\item{\eqn{t} be the sample covariance of posterior mean genotypes
+between loci 1 and 2.}
+}
+Then the estimated covariance between genotypes at loci 1 and 2 is
+\deqn{[s1/(s1 - b1)][s2/(s2-b2)]t.}
+We obtain the estimate Pearson correlation by normalizing by the
+prior standard deviations
+\deqn{[\sqrt{s1}/(s1 - b1)][\sqrt{s2}/(s2-b2)]t.}
+This is the estimated LD when \code{pv} is not \code{NULL}.
+}
+
 \examples{
 ## Load the data -----
 data("uit") # mupdog() fits
