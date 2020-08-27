@@ -497,6 +497,77 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fill_pm
+void fill_pm(NumericMatrix& pm, const arma::cube& gp);
+RcppExport SEXP _ldsep_fill_pm(SEXP pmSEXP, SEXP gpSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type pm(pmSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
+    fill_pm(pm, gp);
+    return R_NilValue;
+END_RCPP
+}
+// fill_pv
+void fill_pv(NumericMatrix& pv, NumericMatrix& pm, const arma::cube& gp);
+RcppExport SEXP _ldsep_fill_pv(SEXP pvSEXP, SEXP pmSEXP, SEXP gpSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type pv(pvSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix& >::type pm(pmSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
+    fill_pv(pv, pm, gp);
+    return R_NilValue;
+END_RCPP
+}
+// grad_delta_m
+void grad_delta_m(const arma::vec& M, arma::vec& grad, double pd);
+RcppExport SEXP _ldsep_grad_delta_m(SEXP MSEXP, SEXP gradSEXP, SEXP pdSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type grad(gradSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    grad_delta_m(M, grad, pd);
+    return R_NilValue;
+END_RCPP
+}
+// grad_deltaprime_m
+void grad_deltaprime_m(const arma::vec& M, arma::vec& grad, double pd);
+RcppExport SEXP _ldsep_grad_deltaprime_m(SEXP MSEXP, SEXP gradSEXP, SEXP pdSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type grad(gradSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    grad_deltaprime_m(M, grad, pd);
+    return R_NilValue;
+END_RCPP
+}
+// grad_rho_m
+void grad_rho_m(const arma::vec& M, arma::vec& grad);
+RcppExport SEXP _ldsep_grad_rho_m(SEXP MSEXP, SEXP gradSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< arma::vec& >::type grad(gradSEXP);
+    grad_rho_m(M, grad);
+    return R_NilValue;
+END_RCPP
+}
+// ldfast_calc
+void ldfast_calc(NumericMatrix& cormat, NumericMatrix& semat, const arma::cube& gp, char type);
+RcppExport SEXP _ldsep_ldfast_calc(SEXP cormatSEXP, SEXP sematSEXP, SEXP gpSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type cormat(cormatSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix& >::type semat(sematSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
+    Rcpp::traits::input_parameter< char >::type type(typeSEXP);
+    ldfast_calc(cormat, semat, gp, type);
+    return R_NilValue;
+END_RCPP
+}
 // ldfast_post
 List ldfast_post(const arma::cube& gp, char type, Nullable<Rcpp::NumericVector> priorvar_);
 RcppExport SEXP _ldsep_ldfast_post(SEXP gpSEXP, SEXP typeSEXP, SEXP priorvar_SEXP) {
@@ -748,6 +819,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_prior_mu", (DL_FUNC) &_ldsep_prior_mu, 2},
     {"_ldsep_prior_sigma", (DL_FUNC) &_ldsep_prior_sigma, 1},
     {"_ldsep_obj_pbnorm_genolike", (DL_FUNC) &_ldsep_obj_pbnorm_genolike, 3},
+    {"_ldsep_fill_pm", (DL_FUNC) &_ldsep_fill_pm, 2},
+    {"_ldsep_fill_pv", (DL_FUNC) &_ldsep_fill_pv, 3},
+    {"_ldsep_grad_delta_m", (DL_FUNC) &_ldsep_grad_delta_m, 3},
+    {"_ldsep_grad_deltaprime_m", (DL_FUNC) &_ldsep_grad_deltaprime_m, 3},
+    {"_ldsep_grad_rho_m", (DL_FUNC) &_ldsep_grad_rho_m, 2},
+    {"_ldsep_ldfast_calc", (DL_FUNC) &_ldsep_ldfast_calc, 4},
     {"_ldsep_ldfast_post", (DL_FUNC) &_ldsep_ldfast_post, 3},
     {"_ldsep_ds_from_gp", (DL_FUNC) &_ldsep_ds_from_gp, 2},
     {"_ldsep_post_rr", (DL_FUNC) &_ldsep_post_rr, 2},

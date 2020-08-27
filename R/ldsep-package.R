@@ -30,7 +30,7 @@
 #' in R for citation information: \code{citation("ldsep")}
 #'
 #'
-#'
+#' @importFrom stats var
 #' @importFrom foreach %dopar%
 #' @useDynLib ldsep, .registration = TRUE
 #' @importFrom Rcpp sourceCpp

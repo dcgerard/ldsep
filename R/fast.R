@@ -14,9 +14,6 @@
 #' or less than -1 (due to sample variability). We truncate these occasions
 #' at 1 and -1, respectively.
 #'
-#' This won't work for missing data in \code{gp} yet, but the plan is to
-#' allow missing data in the future.
-#'
 #' @section Mathematical formulation:
 #' Let
 #' \itemize{
@@ -32,30 +29,19 @@
 #' \deqn{[(a1 + b1)/a1][(a2 + b2)/a2]r.}
 #' This is the estimated LD when \code{pv = NULL}.
 #'
-#' Alternatively, suppose that we know the prior variances and we let
-#' \itemize{
-#'   \item{\eqn{s1} be the prior variance at locus 1,}
-#'   \item{\eqn{s2} be the prior variance at locus 2, and}
-#'   \item{\eqn{t} be the sample covariance of posterior mean genotypes
-#'       between loci 1 and 2.}
-#' }
-#' Then the estimated covariance between genotypes at loci 1 and 2 is
-#' \deqn{[s1/(s1 - b1)][s2/(s2-b2)]t.}
-#' We obtain the estimate Pearson correlation by normalizing by the
-#' prior standard deviations
-#' \deqn{[\sqrt{s1}/(s1 - b1)][\sqrt{s2}/(s2-b2)]t.}
-#' This is the estimated LD when \code{pv} is not \code{NULL}.
 #'
 #' @param gp A three-way array with dimensions SNPs by individuals by dosage.
 #'     That is, \code{gp[i, j, k]} is the posterior probability of
 #'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
-#' @param pv A vector of numerics. Optionally provided prior variances.
-#'     This should only be provided if these prior variances were estimated
-#'     adaptively.
-#' @param type What LD measure should we estimate? The Pearson correlation
-#'     (\code{type = "r"}), the squared Pearson correlation
-#'     (\code{type = "r2"}), or the LD coefficient (\code{type = "D"})?
-#'     These are all \emph{composite} measures of LD.
+#' @param type What LD measure should we estimate?
+#'     \describe{
+#'       \item{\code{r}}{The Pearson correlation.}
+#'       \item{\code{r2}}{The squared Pearson correlation.}
+#'       \item{\code{z}}{The Fisher-z transformed Pearson correlation.}
+#'       \item{\code{D}}{The LD coefficient.}
+#'       \item{\code{Dprime}}{The standardized LD coefficient.}
+#'     }
+#'     Note that these are all \emph{composite} measures of LD.
 #'
 #' @seealso
 #' \describe{
@@ -67,47 +53,122 @@
 #'
 #' @return A list with the following elements:
 #' \describe{
-#'   \item{\code{cor}}{The bias-corrected LD matrix.}
-#'   \item{\code{rr}}{The estimated reliability ratio for the
-#'       \emph{correlation}. This is how much you multiply the
-#'       Pearson correlation by to obtain the bias-adjusted Pearson
-#'       correlation estimate. Square this term to get the reliability
-#'       ratio for the LD coefficient.}
+#'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
+#'   \item{\code{semat}}{A matrix 0f standard errors of the corresponding
+#'       estimators of LD.}
 #' }
 #'
 #' @author David Gerard
 #'
 #' @examples
 #' ## Load the data -----
-#' data("uit") # mupdog() fits
-#' pv <- pvcalc(uit$snpdf[, paste0("Pr_", 0:4)]) # prior probs
 #' data("gp") # posterior probs
+#' ldout <- ldfast(gp, "r")
+#' ldout$ldmat
+#' ldout$semat
 #'
-#' ## Estimate squared correlation using just posterior moments -----
-#' cout1 <- ldfast(gp = gp, type = "r2")
-#' corrplot::corrplot(corr = cout1$cor,
-#'                    diag = FALSE,
-#'                    type = "upper",
-#'                    method = "color")
-#' hist(cout1$rr, xlab = "Reliability Ratio")
+#' ldout <- ldfast(gp, "D")
+#' ldout$ldmat
+#' ldout$semat
 #'
-#' ## Estimate squared correlation also using prior variances -----
-#' cout2 <- ldfast(gp = gp, type = "r2", pv = pv)
-#' corrplot::corrplot(corr = cout2$cor,
-#'                    diag = FALSE,
-#'                    type = "upper",
-#'                    method = "color")
-#' hist(cout2$rr, xlab = "Reliability Ratio")
-#'
-#' ## The adjustments are really close in these data -----
-#' plot(x = cout1$rr,
-#'      y = cout2$rr,
-#'      xlab = "Without Prior Variance",
-#'      ylab = "With Prior Variance")
-#' abline(0, 1)
+#' ldout <- ldfast(gp, "Dprime")
+#' ldout$ldmat
+#' ldout$semat
 #'
 #' @export
-ldfast <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
+ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
+  stopifnot(inherits(gp, "array"))
+  stopifnot(length(dim(gp)) == 3)
+  type <- match.arg(type)
+
+  nsnp <- dim(gp)[[1]]
+  nind <- dim(gp)[[2]]
+  ploidy <- dim(gp)[[3]] - 1
+
+  cormat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
+  semat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
+
+  if (type == "D") {
+    ldfast_calc(cormat = cormat, semat = semat, gp = gp, type = "a")
+  } else if (type == "Dprime") {
+    ldfast_calc(cormat = cormat, semat = semat, gp = gp, type = "c")
+  } else {
+    ldfast_calc(cormat = cormat, semat = semat, gp = gp, type = "b")
+  }
+
+  if (type == "r2") {
+    semat <- semat * abs(cormat) * 2
+    cormat <- cormat ^ 2
+  } else if (type == "z") {
+    semat <- semat / (1 - cormat ^ 2)
+    cormat <- atanh(cormat)
+  }
+
+  return(list(ldmat = cormat, semat = semat))
+}
+
+
+#' same as ldfast, but just calculate the ld, not the se
+#'
+#'
+#' @author David Gerard
+#'
+#' @noRd
+ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
+  stopifnot(inherits(gp, "array"))
+  stopifnot(length(dim(gp)) == 3)
+  type <- match.arg(type)
+
+  nsnp <- dim(gp)[[1]]
+  nind <- dim(gp)[[2]]
+  ploidy <- dim(gp)[[3]] - 1
+
+  pm_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  pv_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  fill_pm(pm = pm_mat, gp = gp)
+  fill_pv(pv = pv_mat, pm = pm_mat, gp = gp)
+
+  varx <- apply(X = pm_mat, MARGIN = 1, FUN = `var`, na.rm = TRUE)
+  muy <- rowMeans(x = pv_mat, na.rm = TRUE)
+
+  ## calculate correlation
+  rr <- sqrt((muy + varx) / varx)
+  ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
+  if (type != "Dprime") {
+    ldmat[ldmat > 1] <- 1
+    ldmat[ldmat < -1] <- -1
+  }
+
+  if (type == "D") {
+    sdvec <- sqrt(muy + varx)
+    ldmat <- (sdvec * ldmat * rep(sdvec, each = nsnp)) / ploidy
+  } else if (type == "Dprime") {
+    mux <- rowMeans(pm_mat, na.rm = TRUE)
+    sdvec <- sqrt(muy + varx)
+    ldmat <- sdvec * ldmat * rep(sdvec, each = nsnp) / ploidy
+
+    deltam_neg <- pmin(outer(X = mux, Y = mux, FUN = `*`),
+                       outer(X = ploidy - mux, Y = ploidy - mux, FUN = `*`)) / ploidy ^ 2
+    deltam_pos <- pmin(outer(X = mux, Y = ploidy - mux, FUN = `*`),
+                       outer(X = ploidy - mux, Y = mux, FUN = `*`)) / ploidy ^ 2
+
+    ldmat[ldmat < 0] <- ldmat[ldmat < 0] / deltam_neg[ldmat < 0]
+    ldmat[ldmat > 0] <- ldmat[ldmat > 0] / deltam_pos[ldmat > 0]
+
+    ldmat[ldmat > ploidy] <- ploidy
+    ldmat[ldmat < -ploidy] <- -ploidy
+  } else if (type == "r2") {
+    ldmat <- ldmat ^ 2
+  } else if (type == "z") {
+    ldmat <- atanh(ldmat)
+  } else {
+    ## do nothing
+  }
+
+  return(ldmat)
+}
+
+ldfast_r <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
   type <- match.arg(type)

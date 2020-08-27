@@ -572,6 +572,46 @@ obj_pbnorm_genolike <- function(par, pgA, pgB) {
     .Call(`_ldsep_obj_pbnorm_genolike`, par, pgA, pgB)
 }
 
+fill_pm <- function(pm, gp) {
+    invisible(.Call(`_ldsep_fill_pm`, pm, gp))
+}
+
+fill_pv <- function(pv, pm, gp) {
+    invisible(.Call(`_ldsep_fill_pv`, pv, pm, gp))
+}
+
+grad_delta_m <- function(M, grad, pd) {
+    invisible(.Call(`_ldsep_grad_delta_m`, M, grad, pd))
+}
+
+grad_deltaprime_m <- function(M, grad, pd) {
+    invisible(.Call(`_ldsep_grad_deltaprime_m`, M, grad, pd))
+}
+
+grad_rho_m <- function(M, grad) {
+    invisible(.Call(`_ldsep_grad_rho_m`, M, grad))
+}
+
+#' Fast bias-correction for LD
+#'
+#' This one does not assume any information about prior moments.
+#' This modifies two empty matrices: the correlation and the standard error
+#' matrices.
+#'
+#' @param cormat The matrix that will hold the correlations.
+#' @param semat The matrix that will hold the standard errors.
+#' @param gp A three-way array with dimensions SNPs by individuals by dosage.
+#'     That is, \code{gp[i, j, k]} is the posterior probability of
+#'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
+#' @param type a = D, b = r, c = D'
+#'
+#' @author David Gerard
+#'
+#' @noRd
+ldfast_calc <- function(cormat, semat, gp, type) {
+    invisible(.Call(`_ldsep_ldfast_calc`, cormat, semat, gp, type))
+}
+
 #' Fast bias-correction for LD
 #'
 #' This one does not assume any information about prior moments.
