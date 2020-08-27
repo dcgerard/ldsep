@@ -10,9 +10,17 @@
 #'
 #' @section Details:
 #'
-#' Sometimes, the reliability ratio results in a correlation greater than 1
-#' or less than -1 (due to sample variability). We truncate these occasions
-#' at 1 and -1, respectively.
+#' Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
+#' The usual measures of LD are implemented: D, D', r, r2, and z
+#' (Fisher-z of r). These are all \emph{composite} measures of LD, not
+#' gametic measures of LD. They are always appropriate measures of association
+#' between loci, but only correspond to gametic measures of LD when
+#' Hardy-Weinberg equilibrium is fulfilled in polyploids.
+#'
+#' Due to sampling varibility, the estimates sometimes lie outside of the
+#' theoretical boundary of the parameters being estimated. In such cases,
+#' we truncate the estimates at the boundary and return \code{NA} for the
+#' standard errors.
 #'
 #' @section Mathematical formulation:
 #' Let
@@ -42,16 +50,17 @@
 #'       \item{\code{Dprime}}{The standardized LD coefficient.}
 #'     }
 #'     Note that these are all \emph{composite} measures of LD.
+#' @param se Should we also return a matrix of standard errors (\code{TRUE})
+#'     or not (\code{FALSE})? It is faster to not return standard errors.
+#'     Defaults to \code{TRUE}.
 #'
 #' @seealso
 #' \describe{
 #' \item{\code{\link{gl_to_gp}()}}{Normalize genotype likelihoods to
 #'     posterior probabilities using naive uniform prior.}
-#' \item{\code{\link{pvcalc}()}}{Calculate prior variances given genotype
-#'     priors.}
 #' }
 #'
-#' @return A list with the following elements:
+#' @return A list with some or all of the following elements:
 #' \describe{
 #'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
 #'   \item{\code{semat}}{A matrix 0f standard errors of the corresponding
@@ -76,11 +85,19 @@
 #' ldout$semat
 #'
 #' @export
-ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
+ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
+  stopifnot(is.logical(se))
+  stopifnot(length(se) == 1)
   type <- match.arg(type)
 
+  ## Just return the LD if asked ---------------------------------------------
+  if (!se) {
+    return(list(ldmat = ldfast_justmean(gp = gp, type = type)))
+  }
+
+  ## Otherwise, go the slow way ----------------------------------------------
   nsnp <- dim(gp)[[1]]
   nind <- dim(gp)[[2]]
   ploidy <- dim(gp)[[3]] - 1
@@ -107,9 +124,9 @@ ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
   return(list(ldmat = cormat, semat = semat))
 }
 
-
-#' same as ldfast, but just calculate the ld, not the se
+#' Same as ldfast, but just calculate the ld, not the se
 #'
+#' @inheritParams ldfast
 #'
 #' @author David Gerard
 #'
@@ -166,63 +183,6 @@ ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
   }
 
   return(ldmat)
-}
-
-ldfast_r <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
-  stopifnot(inherits(gp, "array"))
-  stopifnot(length(dim(gp)) == 3)
-  type <- match.arg(type)
-  if (!is.null(pv)) {
-    stopifnot(inherits(pv, "numeric"))
-    stopifnot(length(pv) == dim(gp)[[1]])
-  }
-  ploidy <- dim(gp)[[3]] - 1
-
-  ds <- matrix(data = 0, nrow = dim(gp)[[2]], ncol = dim(gp)[[1]])
-  ds_from_gp(ds = ds, gp = gp)
-  if (is.null(pv)) {
-    rr <- post_rr(gp = gp, ds = ds)
-    cmat <- rr[, 1] * coop::pcor(x = ds, use = "pairwise.complete.obs") * rep(rr[, 1], each = ncol(ds))
-    # cmat2 <- sweep(x = rr[, 1] * coop::pcor(x = ds, use = "pairwise.complete.obs"), MARGIN = 2, STATS = rr[, 1], FUN = `*`)
-  } else {
-    rr <- prior_rr(gp = gp, ds = ds, priorvar = pv)
-    cmat <- (rr[, 1]^2) * coop::covar(x = ds, use = "pairwise.complete.obs") * rep(rr[, 1]^2, each = ncol(ds))
-    # cmat2 <- sweep(x = (rr[, 1]^2) * coop::covar(x = ds, use = "pairwise.complete.obs"), MARGIN = 2, STATS = rr[, 1]^2, FUN = `*`)
-    diag(cmat) <- rr[, 2] ^ 2
-    cmat <- stats::cov2cor(cmat)
-  }
-  cmat[cmat > 1] <- 1
-  cmat[cmat < -1] <- -1
-
-  if (type == "r2") {
-    cmat <- cmat ^ 2
-  } else if (type == "D") {
-    cmat <- sweep(x = rr[, 2] * cmat, MARGIN = 2, STATS = rr[, 2], FUN = `*`) / ploidy
-  }
-
-  return(list(cor = cmat, rr = rr[, 1]))
-}
-
-# alternate c++ based code
-ldfast_c <- function(gp, type = c("r", "r2", "D"), pv = NULL) {
-  stopifnot(length(dim(gp)) == 3)
-  type <- match.arg(type)
-  if (!is.null(pv)) {
-    stopifnot(inherits(pv, "numeric"))
-    stopifnot(length(pv) == dim(gp)[[1]])
-  }
-
-  if (type %in% c("r", "r2")) {
-    cout <- ldfast_post(gp = gp, type = "r", priorvar_ = pv)
-    if (type == "r2") {
-      cout$cor <- cout$cor ^ 2
-    }
-  } else {
-    cout <- ldfast_post(gp = gp, type = "D", priorvar_ = pv)
-  }
-  rownames(cout$cor) <- dimnames(gp)[[1]]
-  colnames(cout$cor) <- dimnames(gp)[[1]]
-  return(cout)
 }
 
 #' Normalize genotype likelihoods to posterior probabilities.

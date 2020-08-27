@@ -1,32 +1,5 @@
 context("Posterior moments")
 
-test_that("Posterior mean from gp works", {
-  data("gp", package = "ldsep")
-  ds <- matrix(data = 0, nrow = dim(gp)[[2]], ncol = dim(gp)[[1]])
-
-  ds_from_gp(ds = ds, gp = gp)
-  pmout <- apply(sweep(x = gp, MARGIN = 3, STATS = 0:4, FUN = `*`), c(1, 2), sum)
-  dimnames(pmout) <- NULL
-  expect_equal(ds, t(pmout))
-
-  pmout2 <- apply(sweep(x = gp, MARGIN = 3, STATS = (0:4)^2, FUN = `*`), c(1, 2), sum)
-  vout <- pmout2 - pmout^2
-  dimnames(vout) <- NULL
-
-  pv <- rep(0, length = dim(gp)[[2]])
-  pv_from_gp(pv = pv, gp = gp, ds = ds, i = 0)
-  expect_equal(pv, vout[1, ])
-
-  pv <- rep(0, length = dim(gp)[[2]])
-  pv_from_gp(pv = pv, gp = gp, ds = ds, i = 3)
-  expect_equal(pv, vout[4, ])
-
-  c0 <- cor(t(pmout))
-  c1 <- cov2cor(ldfast_post(gp = gp, type = "D")$cor)
-  c2 <- ldfast_post(gp = gp, type = "r")$cor
-  expect_equal(c1, c2)
-})
-
 test_that("gl_to_gp works", {
   data("glike", package = "ldsep")
   gp2 <- ldsep::gl_to_gp(glike)
@@ -37,24 +10,27 @@ test_that("gl_to_gp works", {
 
 test_that("ldfast versions are the same", {
   data("gp", package = "ldsep")
+
+  # gp[3, 1:50, 1] <- NA
+
   c1 <- ldfast_justmean(gp = gp, type = "r")
-  c2 <- ldfast(gp = gp, type = "r")
+  c2 <- ldfast(gp = gp, type = "r", se = TRUE)
   expect_equal(c1[upper.tri(c1)], c2$ldmat[upper.tri(c2$ldmat)], tolerance = 10^-5)
 
   c1 <- ldfast_justmean(gp = gp, type = "D")
-  c2 <- ldfast(gp = gp, type = "D")
+  c2 <- ldfast(gp = gp, type = "D", se = TRUE)
   expect_equal(c1[upper.tri(c1)], c2$ldmat[upper.tri(c2$ldmat)], tolerance = 10^-5)
 
   c1 <- ldfast_justmean(gp = gp, type = "Dprime")
-  c2 <- ldfast(gp = gp, type = "Dprime")
+  c2 <- ldfast(gp = gp, type = "Dprime", se = TRUE)
   expect_equal(c1[upper.tri(c1)], c2$ldmat[upper.tri(c2$ldmat)], tolerance = 10^-5)
 
   c1 <- ldfast_justmean(gp = gp, type = "z")
-  c2 <- ldfast(gp = gp, type = "z")
+  c2 <- ldfast(gp = gp, type = "z", se = TRUE)
   expect_equal(c1[upper.tri(c1)], c2$ldmat[upper.tri(c2$ldmat)], tolerance = 10^-5)
 
   c1 <- ldfast_justmean(gp = gp, type = "r2")
-  c2 <- ldfast(gp = gp, type = "r2")
+  c2 <- ldfast(gp = gp, type = "r2", se = TRUE)
   expect_equal(c1[upper.tri(c1)], c2$ldmat[upper.tri(c2$ldmat)], tolerance = 10^-5)
 
   # microbenchmark::microbenchmark(
@@ -194,3 +170,21 @@ test_that("posterior moments are calculated correctly", {
 
 })
 
+test_that("NA ses are returned at threshholds in ldfast", {
+  data("gp")
+
+  ldout <- ldfast(gp = gp, type = "r", se = TRUE)
+  expect_true(is.na(ldout$se[1, 1]))
+
+  ldout <- ldfast(gp = gp, type = "D", se = TRUE)
+  expect_true(is.na(ldout$se[1, 1]))
+
+  ldout <- ldfast(gp = gp, type = "Dprime", se = TRUE)
+  expect_true(is.na(ldout$se[1, 1]))
+
+  ldout <- ldfast(gp = gp, type = "z", se = TRUE)
+  expect_true(is.na(ldout$se[1, 1]))
+
+  ldout <- ldfast(gp = gp, type = "r2", se = TRUE)
+  expect_true(is.na(ldout$se[1, 1]))
+})

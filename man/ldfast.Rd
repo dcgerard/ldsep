@@ -4,7 +4,7 @@
 \alias{ldfast}
 \title{Fast bias-correction for LD Estimation}
 \usage{
-ldfast(gp, type = c("r", "r2", "z", "D", "Dprime"))
+ldfast(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE)
 }
 \arguments{
 \item{gp}{A three-way array with dimensions SNPs by individuals by dosage.
@@ -20,9 +20,13 @@ dosage \code{k-1} for individual \code{j} at SNP \code{i}.}
 \item{\code{Dprime}}{The standardized LD coefficient.}
 }
 Note that these are all \emph{composite} measures of LD.}
+
+\item{se}{Should we also return a matrix of standard errors (\code{TRUE})
+or not (\code{FALSE})? It is faster to not return standard errors.
+Defaults to \code{TRUE}.}
 }
 \value{
-A list with the following elements:
+A list with some or all of the following elements:
 \describe{
 \item{\code{ldmat}}{The bias-corrected LD matrix.}
 \item{\code{semat}}{A matrix 0f standard errors of the corresponding
@@ -37,9 +41,17 @@ caused by genotype uncertainty.
 \section{Details}{
 
 
-Sometimes, the reliability ratio results in a correlation greater than 1
-or less than -1 (due to sample variability). We truncate these occasions
-at 1 and -1, respectively.
+Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
+The usual measures of LD are implemented: D, D', r, r2, and z
+(Fisher-z of r). These are all \emph{composite} measures of LD, not
+gametic measures of LD. They are always appropriate measures of association
+between loci, but only correspond to gametic measures of LD when
+Hardy-Weinberg equilibrium is fulfilled in polyploids.
+
+Due to sampling varibility, the estimates sometimes lie outside of the
+theoretical boundary of the parameters being estimated. In such cases,
+we truncate the estimates at the boundary and return \code{NA} for the
+standard errors.
 }
 
 \section{Mathematical formulation}{
@@ -79,8 +91,6 @@ ldout$semat
 \describe{
 \item{\code{\link{gl_to_gp}()}}{Normalize genotype likelihoods to
 posterior probabilities using naive uniform prior.}
-\item{\code{\link{pvcalc}()}}{Calculate prior variances given genotype
-priors.}
 }
 }
 \author{

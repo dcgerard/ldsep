@@ -12,6 +12,8 @@
 #'
 #' The main functions are:
 #' \describe{
+#'   \item{\code{\link{ldfast}()}}{Fast, moment-based, bias-corrected LD
+#'       LD estimates from marginal posterior distributions.}
 #'   \item{\code{\link{ldest}()}}{Estimates pairwise LD.}
 #'   \item{\code{\link{mldest}()}}{Iteratively apply \code{\link{ldest}()}
 #'       across many pairs of SNPs.}
