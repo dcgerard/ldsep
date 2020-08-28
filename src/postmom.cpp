@@ -232,7 +232,7 @@ void ldfast_calc(NumericMatrix &cormat,
       uxb = Mbar(2);
       vxa = (Mbar(1) - std::pow(Mbar(0), 2.0)) * ((double)na) / ((double)na - 1.0);
       vxb = (Mbar(3) - std::pow(Mbar(2), 2.0)) * ((double)nb) / ((double)nb - 1.0);
-      cx =  (Mbar(4) - Mbar(0) * Mbar(2)) * ((double)n) / ((double)n - 1.0);
+      cx =  (Mbar_om(4) - Mbar_om(0) * Mbar(2) - Mbar(0) * Mbar_om(2) + Mbar(0) * Mbar(2)) * ((double)n) / ((double)n - 1.0);
       uya = Mbar(5);
       uyb = Mbar(6);
 
