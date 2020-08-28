@@ -153,16 +153,12 @@ void ldfast_calc(NumericMatrix &cormat,
   // M_i = (X_{iA}, X_{iA}^2, X_{iB}, X_{iB}^2, X_{iA}X_{iB}, Y_{iA}, Y_{iB})
   arma::vec Mi(7); // moments for each individual between two loci
   arma::mat Omega(7, 7); // Sample covariance between moments
+  arma::vec Mbar_om(7); // sample mean using just pairwise complete obs.
   arma::vec Mbar(7); // Sample mean of moments.
   arma::vec grad(7); // gradient for transformation from M to LD measure.
   int n; // sample size for pairwise complete observations;
   int na; // sample size for SNP A
   int nb; // sample size for SNP B
-
-  // I need this because I didn't have locus 1 (or 2) contiguous in original code.
-  arma::Col<int> aind = {0, 1, 5}; // indices of A locus in Mi
-  arma::Col<int> bind = {2, 3, 6}; // indices of B locus in Mi
-  int crossind = 4; // index of cross product
 
   double uxa; // mean of posterior means at locus 1.
   double uxb; // mean of posterior means at locus 2.
@@ -182,7 +178,6 @@ void ldfast_calc(NumericMatrix &cormat,
       nb = 0;
       Mbar.zeros();
       Omega.zeros();
-
       for (int ell = 0; ell < nind; ell++) {
         if (!NumericMatrix::is_na(pm_mat(i, ell))) {
           // update locus A moments
@@ -194,14 +189,6 @@ void ldfast_calc(NumericMatrix &cormat,
           Mbar(0) = Mbar(0) * ((double)na - 1.0) / (double)na + Mi(0) / (double)na;
           Mbar(1) = Mbar(1) * ((double)na - 1.0) / (double)na + Mi(1) / (double)na;
           Mbar(5) = Mbar(5) * ((double)na - 1.0) / (double)na + Mi(5) / (double)na;
-
-          for (int ai = 0; ai < 3; ai++) {
-            for (int aj = 0; aj < 3; aj++) {
-              Omega(aind(ai), aind(aj)) = Omega(aind(ai), aind(aj)) * ((double)na - 1.0) / (double)na +
-                Mi(aind(ai)) * Mi(aind(aj)) / (double)na;
-            }
-          }
-
         }
 
         if (!NumericMatrix::is_na(pm_mat(j, ell))) {
@@ -214,14 +201,6 @@ void ldfast_calc(NumericMatrix &cormat,
           Mbar(2) = Mbar(2) * ((double)nb - 1.0) / (double)nb + Mi(2) / (double)nb;
           Mbar(3) = Mbar(3) * ((double)nb - 1.0) / (double)nb + Mi(3) / (double)nb;
           Mbar(6) = Mbar(6) * ((double)nb - 1.0) / (double)nb + Mi(6) / (double)nb;
-
-          for (int bi = 0; bi < 3; bi++) {
-            for (int bj = 0; bj < 3; bj++) {
-              Omega(bind(bi), bind(bj)) = Omega(bind(bi), bind(bj)) * ((double)nb - 1.0) / (double)nb +
-                Mi(bind(bi)) * Mi(bind(bj)) / (double)nb;
-            }
-          }
-
         }
 
         if (!NumericMatrix::is_na(pm_mat(i, ell)) &&
@@ -231,57 +210,12 @@ void ldfast_calc(NumericMatrix &cormat,
           Mi(4) = pm_mat(i, ell) * pm_mat(j, ell);
           Mbar(4) = Mbar(4) * ((double)n - 1.0) / (double)n + Mi(4) / (double)n;
 
-          Omega(crossind, crossind) = Omega(crossind, crossind) * ((double)n - 1.0) / (double)n +
-            std::pow(Mi(4), 2.0) / (double)n;
-
-          for (int ai = 0; ai < 3; ai++) {
-            Omega(aind(ai), crossind) = Omega(aind(ai), crossind) * ((double)n - 1.0) / (double)n +
-              Mi(aind(ai)) * Mi(crossind) / (double)n;
-            Omega(crossind, aind(ai)) = Omega(aind(ai), crossind);
-          }
-
-          for (int bi = 0; bi < 3; bi++) {
-            Omega(bind(bi), crossind) = Omega(bind(bi), crossind) * ((double)n - 1.0) / (double)n +
-              Mi(bind(bi)) * Mi(crossind) / (double)n;
-            Omega(crossind, bind(bi)) = Omega(bind(bi), crossind);
-          }
-
-          for (int ai = 0; ai < 3; ai++) {
-            for (int bi = 0; bi < 3; bi++) {
-              Omega(aind(ai), bind(bi)) = Omega(aind(ai), bind(bi)) * ((double)n - 1.0) / (double)n +
-                Mi(aind(ai)) * Mi(bind(bi)) / (double)n;
-              Omega(bind(bi), aind(ai)) = Omega(aind(ai), bind(bi));
-            }
-          }
+          Mbar_om = Mbar_om + Mi;
+          Omega = Omega + Mi * Mi.t();
         }
       }
-      Omega = Omega - Mbar * Mbar.t();
-
-      // Update cov denominator to make unbiased
-      Omega(crossind, crossind) = Omega(crossind, crossind) * (double)n / ((double)n - 1.0);
-      for (int ai = 0; ai < 3; ai++) {
-        for (int aj = 0; aj < 3; aj++) {
-          Omega(aind(ai), aind(aj)) = Omega(aind(ai), aind(aj)) * (double)na / ((double)na - 1.0);
-        }
-      }
-      for (int bi = 0; bi < 3; bi++) {
-        for (int bj = 0; bj < 3; bj++) {
-          Omega(bind(bi), bind(bj)) = Omega(bind(bi), bind(bj)) * (double)nb / ((double)nb - 1.0);
-        }
-      }
-      for (int ai = 0; ai < 3; ai++) {
-        for (int bi = 0; bi < 3; bi++) {
-          Omega(aind(ai), bind(bi)) = Omega(aind(ai), bind(bi)) * (double)n / ((double)n - 1.0);
-          Omega(bind(bi), aind(ai)) = Omega(aind(ai), bind(bi));
-        }
-      }
-      for (int ab = 0; ab < 3; ab++) {
-        Omega(aind(ab), crossind) = Omega(aind(ab), crossind) * (double)n / ((double)n - 1.0);
-        Omega(crossind, aind(ab)) = Omega(aind(ab), crossind);
-
-        Omega(bind(ab), crossind) = Omega(bind(ab), crossind) * (double)n / ((double)n - 1.0);
-        Omega(crossind, bind(ab)) = Omega(bind(ab), crossind);
-      }
+      Mbar_om = Mbar_om / (double)n;
+      Omega = Omega / ((double)n - 1.0) - Mbar_om * Mbar_om.t() * (double)n / ((double)n - 1.0);
 
       // Calculate central posterior moments
       uxa = Mbar(0);
