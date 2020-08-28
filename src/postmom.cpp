@@ -159,6 +159,8 @@ void ldfast_calc(NumericMatrix &cormat,
   int n; // sample size for pairwise complete observations;
   int na; // sample size for SNP A
   int nb; // sample size for SNP B
+  double one_over_n; // One over n
+  double nm1_over_n; // (n-1)/n
 
   double uxa; // mean of posterior means at locus 1.
   double uxb; // mean of posterior means at locus 2.
@@ -182,40 +184,48 @@ void ldfast_calc(NumericMatrix &cormat,
         if (!NumericMatrix::is_na(pm_mat(i, ell))) {
           // update locus A moments
           na++;
+          one_over_n = 1.0 / (double)na;
+          nm1_over_n = ((double)na - 1.0) / (double)na;
+
           Mi(0) = pm_mat(i, ell);
           Mi(1) = std::pow(pm_mat(i, ell), 2.0);
           Mi(5) = pv_mat(i, ell);
 
-          Mbar(0) = Mbar(0) * ((double)na - 1.0) / (double)na + Mi(0) / (double)na;
-          Mbar(1) = Mbar(1) * ((double)na - 1.0) / (double)na + Mi(1) / (double)na;
-          Mbar(5) = Mbar(5) * ((double)na - 1.0) / (double)na + Mi(5) / (double)na;
+          Mbar(0) = Mbar(0) * nm1_over_n + Mi(0) * one_over_n;
+          Mbar(1) = Mbar(1) * nm1_over_n + Mi(1) * one_over_n;
+          Mbar(5) = Mbar(5) * nm1_over_n + Mi(5) * one_over_n;
         }
 
         if (!NumericMatrix::is_na(pm_mat(j, ell))) {
           // update locus B moments
           nb++;
+          one_over_n = 1.0 / (double)nb;
+          nm1_over_n = ((double)nb - 1.0) / (double)nb;
+
           Mi(2) = pm_mat(j, ell);
           Mi(3) = std::pow(pm_mat(j, ell), 2.0);
           Mi(6) = pv_mat(j, ell);
 
-          Mbar(2) = Mbar(2) * ((double)nb - 1.0) / (double)nb + Mi(2) / (double)nb;
-          Mbar(3) = Mbar(3) * ((double)nb - 1.0) / (double)nb + Mi(3) / (double)nb;
-          Mbar(6) = Mbar(6) * ((double)nb - 1.0) / (double)nb + Mi(6) / (double)nb;
+          Mbar(2) = Mbar(2) * nm1_over_n + Mi(2) * one_over_n;
+          Mbar(3) = Mbar(3) * nm1_over_n + Mi(3) * one_over_n;
+          Mbar(6) = Mbar(6) * nm1_over_n + Mi(6) * one_over_n;
         }
 
         if (!NumericMatrix::is_na(pm_mat(i, ell)) &&
             !NumericMatrix::is_na(pm_mat(j, ell))) {
           // update cross product moments
           n++;
-          Mi(4) = pm_mat(i, ell) * pm_mat(j, ell);
-          Mbar(4) = Mbar(4) * ((double)n - 1.0) / (double)n + Mi(4) / (double)n;
+          one_over_n = 1.0 / (double)n;
+          nm1_over_n = ((double)n - 1.0) / (double)n;
 
-          Mbar_om = Mbar_om + Mi;
-          Omega = Omega + Mi * Mi.t();
+          Mi(4) = pm_mat(i, ell) * pm_mat(j, ell);
+          Mbar(4) = Mbar(4) * nm1_over_n + Mi(4) * one_over_n;
+
+          Mbar_om = Mbar_om * nm1_over_n + Mi * one_over_n;
+          Omega = Omega * nm1_over_n + (Mi * Mi.t()) * one_over_n;
         }
       }
-      Mbar_om = Mbar_om / (double)n;
-      Omega = Omega / ((double)n - 1.0) - Mbar_om * Mbar_om.t() * (double)n / ((double)n - 1.0);
+      Omega = (Omega - (Mbar_om * Mbar_om.t())) * (double)n / ((double)n - 1.0);
 
       // Calculate central posterior moments
       uxa = Mbar(0);

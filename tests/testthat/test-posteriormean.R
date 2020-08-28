@@ -11,8 +11,6 @@ test_that("gl_to_gp works", {
 test_that("ldfast versions are the same", {
   data("gp", package = "ldsep")
 
-  # gp[3, 1:50, 1] <- NA
-
   c1 <- ldfast_justmean(gp = gp, type = "r")
   c2 <- ldfast(gp = gp, type = "r", se = TRUE)
   expect_equal(c1[upper.tri(c1)], c2$ldmat[upper.tri(c2$ldmat)], tolerance = 10^-5)
@@ -37,6 +35,17 @@ test_that("ldfast versions are the same", {
   #   c1 <- ldfast_justmean(gp = gp, type = "r"),
   #   c2 <- ldfast(gp = gp, type = "r")
   # )
+})
+
+test_that("NA's are not propogated", {
+  data("gp", package = "ldsep")
+
+  gp[3, 1:50, 1] <- NA
+
+  c1 <- ldfast_justmean(gp = gp, type = "r")
+  c2 <- ldfast(gp = gp, type = "r", se = TRUE)
+  expect_true(all(!is.na(c2$ldmat[upper.tri(c2$ldmat)])))
+  expect_true(all(!is.na(c1[upper.tri(c1)])))
 })
 
 test_that("gradient for delta based on m works", {
