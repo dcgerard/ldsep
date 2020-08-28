@@ -174,10 +174,6 @@ void ldfast_calc(NumericMatrix &cormat,
 
   double Deltam; // bound of delta conditional on means
 
-
-  // REMOVE
-  arma::mat Omega2(7, 7); // Sample covariance between moments
-
   // Fill in correlations
   for (int i = 0; i < nsnp; i++) {
     for (int j = i; j < nsnp; j++) {
@@ -186,9 +182,6 @@ void ldfast_calc(NumericMatrix &cormat,
       nb = 0;
       Mbar.zeros();
       Omega.zeros();
-
-      // REMOVE
-      Omega2.zeros();
 
       for (int ell = 0; ell < nind; ell++) {
         if (!NumericMatrix::is_na(pm_mat(i, ell))) {
@@ -260,17 +253,11 @@ void ldfast_calc(NumericMatrix &cormat,
               Omega(bind(bi), aind(ai)) = Omega(aind(ai), bind(bi));
             }
           }
-
-          // REMOVE
-          Omega2 = Omega2 + (Mi * Mi.t());
         }
       }
       Omega = Omega - Mbar * Mbar.t();
 
-      // REMOVE
-      Omega2 = Omega2 / ((double)n - 1.0) - Mbar * Mbar.t() * (double)n / ((double)n - 1.0);
-
-      // Update denominator to make unbiased
+      // Update cov denominator to make unbiased
       Omega(crossind, crossind) = Omega(crossind, crossind) * (double)n / ((double)n - 1.0);
       for (int ai = 0; ai < 3; ai++) {
         for (int aj = 0; aj < 3; aj++) {
@@ -294,15 +281,6 @@ void ldfast_calc(NumericMatrix &cormat,
 
         Omega(bind(ab), crossind) = Omega(bind(ab), crossind) * (double)n / ((double)n - 1.0);
         Omega(crossind, bind(ab)) = Omega(bind(ab), crossind);
-      }
-
-      // REMOVE
-      if (i==4 && j==5) {
-        Rcpp::Rcout << Omega
-                    << std::endl
-                    << std::endl
-                    << Omega2
-                    << std::endl;
       }
 
       // Calculate central posterior moments
