@@ -63,6 +63,9 @@
 #' @return A list with some or all of the following elements:
 #' \describe{
 #'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
+#'   \item{\code{rr}}{The estimated reliability ratio for each SNP. This
+#'       is the multiplicative factor applied to the naive LD estimate
+#'       for each SNP.}
 #'   \item{\code{semat}}{A matrix 0f standard errors of the corresponding
 #'       estimators of LD.}
 #' }
@@ -74,14 +77,17 @@
 #' data("gp") # posterior probs
 #' ldout <- ldfast(gp, "r")
 #' ldout$ldmat
+#' ldout$rr
 #' ldout$semat
 #'
 #' ldout <- ldfast(gp, "D")
 #' ldout$ldmat
+#' ldout$rr
 #' ldout$semat
 #'
 #' ldout <- ldfast(gp, "Dprime")
 #' ldout$ldmat
+#' ldout$rr
 #' ldout$semat
 #'
 #' @export
@@ -94,7 +100,7 @@ ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 
   ## Just return the LD if asked ---------------------------------------------
   if (!se) {
-    return(list(ldmat = ldfast_justmean(gp = gp, type = type)))
+    return(ldfast_justmean(gp = gp, type = type))
   }
 
   ## Otherwise, go the slow way ----------------------------------------------
@@ -102,38 +108,53 @@ ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
   nind <- dim(gp)[[2]]
   ploidy <- dim(gp)[[3]] - 1
 
-  cormat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
+  ldmat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
   semat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
+  rr    <- rep(NA_real_, length.out = nsnp)
 
   if (type == "D") {
-    ldfast_calc(cormat = cormat, semat = semat, gp = gp, type = "a")
+    ldfast_calc(cormat = ldmat, semat = semat, rr = rr, gp = gp, type = "a")
   } else if (type == "Dprime") {
-    ldfast_calc(cormat = cormat, semat = semat, gp = gp, type = "c")
+    ldfast_calc(cormat = ldmat, semat = semat, rr = rr, gp = gp, type = "c")
   } else {
-    ldfast_calc(cormat = cormat, semat = semat, gp = gp, type = "b")
+    ldfast_calc(cormat = ldmat, semat = semat, rr = rr, gp = gp, type = "b")
   }
 
   if (type == "r2") {
-    semat <- semat * abs(cormat) * 2
-    cormat <- cormat ^ 2
+    semat <- semat * abs(ldmat) * 2
+    ldmat <- ldmat ^ 2
+    rr <- rr ^ 2
   } else if (type == "z") {
-    semat <- semat / (1 - cormat ^ 2)
-    cormat <- atanh(cormat)
+    semat <- semat / (1 - ldmat ^ 2)
+    ldmat <- atanh(ldmat)
   }
 
-  return(list(ldmat = cormat, semat = semat))
+  return(list(ldmat = ldmat, rr = rr, semat = semat))
 }
 
 #' Same as ldfast, but just calculate the ld, not the se
 #'
 #' @inheritParams ldfast
+#' @param shrinkrr A logical. Should we use adaptive shrinkage to shrink
+#'     the reliability ratios (\code{TRUE}) or keep the raw reliability
+#'     ratios (\code{FALSE}). Defaults to \code{TRUE}.
+#'
+#' @return A list with two elements. The mean matrix and the reliability ratio.
 #'
 #' @author David Gerard
 #'
+#' @examples
+#' data("gp") # posterior probs
+#' ldout <- ldfast_justmean(gp, "r", TRUE)
+#'
 #' @noRd
-ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
+ldfast_justmean <- function(gp,
+                            type = c("r", "r2", "z", "D", "Dprime"),
+                            shrinkrr = TRUE) {
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
+  stopifnot(is.logical(shrinkrr))
+  stopifnot(length(shrinkrr) == 1)
   type <- match.arg(type)
 
   nsnp <- dim(gp)[[1]]
@@ -148,8 +169,43 @@ ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
   varx <- apply(X = pm_mat, MARGIN = 1, FUN = `var`, na.rm = TRUE)
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
 
+  ## Calculate reliability ratios
+  rr <- (muy + varx) / varx
+  if (shrinkrr) {
+    amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
+    mbar <- apply(X = amom, MARGIN = 3, FUN = rowMeans, na.rm = TRUE)
+    covarray <- apply(X = amom, MARGIN = 1, FUN = stats::cov, use = "pairwise.complete.obs")
+    dim(covarray) <- c(3, 3, nsnp)
+    gradmat <- matrix(NA_real_, nrow = nsnp, ncol = 3)
+    gradmat[, 1] <-
+      -2 * mbar[, 1] / (mbar[, 3] + mbar[, 2] - mbar[, 1]^2) +
+      2 * mbar[, 1] / (mbar[, 2] - mbar[, 1]^2)
+    gradmat[, 2] <-
+      1 / (mbar[, 3] + mbar[, 2] - mbar[, 1]^2) -
+      1 / (mbar[, 2] - mbar[, 1]^2)
+    gradmat[, 3] <-
+      1 / (mbar[, 3] + mbar[, 2] - mbar[, 1]^2)
+    svec <- rep(NA_real_, nsnp) # Variances for log rr
+    nvec <- rowSums(!is.na(pm_mat)) # missing values
+    for (i in seq_len(nsnp)) {
+      svec[[i]] <- gradmat[i, , drop = FALSE] %*% covarray[, , i, drop = TRUE] %*% t(gradmat[i, , drop = FALSE])
+    }
+    svec <- svec / nvec
+    svec[svec < 0] <- 0
+    lvec <- log(rr)
+    modest <- modeest::hsm(x = lvec)
+    ashout <- ashr::ash(betahat = lvec,
+                        sebetahat = sqrt(svec),
+                        mixcompdist = "uniform",
+                        mode = modest)
+    rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
+  } else {
+    rr <- sqrt(rr)
+  }
+
+  ## rr should now be for correlation, not covariance
+
   ## calculate correlation
-  rr <- sqrt((muy + varx) / varx)
   ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
   if (type != "Dprime") {
     ldmat[ldmat > 1] <- 1
@@ -157,9 +213,11 @@ ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
   }
 
   if (type == "D") {
+    rr <- rr ^ 2
     sdvec <- sqrt(muy + varx)
     ldmat <- (sdvec * ldmat * rep(sdvec, each = nsnp)) / ploidy
   } else if (type == "Dprime") {
+    rr <- rr ^ 2
     mux <- rowMeans(pm_mat, na.rm = TRUE)
     sdvec <- sqrt(muy + varx)
     ldmat <- sdvec * ldmat * rep(sdvec, each = nsnp) / ploidy
@@ -174,7 +232,9 @@ ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
 
     ldmat[ldmat > ploidy] <- ploidy
     ldmat[ldmat < -ploidy] <- -ploidy
+    diag(ldmat) <- ploidy
   } else if (type == "r2") {
+    rr <- rr ^ 2
     ldmat <- ldmat ^ 2
   } else if (type == "z") {
     ldmat <- atanh(ldmat)
@@ -182,7 +242,7 @@ ldfast_justmean <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
     ## do nothing
   }
 
-  return(ldmat)
+  return(list(ldmat = ldmat, rr = rr))
 }
 
 #' Normalize genotype likelihoods to posterior probabilities.

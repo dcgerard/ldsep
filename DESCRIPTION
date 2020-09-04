@@ -32,7 +32,9 @@ Imports:
     doParallel,
     ashr,
     corrplot,
-    lpSolve
+    lpSolve,
+    abind,
+    modeest
 Suggests: 
     testthat,
     covr,

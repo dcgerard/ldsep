@@ -600,6 +600,7 @@ grad_rho_m <- function(M, grad) {
 #'
 #' @param cormat The matrix that will hold the correlations.
 #' @param semat The matrix that will hold the standard errors.
+#' @param rr The vector that will hold the reliability ratios.
 #' @param gp A three-way array with dimensions SNPs by individuals by dosage.
 #'     That is, \code{gp[i, j, k]} is the posterior probability of
 #'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
@@ -608,8 +609,8 @@ grad_rho_m <- function(M, grad) {
 #' @author David Gerard
 #'
 #' @noRd
-ldfast_calc <- function(cormat, semat, gp, type) {
-    invisible(.Call(`_ldsep_ldfast_calc`, cormat, semat, gp, type))
+ldfast_calc <- function(cormat, semat, rr, gp, type) {
+    invisible(.Call(`_ldsep_ldfast_calc`, cormat, semat, rr, gp, type))
 }
 
 #' Prior probability for haplotype frequencies.

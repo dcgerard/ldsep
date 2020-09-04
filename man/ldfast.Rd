@@ -29,6 +29,9 @@ Defaults to \code{TRUE}.}
 A list with some or all of the following elements:
 \describe{
 \item{\code{ldmat}}{The bias-corrected LD matrix.}
+\item{\code{rr}}{The estimated reliability ratio for each SNP. This
+is the multiplicative factor applied to the naive LD estimate
+for each SNP.}
 \item{\code{semat}}{A matrix 0f standard errors of the corresponding
 estimators of LD.}
 }
@@ -76,14 +79,17 @@ This is the estimated LD when \code{pv = NULL}.
 data("gp") # posterior probs
 ldout <- ldfast(gp, "r")
 ldout$ldmat
+ldout$rr
 ldout$semat
 
 ldout <- ldfast(gp, "D")
 ldout$ldmat
+ldout$rr
 ldout$semat
 
 ldout <- ldfast(gp, "Dprime")
 ldout$ldmat
+ldout$rr
 ldout$semat
 
 }

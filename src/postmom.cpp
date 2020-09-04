@@ -113,6 +113,7 @@ void grad_rho_m(const arma::vec &M, arma::vec &grad) {
 //'
 //' @param cormat The matrix that will hold the correlations.
 //' @param semat The matrix that will hold the standard errors.
+//' @param rr The vector that will hold the reliability ratios.
 //' @param gp A three-way array with dimensions SNPs by individuals by dosage.
 //'     That is, \code{gp[i, j, k]} is the posterior probability of
 //'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
@@ -124,6 +125,7 @@ void grad_rho_m(const arma::vec &M, arma::vec &grad) {
 // [[Rcpp::export]]
 void ldfast_calc(NumericMatrix &cormat,
                  NumericMatrix &semat,
+                 NumericVector &rr,
                  const arma::cube &gp,
                  char type) {
   int nsnp = gp.n_rows; // number of SNPs
@@ -254,6 +256,11 @@ void ldfast_calc(NumericMatrix &cormat,
             grad_delta_m(Mbar, grad, pd);
             semat(i, j) = std::sqrt((grad.t() * Omega * grad).eval()(0, 0) / (double)n);
           }
+
+          rr(i) = (uya + vxa) / vxa;
+          rr(j) = (uyb + vxb) / vxb;
+          cormat(j, i) = cormat(i, j);
+          semat(j, i) = semat(i, j);
         }
       } else if (type == 'b') {
         // r
@@ -273,6 +280,11 @@ void ldfast_calc(NumericMatrix &cormat,
             grad_rho_m(Mbar, grad);
             semat(i, j) = std::sqrt((grad.t() * Omega * grad).eval()(0, 0) / (double)n);
           }
+
+          rr(i) = std::sqrt((uya + vxa) / vxa);
+          rr(j) = std::sqrt((uyb + vxb) / vxb);
+          cormat(j, i) = cormat(i, j);
+          semat(j, i) = semat(i, j);
         }
       } else if (type == 'c') {
         // D'
@@ -300,6 +312,10 @@ void ldfast_calc(NumericMatrix &cormat,
             semat(i, j) = std::sqrt((grad.t() * Omega * grad).eval()(0, 0) / (double)n);
           }
 
+          rr(i) = (uya + vxa) / vxa;
+          rr(j) = (uyb + vxb) / vxb;
+          cormat(j, i) = cormat(i, j);
+          semat(j, i) = semat(i, j);
         }
       } else {
         Rcpp::stop("type should be a, b, or c");
