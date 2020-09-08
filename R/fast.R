@@ -166,7 +166,7 @@ ldfast_justmean <- function(gp,
   fill_pm(pm = pm_mat, gp = gp)
   fill_pv(pv = pv_mat, pm = pm_mat, gp = gp)
 
-  varx <- apply(X = pm_mat, MARGIN = 1, FUN = `var`, na.rm = TRUE)
+  varx <- matrixStats::rowVars(x = pm_mat, na.rm = TRUE)
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
 
   ## Calculate reliability ratios

@@ -34,7 +34,8 @@ Imports:
     corrplot,
     lpSolve,
     abind,
-    modeest
+    modeest,
+    matrixStats
 Suggests: 
     testthat,
     covr,
