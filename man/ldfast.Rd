@@ -4,7 +4,14 @@
 \alias{ldfast}
 \title{Fast bias-correction for LD Estimation}
 \usage{
-ldfast(gp, type = c("r", "r2", "z", "D", "Dprime"), shrinkrr = TRUE, se = TRUE)
+ldfast(
+  gp,
+  type = c("r", "r2", "z", "D", "Dprime"),
+  shrinkrr = TRUE,
+  se = TRUE,
+  thresh = TRUE,
+  upper = 10
+)
 }
 \arguments{
 \item{gp}{A three-way array with dimensions SNPs by individuals by dosage.
@@ -28,6 +35,12 @@ ratios (\code{FALSE}). Defaults to \code{TRUE}.}
 \item{se}{Should we also return a matrix of standard errors (\code{TRUE})
 or not (\code{FALSE})? It is faster to not return standard errors.
 Defaults to \code{TRUE}.}
+
+\item{thresh}{A logical. Should we apply a upper bound on the reliability
+ratios (\code{TRUE}) or not (\code{FALSE}).}
+
+\item{upper}{The upper bound on the reliability ratios if
+\code{thresh = TRUE}. The default is a generous 10.}
 }
 \value{
 A list with some or all of the following elements:

@@ -107,6 +107,10 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #' @param shrinkrr A logical. Should we use adaptive shrinkage to shrink
 #'     the reliability ratios (\code{TRUE}) or keep the raw reliability
 #'     ratios (\code{FALSE}). Defaults to \code{TRUE}.
+#' @param thresh A logical. Should we apply a upper bound on the reliability
+#'     ratios (\code{TRUE}) or not (\code{FALSE}).
+#' @param upper The upper bound on the reliability ratios if
+#'     \code{thresh = TRUE}. The default is a generous 10.
 #'
 #' @seealso
 #' \describe{
@@ -150,7 +154,9 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 ldfast <- function(gp,
                    type = c("r", "r2", "z", "D", "Dprime"),
                    shrinkrr = TRUE,
-                   se = TRUE) {
+                   se = TRUE,
+                   thresh = TRUE,
+                   upper = 10) {
   ## Check input -------------------------------------------------------------
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
@@ -158,6 +164,10 @@ ldfast <- function(gp,
   stopifnot(length(shrinkrr) == 1)
   stopifnot(is.logical(se))
   stopifnot(length(se) == 1)
+  stopifnot(is.logical(thresh))
+  stopifnot(length(thresh) == 1)
+  stopifnot(is.numeric(upper))
+  stopifnot(length(numeric) == 1)
   type <- match.arg(type)
 
   nsnp <- dim(gp)[[1]]
@@ -197,6 +207,9 @@ ldfast <- function(gp,
     }
     svec <- svec / nvec
     svec[svec < 0] <- 0
+    if (thresh) {
+      svec[rr > upper] <- Inf
+    }
     lvec <- log(rr)
     modest <- modeest::hsm(x = lvec)
     ashout <- ashr::ash(betahat = lvec,
@@ -205,6 +218,9 @@ ldfast <- function(gp,
                         mode = modest)
     rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
   } else {
+    if (thresh) {
+      rr[rr > upper] <- stats::median(rr)
+    }
     rr <- sqrt(rr)
   }
 
