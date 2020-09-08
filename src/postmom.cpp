@@ -323,3 +323,91 @@ void ldfast_calc(NumericMatrix &cormat,
     }
   }
 }
+
+
+//' Calculate just the standard errors from genotype posterior array.
+//'
+//' Only pairwise complete observations are used to calculate standard errors.
+//'
+//' @param gp A three-way array with dimensions SNPs by individuals by dosage.
+//'     That is, \code{gp[i, j, k]} is the posterior probability of
+//'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
+//' @param pm_mat The matrix of posterior mean genotypes for each individual.
+//'     Rows index SNPs and columns index individuals.
+//' @param pv_mat The matrix of posterior variances for each individual.
+//'     Rows index SNPs and columns index individuals.
+//' @param type a = D, b = r, c = D'
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+NumericMatrix secalc(const arma::cube &gp,
+                     const NumericMatrix &pm_mat,
+                     const NumericMatrix &pv_mat,
+                     char type) {
+  if ((type != 'a') && (type != 'b') && (type != 'c')) {
+    Rcpp::stop("type should be a, b, or c");
+  }
+
+  int nsnp = gp.n_rows; // number of SNPs
+  int nind = gp.n_cols; //  number of individuals
+  int ploidy = gp.n_slices - 1; // ploidy of species
+  double pd = (double)ploidy; // double version of ploidy
+
+  arma::vec Mi(7); // moments for each individual between two loci
+  arma::mat Omega(7, 7); // Sample covariance between moments using just pairwise complete observations
+  arma::vec Mbar(7); // Sample mean using just pairwise complete obs.
+  arma::vec grad(7); // gradient for transformation from M to LD measure.
+  int n; // sample size for pairwise complete observations;
+  double one_over_n; // One over n
+  double nm1_over_n; // (n-1)/n
+
+  NumericMatrix semat(nsnp, nsnp);
+  std::fill(semat.begin(), semat.end(), NA_REAL);
+
+  for (int i = 0; i < nsnp; i++) {
+    for (int j = i; j < nsnp; j++) {
+      n = 0;
+      Mbar.zeros();
+      Omega.zeros();
+      for (int ell = 0; ell < nind; ell++) {
+        if (!NumericMatrix::is_na(pm_mat(i, ell)) &&
+            !NumericMatrix::is_na(pm_mat(j, ell))) {
+            n++;
+          one_over_n = 1.0 / (double)n;
+          nm1_over_n = ((double)n - 1.0) / (double)n;
+
+          Mi(0) = pm_mat(i, ell);
+          Mi(1) = std::pow(pm_mat(i, ell), 2.0);
+          Mi(2) = pm_mat(j, ell);
+          Mi(3) = std::pow(pm_mat(j, ell), 2.0);
+          Mi(4) = pm_mat(i, ell) * pm_mat(j, ell);
+          Mi(5) = pv_mat(i, ell);
+          Mi(6) = pv_mat(j, ell);
+
+          Mbar = Mbar * nm1_over_n + Mi * one_over_n;
+          Omega = Omega * nm1_over_n + (Mi * Mi.t()) * one_over_n;
+        }
+      }
+      Omega = (Omega - (Mbar * Mbar.t())) * (double)n / ((double)n - 1.0);
+
+      if ((type == 'a') && (i != j)) {
+        // D
+        grad_delta_m(Mbar, grad, pd);
+        semat(i, j) = std::sqrt((grad.t() * Omega * grad).eval()(0, 0) / (double)n);
+      } else if ((type == 'b') && (i != j)) {
+        // r
+        grad_rho_m(Mbar, grad);
+        semat(i, j) = std::sqrt((grad.t() * Omega * grad).eval()(0, 0) / (double)n);
+      } else if ((type == 'c') && (i != j)) {
+        // D'
+        grad_deltaprime_m(Mbar, grad, pd);
+        semat(i, j) = std::sqrt((grad.t() * Omega * grad).eval()(0, 0) / (double)n);
+      }
+      semat(j, i) = semat(i, j);
+    }
+  }
+
+  return semat;
+}

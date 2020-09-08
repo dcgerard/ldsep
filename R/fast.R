@@ -2,106 +2,21 @@
 ## FAST LD Correction
 ###################
 
-#' Fast bias-correction for LD Estimation
+#' Old version of ldfast.
 #'
-#' Estimates the reliability ratios from posterior marginal moments and uses
-#' these to correct the biases in linkage disequilibrium estimation
-#' caused by genotype uncertainty.
+#' Does not allow for ash.
 #'
-#' @section Details:
-#'
-#' Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
-#' The usual measures of LD are implemented: D, D', r, r2, and z
-#' (Fisher-z of r). These are all \emph{composite} measures of LD, not
-#' gametic measures of LD. They are always appropriate measures of association
-#' between loci, but only correspond to gametic measures of LD when
-#' Hardy-Weinberg equilibrium is fulfilled in polyploids.
-#'
-#' Due to sampling varibility, the estimates sometimes lie outside of the
-#' theoretical boundary of the parameters being estimated. In such cases,
-#' we truncate the estimates at the boundary and return \code{NA} for the
-#' standard errors.
-#'
-#' @section Mathematical formulation:
-#' Let
-#' \itemize{
-#'   \item{\eqn{r} be the sample correlation of posterior mean genotypes
-#'       between loci 1 and 2,}
-#'   \item{\eqn{a1} be the sample variance of posterior means at locus 1,}
-#'   \item{\eqn{a2} be the sample variance of posterior means at locus 2,}
-#'   \item{\eqn{b1} be the sample mean of posterior variances at locus 1, and}
-#'   \item{\eqn{b2} be the sample mean of posterior variances at locus 2.}
-#' }
-#' Then the estimated Pearson correlation between the genotypes at
-#' loci 1 and 2 is
-#' \deqn{[(a1 + b1)/a1][(a2 + b2)/a2]r.}
-#' This is the estimated LD when \code{pv = NULL}.
-#'
-#'
-#' @param gp A three-way array with dimensions SNPs by individuals by dosage.
-#'     That is, \code{gp[i, j, k]} is the posterior probability of
-#'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
-#' @param type What LD measure should we estimate?
-#'     \describe{
-#'       \item{\code{r}}{The Pearson correlation.}
-#'       \item{\code{r2}}{The squared Pearson correlation.}
-#'       \item{\code{z}}{The Fisher-z transformed Pearson correlation.}
-#'       \item{\code{D}}{The LD coefficient.}
-#'       \item{\code{Dprime}}{The standardized LD coefficient.}
-#'     }
-#'     Note that these are all \emph{composite} measures of LD.
-#' @param se Should we also return a matrix of standard errors (\code{TRUE})
-#'     or not (\code{FALSE})? It is faster to not return standard errors.
-#'     Defaults to \code{TRUE}.
-#'
-#' @seealso
-#' \describe{
-#' \item{\code{\link{gl_to_gp}()}}{Normalize genotype likelihoods to
-#'     posterior probabilities using naive uniform prior.}
-#' }
-#'
-#' @return A list with some or all of the following elements:
-#' \describe{
-#'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
-#'   \item{\code{rr}}{The estimated reliability ratio for each SNP. This
-#'       is the multiplicative factor applied to the naive LD estimate
-#'       for each SNP.}
-#'   \item{\code{semat}}{A matrix 0f standard errors of the corresponding
-#'       estimators of LD.}
-#' }
+#' @inherit ldfast
 #'
 #' @author David Gerard
 #'
-#' @examples
-#' ## Load the data -----
-#' data("gp") # posterior probs
-#' ldout <- ldfast(gp, "r")
-#' ldout$ldmat
-#' ldout$rr
-#' ldout$semat
-#'
-#' ldout <- ldfast(gp, "D")
-#' ldout$ldmat
-#' ldout$rr
-#' ldout$semat
-#'
-#' ldout <- ldfast(gp, "Dprime")
-#' ldout$ldmat
-#' ldout$rr
-#' ldout$semat
-#'
-#' @export
-ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
+#' @noRd
+ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
   stopifnot(is.logical(se))
   stopifnot(length(se) == 1)
   type <- match.arg(type)
-
-  ## Just return the LD if asked ---------------------------------------------
-  if (!se) {
-    return(ldfast_justmean(gp = gp, type = type))
-  }
 
   ## Otherwise, go the slow way ----------------------------------------------
   nsnp <- dim(gp)[[1]]
@@ -132,35 +47,124 @@ ldfast <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
   return(list(ldmat = ldmat, rr = rr, semat = semat))
 }
 
-#' Same as ldfast, but just calculate the ld, not the se
+#' Fast bias-correction for LD Estimation
 #'
-#' @inheritParams ldfast
+#' Estimates the reliability ratios from posterior marginal moments and uses
+#' these to correct the biases in linkage disequilibrium estimation
+#' caused by genotype uncertainty.
+#'
+#' @section Details:
+#'
+#' Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
+#' The usual measures of LD are implemented: D, D', r, r2, and z
+#' (Fisher-z of r). These are all \emph{composite} measures of LD, not
+#' gametic measures of LD. They are always appropriate measures of association
+#' between loci, but only correspond to gametic measures of LD when
+#' Hardy-Weinberg equilibrium is fulfilled in polyploids.
+#'
+#' Calculating standard errors and performing hierarchical shrinkage of the
+#' reliability ratios are both rather slow operations compared to just
+#' raw method-of-moments based estimation for LD. If you don't need
+#' standard errors, you can double your speed by setting
+#' \code{se = FALSE}. It is not recommended that you disable the
+#' hierarchical shrinkage.
+#'
+#' Due to sampling varibility, the estimates sometimes lie outside of the
+#' theoretical boundary of the parameters being estimated. In such cases,
+#' we truncate the estimates at the boundary and return \code{NA} for the
+#' standard errors.
+#'
+#' @section Mathematical formulation:
+#' Let
+#' \itemize{
+#'   \item{\eqn{r} be the sample correlation of posterior mean genotypes
+#'       between loci 1 and 2,}
+#'   \item{\eqn{a1} be the sample variance of posterior means at locus 1,}
+#'   \item{\eqn{a2} be the sample variance of posterior means at locus 2,}
+#'   \item{\eqn{b1} be the sample mean of posterior variances at locus 1, and}
+#'   \item{\eqn{b2} be the sample mean of posterior variances at locus 2.}
+#' }
+#' Then the estimated Pearson correlation between the genotypes at
+#' loci 1 and 2 is
+#' \deqn{[(a1 + b1)/a1][(a2 + b2)/a2]r.}
+#' This is the estimated LD when \code{pv = NULL}.
+#'
+#' @param gp A three-way array with dimensions SNPs by individuals by dosage.
+#'     That is, \code{gp[i, j, k]} is the posterior probability of
+#'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
+#' @param type What LD measure should we estimate?
+#'     \describe{
+#'       \item{\code{r}}{The Pearson correlation.}
+#'       \item{\code{r2}}{The squared Pearson correlation.}
+#'       \item{\code{z}}{The Fisher-z transformed Pearson correlation.}
+#'       \item{\code{D}}{The LD coefficient.}
+#'       \item{\code{Dprime}}{The standardized LD coefficient.}
+#'     }
+#'     Note that these are all \emph{composite} measures of LD.
+#' @param se Should we also return a matrix of standard errors (\code{TRUE})
+#'     or not (\code{FALSE})? It is faster to not return standard errors.
+#'     Defaults to \code{TRUE}.
 #' @param shrinkrr A logical. Should we use adaptive shrinkage to shrink
 #'     the reliability ratios (\code{TRUE}) or keep the raw reliability
 #'     ratios (\code{FALSE}). Defaults to \code{TRUE}.
 #'
-#' @return A list with two elements. The mean matrix and the reliability ratio.
+#' @seealso
+#' \describe{
+#'   \item{\code{\link{gl_to_gp}()}}{Normalize genotype likelihoods to
+#'       posterior probabilities using naive uniform prior.}
+#'   \item{\code{\link[ashr]{ash}()}}{Function used to perform hierarchical
+#'       shrinkage on the log of the reliability ratios.}
+#' }
+#'
+#' @return A list with some or all of the following elements:
+#' \describe{
+#'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
+#'   \item{\code{rr}}{The estimated reliability ratio for each SNP. This
+#'       is the multiplicative factor applied to the naive LD estimate
+#'       for each SNP.}
+#'   \item{\code{semat}}{A matrix 0f standard errors of the corresponding
+#'       estimators of LD.}
+#' }
 #'
 #' @author David Gerard
 #'
 #' @examples
+#' ## Load the data -----
 #' data("gp") # posterior probs
-#' ldout <- ldfast_justmean(gp, "r", TRUE)
+#' ldout <- ldfast(gp, "r", shrinkrr = FALSE)
+#' ldout$ldmat
+#' ldout$rr
+#' ldout$semat
 #'
-#' @noRd
-ldfast_justmean <- function(gp,
-                            type = c("r", "r2", "z", "D", "Dprime"),
-                            shrinkrr = TRUE) {
+#' ldout <- ldfast(gp, "D")
+#' ldout$ldmat
+#' ldout$rr
+#' ldout$semat
+#'
+#' ldout <- ldfast(gp, "Dprime")
+#' ldout$ldmat
+#' ldout$rr
+#' ldout$semat
+#'
+#' @export
+ldfast <- function(gp,
+                   type = c("r", "r2", "z", "D", "Dprime"),
+                   shrinkrr = TRUE,
+                   se = TRUE) {
+  ## Check input -------------------------------------------------------------
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
   stopifnot(is.logical(shrinkrr))
   stopifnot(length(shrinkrr) == 1)
+  stopifnot(is.logical(se))
+  stopifnot(length(se) == 1)
   type <- match.arg(type)
 
   nsnp <- dim(gp)[[1]]
   nind <- dim(gp)[[2]]
   ploidy <- dim(gp)[[3]] - 1
 
+  ## Calculate posterior moments ----------------------------------------------
   pm_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
   pv_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
   fill_pm(pm = pm_mat, gp = gp)
@@ -169,7 +173,8 @@ ldfast_justmean <- function(gp,
   varx <- matrixStats::rowVars(x = pm_mat, na.rm = TRUE)
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
 
-  ## Calculate reliability ratios
+  ## Calculate reliability ratios ---------------------------------------------
+  ## after this step rr should be for correlation, *not* for covariance
   rr <- (muy + varx) / varx
   if (shrinkrr) {
     amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
@@ -203,15 +208,17 @@ ldfast_justmean <- function(gp,
     rr <- sqrt(rr)
   }
 
-  ## rr should now be for correlation, not covariance
-
-  ## calculate correlation
+  ## Calculate Pearson correlation --------------------------------------------
   ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
   if (type != "Dprime") {
+    if (se) {
+      which_truncate <- (ldmat > 1) | (ldmat < -1)
+    }
     ldmat[ldmat > 1] <- 1
     ldmat[ldmat < -1] <- -1
   }
 
+  ## LD adjustment based on user selection ------------------------------------
   if (type == "D") {
     rr <- rr ^ 2
     sdvec <- sqrt(muy + varx)
@@ -230,6 +237,10 @@ ldfast_justmean <- function(gp,
     ldmat[ldmat < 0] <- ldmat[ldmat < 0] / deltam_neg[ldmat < 0]
     ldmat[ldmat > 0] <- ldmat[ldmat > 0] / deltam_pos[ldmat > 0]
 
+
+    if (se) {
+      which_truncate <- (ldmat > ploidy) | (ldmat < -ploidy)
+    }
     ldmat[ldmat > ploidy] <- ploidy
     ldmat[ldmat < -ploidy] <- -ploidy
     diag(ldmat) <- ploidy
@@ -242,7 +253,29 @@ ldfast_justmean <- function(gp,
     ## do nothing
   }
 
-  return(list(ldmat = ldmat, rr = rr))
+  ## Return list --------------------------------------------------------------
+  retlist <- list(ldmat = ldmat, rr = rr)
+
+  ## Standard error calculations if option ------------------------------------
+  if (se) {
+    if (type == "D") {
+      semat <- secalc(gp = gp, pm_mat = pm_mat, pv_mat = pv_mat, type = "a")
+    } else if (type %in% c("r", "r2", "z")) {
+      semat <- secalc(gp = gp, pm_mat = pm_mat, pv_mat = pv_mat, type = "b")
+      if (type == "r2") {
+        semat <- 2 * semat * sqrt(ldmat)
+      } else if (type == "z") {
+        semat <- semat / (1 - tanh(ldmat) ^ 2)
+      }
+    } else if (type == "Dprime") {
+      semat <- secalc(gp = gp, pm_mat = pm_mat, pv_mat = pv_mat, type = "c")
+    }
+
+    semat[which_truncate] <- NA_real_
+    retlist$semat <- semat
+  }
+
+  return(retlist)
 }
 
 #' Normalize genotype likelihoods to posterior probabilities.

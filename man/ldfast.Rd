@@ -4,7 +4,7 @@
 \alias{ldfast}
 \title{Fast bias-correction for LD Estimation}
 \usage{
-ldfast(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE)
+ldfast(gp, type = c("r", "r2", "z", "D", "Dprime"), shrinkrr = TRUE, se = TRUE)
 }
 \arguments{
 \item{gp}{A three-way array with dimensions SNPs by individuals by dosage.
@@ -20,6 +20,10 @@ dosage \code{k-1} for individual \code{j} at SNP \code{i}.}
 \item{\code{Dprime}}{The standardized LD coefficient.}
 }
 Note that these are all \emph{composite} measures of LD.}
+
+\item{shrinkrr}{A logical. Should we use adaptive shrinkage to shrink
+the reliability ratios (\code{TRUE}) or keep the raw reliability
+ratios (\code{FALSE}). Defaults to \code{TRUE}.}
 
 \item{se}{Should we also return a matrix of standard errors (\code{TRUE})
 or not (\code{FALSE})? It is faster to not return standard errors.
@@ -51,6 +55,13 @@ gametic measures of LD. They are always appropriate measures of association
 between loci, but only correspond to gametic measures of LD when
 Hardy-Weinberg equilibrium is fulfilled in polyploids.
 
+Calculating standard errors and performing hierarchical shrinkage of the
+reliability ratios are both rather slow operations compared to just
+raw method-of-moments based estimation for LD. If you don't need
+standard errors, you can double your speed by setting
+\code{se = FALSE}. It is not recommended that you disable the
+hierarchical shrinkage.
+
 Due to sampling varibility, the estimates sometimes lie outside of the
 theoretical boundary of the parameters being estimated. In such cases,
 we truncate the estimates at the boundary and return \code{NA} for the
@@ -77,7 +88,7 @@ This is the estimated LD when \code{pv = NULL}.
 \examples{
 ## Load the data -----
 data("gp") # posterior probs
-ldout <- ldfast(gp, "r")
+ldout <- ldfast(gp, "r", shrinkrr = FALSE)
 ldout$ldmat
 ldout$rr
 ldout$semat
@@ -97,6 +108,8 @@ ldout$semat
 \describe{
 \item{\code{\link{gl_to_gp}()}}{Normalize genotype likelihoods to
 posterior probabilities using naive uniform prior.}
+\item{\code{\link[ashr]{ash}()}}{Function used to perform hierarchical
+shrinkage on the log of the reliability ratios.}
 }
 }
 \author{

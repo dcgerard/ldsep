@@ -613,6 +613,26 @@ ldfast_calc <- function(cormat, semat, rr, gp, type) {
     invisible(.Call(`_ldsep_ldfast_calc`, cormat, semat, rr, gp, type))
 }
 
+#' Calculate just the standard errors from genotype posterior array.
+#'
+#' Only pairwise complete observations are used to calculate standard errors.
+#'
+#' @param gp A three-way array with dimensions SNPs by individuals by dosage.
+#'     That is, \code{gp[i, j, k]} is the posterior probability of
+#'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
+#' @param pm_mat The matrix of posterior mean genotypes for each individual.
+#'     Rows index SNPs and columns index individuals.
+#' @param pv_mat The matrix of posterior variances for each individual.
+#'     Rows index SNPs and columns index individuals.
+#' @param type a = D, b = r, c = D'
+#'
+#' @author David Gerard
+#'
+#' @noRd
+secalc <- function(gp, pm_mat, pv_mat, type) {
+    .Call(`_ldsep_secalc`, gp, pm_mat, pv_mat, type)
+}
+
 #' Prior probability for haplotype frequencies.
 #'
 #' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
