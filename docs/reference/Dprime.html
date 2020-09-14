@@ -82,7 +82,7 @@ maximum covariance conditional on the marginal allele frequencies." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -104,6 +104,9 @@ maximum covariance conditional on the marginal allele frequencies." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -144,7 +147,7 @@ conditional on the marginal genotype distribution, or by the
 maximum covariance conditional on the marginal allele frequencies.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>Dprime</span>(<span class='no'>qmat</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"allele"</span>, <span class='st'>"geno"</span>), <span class='kw'>constrain</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>Dprime</span>(<span class='kw'>qmat</span>, type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"allele"</span>, <span class='st'>"geno"</span>), constrain = <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,13 +186,18 @@ it will not equal gametic D' under HWE.</p>
 <p>Using <code>type = "geno"</code> is its own thing and will not equal
 D' generally under HWE. When <code>type = "geno"</code>, then the
 the <code>constrain</code> parameter has no effect.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>K</span> <span class='kw'>&lt;-</span> <span class='fl'>6</span>
-<span class='no'>qmat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>((<span class='no'>K</span>+<span class='fl'>1</span>)^<span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>K</span>+<span class='fl'>1</span>)
-<span class='no'>qmat</span> <span class='kw'>&lt;-</span> <span class='no'>qmat</span> / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>qmat</span>)
-<span class='fu'>Dprime</span>(<span class='no'>qmat</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"geno"</span>)</div><div class='output co'>#&gt;     Dprime       Dmax 
-#&gt; 0.08697558 0.66851339 </div><div class='input'><span class='fu'>Dprime</span>(<span class='no'>qmat</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"allele"</span>)</div><div class='output co'>#&gt;    Dprime      Dmax 
+    <pre class="examples"><div class='input'><span class='kw'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span>
+<span class='kw'>qmat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw'>stats</span>::<span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>((<span class='kw'>K</span><span class='op'>+</span><span class='fl'>1</span>)<span class='op'>^</span><span class='fl'>2</span>), nrow = <span class='kw'>K</span><span class='op'>+</span><span class='fl'>1</span>)
+<span class='kw'>qmat</span> <span class='op'>&lt;-</span> <span class='kw'>qmat</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='kw'>qmat</span>)
+<span class='fu'>Dprime</span>(<span class='kw'>qmat</span>, type = <span class='st'>"geno"</span>)
+</div><div class='output co'>#&gt;     Dprime       Dmax 
+#&gt; 0.08697558 0.66851339 </div><div class='input'><span class='fu'>Dprime</span>(<span class='kw'>qmat</span>, type = <span class='st'>"allele"</span>)
+</div><div class='output co'>#&gt;    Dprime      Dmax 
 #&gt; 0.2644744 0.2198487 </div><div class='input'>
 </div></pre>
   </div>
@@ -207,7 +215,7 @@ the <code>constrain</code> parameter has no effect.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

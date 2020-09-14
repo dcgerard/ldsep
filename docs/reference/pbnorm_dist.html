@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -140,7 +143,7 @@
     <p>Returns distribution of proportional bivariate normal.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pbnorm_dist</span>(<span class='no'>mu</span>, <span class='no'>sigma</span>, <span class='no'>K</span>, <span class='kw'>log</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>pbnorm_dist</span>(<span class='kw'>mu</span>, <span class='kw'>sigma</span>, <span class='kw'>K</span>, log = <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,6 +170,9 @@
 
     <p>A matrix. Element (i,j) is the (log) probability of genotype
 i-1 at locus 1 and j-1 at locus 2.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -183,7 +189,7 @@ i-1 at locus 1 and j-1 at locus 2.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the output of <code><a href='mldest.html'>mldest</a>()</code> or
-<code><a href='sldest.html'>sldest</a>()</code> using <code><a href='https://rdrr.io/pkg/corrplot/man/corrplot.html'>corrplot</a>()</code> — plot.lddf • ldsep</title>
+<title>Plot the output of mldest() or
+sldest() using corrplot() — plot.lddf • ldsep</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,8 +47,8 @@
 
 
 
-<meta property="og:title" content="Plot the output of <code><a href='mldest.html'>mldest</a>()</code> or
-<code><a href='sldest.html'>sldest</a>()</code> using <code><a href='https://rdrr.io/pkg/corrplot/man/corrplot.html'>corrplot</a>()</code> — plot.lddf" />
+<meta property="og:title" content="Plot the output of mldest() or
+sldest() using corrplot() — plot.lddf" />
 <meta property="og:description" content="Formats the LD estimates in the form of a matrix and creates a heatmap of
 these estimates. This heatmap is created using the
 corrplot R package. I've adjusted a lot of the defaults
@@ -85,7 +85,7 @@ to suit my visualization preferences." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -107,6 +107,9 @@ to suit my visualization preferences." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -150,17 +153,17 @@ to suit my visualization preferences.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for lddf</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(
-  <span class='no'>x</span>,
-  <span class='kw'>element</span> <span class='kw'>=</span> <span class='st'>"r2"</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"upper"</span>, <span class='st'>"full"</span>, <span class='st'>"lower"</span>),
-  <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"color"</span>, <span class='st'>"circle"</span>, <span class='st'>"square"</span>, <span class='st'>"ellipse"</span>, <span class='st'>"number"</span>, <span class='st'>"shade"</span>, <span class='st'>"pie"</span>),
-  <span class='kw'>diag</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>is.corr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>tl.pos</span> <span class='kw'>=</span> <span class='st'>"n"</span>,
-  <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>na.label</span> <span class='kw'>=</span> <span class='st'>"square"</span>,
-  <span class='no'>...</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(
+  <span class='kw'>x</span>,
+  element = <span class='st'>"r2"</span>,
+  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"upper"</span>, <span class='st'>"full"</span>, <span class='st'>"lower"</span>),
+  method = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"color"</span>, <span class='st'>"circle"</span>, <span class='st'>"square"</span>, <span class='st'>"ellipse"</span>, <span class='st'>"number"</span>, <span class='st'>"shade"</span>, <span class='st'>"pie"</span>),
+  diag = <span class='fl'>FALSE</span>,
+  is.corr = <span class='kw'>NULL</span>,
+  tl.pos = <span class='st'>"n"</span>,
+  title = <span class='kw'>NULL</span>,
+  na.label = <span class='st'>"square"</span>,
+  <span class='kw'>...</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -227,25 +230,29 @@ function for options.</p></td>
 
     <p>For greater plotting flexibility, see <code><a href='https://rdrr.io/pkg/corrplot/man/corrplot.html'>corrplot</a>()</code>
 for the parameter options.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1</span>)
 
 <span class='co'>## Simulate genotypes when true correlation is 0</span>
-<span class='no'>nloci</span> <span class='kw'>&lt;-</span> <span class='fl'>5</span>
-<span class='no'>nind</span>  <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>K</span> <span class='kw'>&lt;-</span> <span class='fl'>6</span>
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>
-<span class='no'>genomat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span>:<span class='no'>K</span>, <span class='no'>nind</span> * <span class='no'>nloci</span>, <span class='fl'>TRUE</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nloci</span>)
+<span class='kw'>nloci</span> <span class='op'>&lt;-</span> <span class='fl'>5</span>
+<span class='kw'>nind</span>  <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='kw'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span>
+<span class='kw'>nc</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
+<span class='kw'>genomat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span><span class='op'>:</span><span class='kw'>K</span>, <span class='kw'>nind</span> <span class='op'>*</span> <span class='kw'>nloci</span>, <span class='fl'>TRUE</span>), nrow = <span class='kw'>nloci</span>)
 
 <span class='co'>## Gametic LD estimates</span>
-<span class='no'>lddf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mldest.html'>mldest</a></span>(<span class='kw'>geno</span> <span class='kw'>=</span> <span class='no'>genomat</span>,
-               <span class='kw'>K</span> <span class='kw'>=</span> <span class='no'>K</span>,
-               <span class='kw'>nc</span> <span class='kw'>=</span> <span class='no'>nc</span>,
-               <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"gam"</span>)
+<span class='kw'>lddf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mldest.html'>mldest</a></span>(geno = <span class='kw'>genomat</span>,
+               K = <span class='kw'>K</span>,
+               nc = <span class='kw'>nc</span>,
+               type = <span class='st'>"gam"</span>)
 
 <span class='co'>## Plot estimates of z</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>lddf</span>, <span class='kw'>element</span> <span class='kw'>=</span> <span class='st'>"z"</span>)</div><div class='img'><img src='plot.lddf-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>lddf</span>, element = <span class='st'>"z"</span>)
+</div><div class='img'><img src='plot.lddf-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -262,7 +269,7 @@ for the parameter options.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

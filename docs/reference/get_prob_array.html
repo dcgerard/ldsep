@@ -82,7 +82,7 @@ is under the assumptions of HWE." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -104,6 +104,9 @@ is under the assumptions of HWE." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -144,7 +147,7 @@ combinations at two loci given just the haplotype frequencies. This
 is under the assumptions of HWE.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_prob_array</span>(<span class='no'>K</span>, <span class='no'>prob</span>, <span class='kw'>log_p</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>get_prob_array</span>(<span class='kw'>K</span>, <span class='kw'>prob</span>, log_p = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,9 +171,13 @@ or the probabilities (<code>FALSE</code>). Defaults to <code>TRUE</code>.</p></t
 
     <p>Element (i, j) is the (log) probability of genotype i-1 at locus 1
 and genotype j-1 at locus 2.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>get_prob_array</span>(<span class='kw'>K</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>prob</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>), <span class='kw'>log_p</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt;          [,1]     [,2]     [,3]    [,4]     [,5]     [,6]     [,7]
+    <pre class="examples"><div class='input'><span class='fu'>get_prob_array</span>(K = <span class='fl'>6</span>, prob = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>), log_p = <span class='fl'>FALSE</span>)
+</div><div class='output co'>#&gt;          [,1]     [,2]     [,3]    [,4]     [,5]     [,6]     [,7]
 #&gt; [1,] 0.000001 0.000018 0.000135 0.00054 0.001215 0.001458 0.000729
 #&gt; [2,] 0.000012 0.000204 0.001440 0.00540 0.011340 0.012636 0.005832
 #&gt; [3,] 0.000060 0.000960 0.006360 0.02232 0.043740 0.045360 0.019440
@@ -194,7 +201,7 @@ and genotype j-1 at locus 2.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

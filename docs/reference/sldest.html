@@ -82,7 +82,7 @@ foreach and doParallel packages." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -104,6 +104,9 @@ foreach and doParallel packages." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -145,14 +148,14 @@ foreach and doParallel packages.</p>
     </div>
 
     <pre class="usage"><span class='fu'>sldest</span>(
-  <span class='no'>geno</span>,
-  <span class='no'>K</span>,
-  <span class='kw'>win</span> <span class='kw'>=</span> <span class='fl'>50</span>,
-  <span class='kw'>nc</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gam"</span>, <span class='st'>"comp"</span>),
-  <span class='kw'>model</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"norm"</span>, <span class='st'>"flex"</span>),
-  <span class='kw'>pen</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='no'>type</span> <span class='kw'>==</span> <span class='st'>"gam"</span>, <span class='fl'>2</span>, <span class='fl'>1</span>),
-  <span class='kw'>se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+  <span class='kw'>geno</span>,
+  <span class='kw'>K</span>,
+  win = <span class='fl'>50</span>,
+  nc = <span class='fl'>1</span>,
+  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gam"</span>, <span class='st'>"comp"</span>),
+  model = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"norm"</span>, <span class='st'>"flex"</span>),
+  pen = <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='kw'>type</span> <span class='op'>==</span> <span class='st'>"gam"</span>, <span class='fl'>2</span>, <span class='fl'>1</span>),
+  se = <span class='fl'>TRUE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -236,7 +239,7 @@ should be pretty fast.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame of class <code><a href='https://rdrr.io/r/base/c.html'>c("lddf", "data.frame")</a></code>
-with some or all of the following elements:</p><dl'>
+with some or all of the following elements:</p><dl>
 <dt><code>i</code></dt><dd><p>The index of the first SNP.</p></dd>
 <dt><code>j</code></dt><dd><p>The index of the second SNP.</p></dd>
 <dt><code>snpi</code></dt><dd><p>The row name corresponding to SNP <code>i</code>, if
@@ -285,11 +288,13 @@ estimators supported.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'>
-<dl'>
+<dl>
 <dt><code><a href='ldest.html'>ldest</a>()</code></dt><dd><p>For the base function that estimates
 pairwise LD.</p></dd>
 <dt><code><a href='mldest.html'>mldest</a>()</code></dt><dd><p>For estimating pairwise LD between
 <em>all</em> provided SNPs.</p></dd>
+<dt><code><a href='ldfast.html'>ldfast</a>()</code></dt><dd><p>Fast, moment-based approach to LD estimation
+that also accounts for genotype uncertainty.</p></dd>
 <dt><code><a href='format_lddf.html'>format_lddf</a>()</code></dt><dd><p>For formatting the output of
 <code>sldest()</code> as a matrix.</p></dd>
 <dt><code><a href='plot.lddf.html'>plot.lddf</a>()</code></dt><dd><p>For plotting the output of
@@ -297,25 +302,29 @@ pairwise LD.</p></dd>
 
 </dl>
 </div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1</span>)
 
 <span class='co'>## Simulate genotypes when true correlation is 0</span>
-<span class='no'>nloci</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>nind</span>  <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>win</span> <span class='kw'>&lt;-</span> <span class='fl'>5</span>
-<span class='no'>K</span> <span class='kw'>&lt;-</span> <span class='fl'>6</span>
-<span class='no'>nc</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>
-<span class='no'>genomat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span>:<span class='no'>K</span>, <span class='no'>nind</span> * <span class='no'>nloci</span>, <span class='fl'>TRUE</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nloci</span>)
+<span class='kw'>nloci</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='kw'>nind</span>  <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='kw'>win</span> <span class='op'>&lt;-</span> <span class='fl'>5</span>
+<span class='kw'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span>
+<span class='kw'>nc</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
+<span class='kw'>genomat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span><span class='op'>:</span><span class='kw'>K</span>, <span class='kw'>nind</span> <span class='op'>*</span> <span class='kw'>nloci</span>, <span class='fl'>TRUE</span>), nrow = <span class='kw'>nloci</span>)
 
 <span class='co'>## Composite LD estimates</span>
-<span class='no'>lddf</span> <span class='kw'>&lt;-</span> <span class='fu'>sldest</span>(<span class='kw'>geno</span> <span class='kw'>=</span> <span class='no'>genomat</span>,
-               <span class='kw'>K</span> <span class='kw'>=</span> <span class='no'>K</span>,
-               <span class='kw'>win</span> <span class='kw'>=</span> <span class='no'>win</span>,
-               <span class='kw'>nc</span> <span class='kw'>=</span> <span class='no'>nc</span>,
-               <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"comp"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>lddf</span>, <span class='kw'>element</span> <span class='kw'>=</span> <span class='st'>"z"</span>)</div><div class='img'><img src='sldest-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='kw'>lddf</span> <span class='op'>&lt;-</span> <span class='fu'>sldest</span>(geno = <span class='kw'>genomat</span>,
+               K = <span class='kw'>K</span>,
+               win = <span class='kw'>win</span>,
+               nc = <span class='kw'>nc</span>,
+               type = <span class='st'>"comp"</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>lddf</span>, element = <span class='st'>"z"</span>)
+</div><div class='img'><img src='sldest-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -332,7 +341,7 @@ pairwise LD.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -24,8 +24,10 @@
     coefficient D, the standardized LD coefficient D', and the Pearson 
     correlation coefficient r. All estimates are returned with corresponding 
     standard errors. These estimates and standard errors can then be used
-    for shrinkage estimation. The main functions are ldest(), mldest(),
-    sldest(), plot.lddf(), format_lddf(), and ldshrink().">
+    for shrinkage estimation. The main functions are ldfast(), ldest(),
+    mldest(), sldest(), plot.lddf(), format_lddf(), and ldshrink().
+    Details of the methods implemented in this packages are described
+    in Gerard (2020) &lt;doi:10.1101/2020.08.03.234476&gt;.">
 <meta property="og:image" content="https://dcgerard.github.io/ldsep/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -45,7 +47,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -68,6 +70,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/fast.html">Fast LD Estimation</a>
+    </li>
+    <li>
       <a href="articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
   </ul>
@@ -105,7 +110,9 @@
 <p>The main functions are:</p>
 <ul>
 <li>
-<code><a href="reference/ldest.html">ldest()</a></code>: Estimates pairwise LD.</li>
+<code><a href="reference/ldfast.html">ldfast()</a></code>: Fast, moment-based approach to estimate pairwise LD in the presence of genotype uncertainty.</li>
+<li>
+<code><a href="reference/ldest.html">ldest()</a></code>: Estimates pairwise LD via maximum likelihood.</li>
 <li>
 <code><a href="reference/mldest.html">mldest()</a></code>: Iteratively apply <code><a href="reference/ldest.html">ldest()</a></code> across many pairs of SNPs.</li>
 <li>
@@ -121,10 +128,14 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install the released version of ldsep from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"ldsep"</span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"ldsep"</span>)
+</pre></div>
 <p>And the development version from <a href="https://github.com/">GitHub</a> with:</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="co"># install.packages("devtools")</span>
-<span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"dcgerard/ldsep"</span>)</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="co"># install.packages("devtools")</span>
+<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"dcgerard/ldsep"</span>)
+</pre></div>
 </div>
 <div id="code-of-conduct" class="section level2">
 <h2 class="hasAnchor">
@@ -201,7 +212,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

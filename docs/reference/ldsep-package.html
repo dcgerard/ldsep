@@ -86,7 +86,7 @@ for shrinkage estimation." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -108,6 +108,9 @@ for shrinkage estimation." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -159,7 +162,9 @@ for shrinkage estimation.</p>
     
 
 
-<p>The main functions are:</p><dl'>
+<p>The main functions are:</p><dl>
+<dt><code><a href='ldfast.html'>ldfast</a>()</code></dt><dd><p>Fast, moment-based, bias-corrected LD
+LD estimates from marginal posterior distributions.</p></dd>
 <dt><code><a href='ldest.html'>ldest</a>()</code></dt><dd><p>Estimates pairwise LD.</p></dd>
 <dt><code><a href='mldest.html'>mldest</a>()</code></dt><dd><p>Iteratively apply <code><a href='ldest.html'>ldest</a>()</code>
 across many pairs of SNPs.</p></dd>
@@ -180,6 +185,9 @@ using adaptive shrinkage (Stephens, 2017; Dey and Stephens, 2018).</p></dd>
 
 <p>If you find the methods in this package useful, please run the following
 in R for citation information: <code><a href='https://rdrr.io/r/utils/citation.html'>citation("ldsep")</a></code></p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -196,7 +204,7 @@ in R for citation information: <code><a href='https://rdrr.io/r/utils/citation.h
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

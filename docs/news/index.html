@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0</span>
       </span>
     </div>
 
@@ -101,6 +101,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/fast.html">Fast LD Estimation</a>
+    </li>
     <li>
       <a href="../articles/ld_pipeline.html">Example Pipeline for Estimating LD</a>
     </li>
@@ -134,6 +137,15 @@
       <small>Source: <a href='https://github.com/dcgerard/ldsep/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="ldsep-200" class="section level1">
+<h1 class="page-header" data-toc-text="2.0.0">
+<a href="#ldsep-200" class="anchor"></a>ldsep 2.0.0<small> Unreleased </small>
+</h1>
+<ul>
+<li>Added <code><a href="../reference/ldfast.html">ldfast()</a></code>, a new LD estimation approach based on sample moments of marginal posterior genotype moments.</li>
+<li>Unlike <code><a href="../reference/ldest.html">ldest()</a></code>, <code><a href="../reference/mldest.html">mldest()</a></code>, and <code><a href="../reference/sldest.html">sldest()</a></code>, the new approach implemented in <code><a href="../reference/ldfast.html">ldfast()</a></code> is scalable to genome-wide applications, as these new estimators can be calculated in linear time in the sample size.</li>
+</ul>
+</div>
     <div id="ldsep-100" class="section level1">
 <h1 class="page-header" data-toc-text="1.0.0">
 <a href="#ldsep-100" class="anchor"></a>ldsep 1.0.0<small> 2020-08-02 </small>
@@ -159,7 +171,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
