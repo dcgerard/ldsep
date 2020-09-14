@@ -148,6 +148,8 @@ lddf[1:6, 1:6]
 pairwise LD.}
 \item{\code{\link{sldest}()}}{For estimating pairwise LD along a
 sliding window.}
+\item{\code{\link{ldfast}()}}{Fast, moment-based approach to LD estimation
+that also accounts for genotype uncertainty.}
 \item{\code{\link{format_lddf}()}}{For formatting the output of
 \code{mldest()} as a matrix.}
 \item{\code{\link{plot.lddf}()}}{For plotting the output of

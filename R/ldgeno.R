@@ -227,6 +227,8 @@
 #'
 #' @seealso
 #' \describe{
+#'   \item{\code{\link{ldfast}()}}{Fast, moment-based approach to LD estimation
+#'       that also accounts for genotype uncertainty.}
 #'   \item{\code{\link{mldest}()}}{For calculating pairwise LD among all
 #'       pairs of a collection of SNPs.}
 #'   \item{\code{\link{sldest}()}}{For calculating pairwise LD along a

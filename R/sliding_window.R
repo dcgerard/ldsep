@@ -26,6 +26,8 @@
 #'       pairwise LD.}
 #'   \item{\code{\link{mldest}()}}{For estimating pairwise LD between
 #'       \emph{all} provided SNPs.}
+#'   \item{\code{\link{ldfast}()}}{Fast, moment-based approach to LD estimation
+#'       that also accounts for genotype uncertainty.}
 #'   \item{\code{\link{format_lddf}()}}{For formatting the output of
 #'       \code{sldest()} as a matrix.}
 #'   \item{\code{\link{plot.lddf}()}}{For plotting the output of

@@ -58,7 +58,8 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #' Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
 #' The usual measures of LD are implemented: D, D', r, r2, and z
 #' (Fisher-z of r). These are all \emph{composite} measures of LD, not
-#' gametic measures of LD. They are always appropriate measures of association
+#' gametic measures of LD (see the description in \code{\link{ldest}()}).
+#' They are always appropriate measures of association
 #' between loci, but only correspond to gametic measures of LD when
 #' Hardy-Weinberg equilibrium is fulfilled in polyploids.
 #'
@@ -69,7 +70,7 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #' \code{se = FALSE}. It is not recommended that you disable the
 #' hierarchical shrinkage.
 #'
-#' Due to sampling varibility, the estimates sometimes lie outside of the
+#' Due to sampling variability, the estimates sometimes lie outside of the
 #' theoretical boundary of the parameters being estimated. In such cases,
 #' we truncate the estimates at the boundary and return \code{NA} for the
 #' standard errors.
@@ -87,30 +88,48 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #' Then the estimated Pearson correlation between the genotypes at
 #' loci 1 and 2 is
 #' \deqn{[(a1 + b1)/a1][(a2 + b2)/a2]r.}
-#' This is the estimated LD when \code{pv = NULL}.
+#' All other LD calculations are based on this equation. In particular,
+#' the estimated genotype variances at loci 1 and 2 are
+#' \eqn{a1 + b1} and \eqn{a2 + b2}, respectively, which can be
+#' used to calculate D and D'.
+#'
+#' The reliability ratio for SNP i is defined by \eqn{(ai + bi)/ai}.
+#' By default, we apply \code{\link[ashr]{ash}()} (Stephens, 2016)
+#' to the log of these reliability ratios before adjusting the
+#' Pearson correlation. Standard errors are required before using
+#' \code{\link[ashr]{ash}()}, but these are easily obtained
+#' using the central limit theorem and the delta-method.
 #'
 #' @param gp A three-way array with dimensions SNPs by individuals by dosage.
 #'     That is, \code{gp[i, j, k]} is the posterior probability of
 #'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
 #' @param type What LD measure should we estimate?
 #'     \describe{
-#'       \item{\code{r}}{The Pearson correlation.}
-#'       \item{\code{r2}}{The squared Pearson correlation.}
-#'       \item{\code{z}}{The Fisher-z transformed Pearson correlation.}
-#'       \item{\code{D}}{The LD coefficient.}
-#'       \item{\code{Dprime}}{The standardized LD coefficient.}
+#'       \item{\code{"r"}}{The Pearson correlation.}
+#'       \item{\code{"r2"}}{The squared Pearson correlation.}
+#'       \item{\code{"z"}}{The Fisher-z transformed Pearson correlation.}
+#'       \item{\code{"D"}}{The LD coefficient.}
+#'       \item{\code{"Dprime"}}{The standardized LD coefficient.}
 #'     }
-#'     Note that these are all \emph{composite} measures of LD.
+#'     Note that these are all \emph{composite} measures of LD (see
+#'     the description in \code{\link{ldest}()}).
 #' @param se Should we also return a matrix of standard errors (\code{TRUE})
 #'     or not (\code{FALSE})? It is faster to not return standard errors.
 #'     Defaults to \code{TRUE}.
-#' @param shrinkrr A logical. Should we use adaptive shrinkage to shrink
-#'     the reliability ratios (\code{TRUE}) or keep the raw reliability
-#'     ratios (\code{FALSE}). Defaults to \code{TRUE}.
+#' @param shrinkrr A logical. Should we use adaptive shrinkage
+#'     (Stephens, 2016) to shrink the reliability ratios (\code{TRUE})
+#'     or keep the raw reliability ratios (\code{FALSE}). Defaults
+#'     to \code{TRUE}.
 #' @param thresh A logical. Should we apply a upper bound on the reliability
 #'     ratios (\code{TRUE}) or not (\code{FALSE}).
 #' @param upper The upper bound on the reliability ratios if
 #'     \code{thresh = TRUE}. The default is a generous 10.
+#' @param mode A character. Only applies if \code{shrinkrr = TRUE}. When using
+#'     hierarchical shrinkage on the log of the reliability ratios, should
+#'     we use zero as the mode (\code{mode = "zero"}) or estimate it using
+#'     the procedure of Robertson and Cryer (1974)
+#'     (\code{mode = "estimate"})?
+#'
 #'
 #' @seealso
 #' \describe{
@@ -118,6 +137,7 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #'       posterior probabilities using naive uniform prior.}
 #'   \item{\code{\link[ashr]{ash}()}}{Function used to perform hierarchical
 #'       shrinkage on the log of the reliability ratios.}
+#'   \item{\code{\link{ldest}()}, \code{\link{mldest}()}, \code{\link{sldest}()}}{Maximum likelihood estimation of linkage disequilibrium.}
 #' }
 #'
 #' @return A list with some or all of the following elements:
@@ -130,12 +150,18 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #'       estimators of LD.}
 #' }
 #'
+#' @references
+#' \itemize{
+#'   \item{T. Robertson and J. D. Cryer. An iterative procedure for estimating the mode. \emph{Journal of the American Statistical Association}, 69(348):1012–1016, 1974. \href{https://doi.org/10.1080/01621459.1974.10480246}{doi:10.1080/01621459.1974.10480246}.}
+#'   \item{M. Stephens. False discovery rates: a new deal. \emph{Biostatistics}, 18(2):275–294, 10 2016. ISSN 1465-4644 \href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}.}
+#' }
+#'
 #' @author David Gerard
 #'
 #' @examples
-#' ## Load the data -----
-#' data("gp") # posterior probs
-#' ldout <- ldfast(gp, "r", shrinkrr = FALSE)
+#' data("gp")
+#'
+#' ldout <- ldfast(gp, "r")
 #' ldout$ldmat
 #' ldout$rr
 #' ldout$semat
@@ -156,7 +182,8 @@ ldfast <- function(gp,
                    shrinkrr = TRUE,
                    se = TRUE,
                    thresh = TRUE,
-                   upper = 10) {
+                   upper = 10,
+                   mode = c("zero", "estimate")) {
   ## Check input -------------------------------------------------------------
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
@@ -169,6 +196,7 @@ ldfast <- function(gp,
   stopifnot(is.numeric(upper))
   stopifnot(length(numeric) == 1)
   type <- match.arg(type)
+  mode <- match.arg(mode)
 
   nsnp <- dim(gp)[[1]]
   nind <- dim(gp)[[2]]
@@ -211,7 +239,11 @@ ldfast <- function(gp,
       svec[rr > upper] <- Inf
     }
     lvec <- log(rr)
-    modest <- modeest::hsm(x = lvec)
+    if (mode == "estimate") {
+      modest <- modeest::hsm(x = lvec)
+    } else if (mode == "zero") {
+      modest <- 0
+    }
     ashout <- ashr::ash(betahat = lvec,
                         sebetahat = sqrt(svec),
                         mixcompdist = "uniform",

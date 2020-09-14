@@ -28,7 +28,9 @@ Gerard (2020).
 
 The main functions are:
 
-  - `ldest()`: Estimates pairwise LD.
+  - `ldfast()`: Fast, moment-based approach to estimate pairwise LD in
+    the presence of genotype uncertainty.
+  - `ldest()`: Estimates pairwise LD via maximum likelihood.
   - `mldest()`: Iteratively apply `ldest()` across many pairs of SNPs.
   - `sldest()`: Iteratively apply `ldest()` along a sliding window of
     fixed length.
