@@ -149,7 +149,7 @@ over the genotypes, which is typically OK if we are not adaptively
 estimating likelihood elements using this prior.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gl_to_gp</span>(<span class='kw'>gl</span>)</pre>
+    <pre class="usage"><span class='fu'>gl_to_gp</span><span class='op'>(</span><span class='va'>gl</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,10 +171,10 @@ containing the posterior probabilities of each dosage.</p>
     <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"glike"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='kw'>glike</span>)
-</div><div class='output co'>#&gt; [1] "array"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span>(<span class='kw'>glike</span>)
-</div><div class='output co'>#&gt; [1] 10 84  5</div><div class='input'><span class='fu'>gl_to_gp</span>(<span class='kw'>glike</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"glike"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>glike</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "array"</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>glike</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 10 84  5</div><div class='input'><span class='fu'>gl_to_gp</span><span class='op'>(</span><span class='va'>glike</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; , , variable = logL_0
 #&gt; 
 #&gt;                ind

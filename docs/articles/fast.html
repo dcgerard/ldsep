@@ -113,65 +113,58 @@
 <a href="#analysis" class="anchor"></a>Analysis</h1>
 <p>We will load the packages and data that we will need</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">updog</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">ldsep</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/taiyun/corrplot">corrplot</a></span>)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">updog</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ldsep</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot">corrplot</a></span><span class="op">)</span>
 <span class="co">#&gt; corrplot 0.84 loaded</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"uit"</span>, package = <span class="st">"ldsep"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="kw">uit</span>)
-<span class="co">#&gt; [1] "multidog"</span>
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"uit"</span>, package <span class="op">=</span> <span class="st">"ldsep"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">uit</span><span class="op">)</span>
+<span class="co">#&gt; [1] "multidog"</span></pre></div>
 <p>We need the posterior probabilities for each genotype for each individual at each SNP. In <code>updog</code>, this corresponds to the <code>Pr_n</code> variables in its output, where <code>n</code> varies from 0 to the ploidy. We can use <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">updog::format_multidog()</a></code> to extract these values into an array with the proper dimensions.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span>
-<span class="kw">gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span>(x = <span class="kw">uit</span>, varname = <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="kw">ploidy</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="kw">gp</span>)
+<span class="va">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span>
+<span class="va">gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span>
 <span class="co">#&gt; [1] "array"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">gp</span>)
-<span class="co">#&gt; [1] 10 84  5</span>
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span>
+<span class="co">#&gt; [1] 10 84  5</span></pre></div>
 <p>The first dimension indexes the SNPs, the second dimension indexes the individuals, and the third dimension indexes the possible dosages. So <code>gp[i, j, k]</code> contains the posterior probability that individual <code>j</code> has dosage <code>k-1</code> at SNP <code>i</code>. You can use other genotyping programs to obtain these posterior probabilities, but they have to be formatted as an array with the dimensions in the correct order (SNPs by individuals by dosages).</p>
 <p>If you only have genotype log-likelihoods, we can normalize these to posterior probabilities (assuming a uniform prior) with <code><a href="../reference/gl_to_gp.html">ldsep::gl_to_gp()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">gl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span>(x = <span class="kw">uit</span>, varname = <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="kw">ploidy</span>))
-<span class="kw">gp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gl_to_gp.html">gl_to_gp</a></span>(gl = <span class="kw">gl</span>)
-</pre></div>
+<span class="va">gl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span>
+<span class="va">gp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gl_to_gp.html">gl_to_gp</a></span><span class="op">(</span>gl <span class="op">=</span> <span class="va">gl</span><span class="op">)</span></pre></div>
 <p>Let’s use our original genotype posterior probabilities (<code>gp</code>) to estimate LD since the prior used there was adaptive to the data (but for large sample sizes this does not really matter).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">ldout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldfast.html">ldfast</a></span>(gp = <span class="kw">gp</span>, type = <span class="st">"r2"</span>)
-</pre></div>
+<span class="va">ldout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldfast.html">ldfast</a></span><span class="op">(</span>gp <span class="op">=</span> <span class="va">gp</span>, type <span class="op">=</span> <span class="st">"r2"</span><span class="op">)</span></pre></div>
 <p><code>ldout</code> contains:</p>
 <ul>
 <li>
 <p><code>ldmat</code>: The estimated squared correlation coefficients, adjusted for genotype uncertainty.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span>(corr = <span class="kw">ldout</span><span class="op">$</span><span class="kw">ldmat</span>, 
-         method = <span class="st">"color"</span>, 
-         type = <span class="st">"upper"</span>,
-         diag = <span class="fl">FALSE</span>,
-         tl.pos = <span class="st">"n"</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>corr <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">ldmat</span>, 
+         method <span class="op">=</span> <span class="st">"color"</span>, 
+         type <span class="op">=</span> <span class="st">"upper"</span>,
+         diag <span class="op">=</span> <span class="cn">FALSE</span>,
+         tl.pos <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></pre></div>
 <p><img src="fast_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </li>
 <li>
 <p><code>semat</code>: The estimated standard errors for the squared correlation coefficient estimates.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span>(corr = <span class="kw">ldout</span><span class="op">$</span><span class="kw">semat</span>, 
-         method = <span class="st">"color"</span>, 
-         type = <span class="st">"upper"</span>,
-         diag = <span class="fl">FALSE</span>,
-         tl.pos = <span class="st">"n"</span>, 
-         is.corr = <span class="fl">FALSE</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>corr <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">semat</span>, 
+         method <span class="op">=</span> <span class="st">"color"</span>, 
+         type <span class="op">=</span> <span class="st">"upper"</span>,
+         diag <span class="op">=</span> <span class="cn">FALSE</span>,
+         tl.pos <span class="op">=</span> <span class="st">"n"</span>, 
+         is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
 <p><img src="fast_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 </li>
 <li>
 <p><code>rr</code>: The estimated “reliability ratios”, the multiplicative effects applied to the naive LD estimates using just the posterior mean genotypes.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="kw">graphics</span>::<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span>(x = <span class="kw">ldout</span><span class="op">$</span><span class="kw">rr</span>, 
-               main = <span class="st">"Reliability Ratios"</span>, 
-               xlab = <span class="st">"Reliability Ratios"</span>)
-</pre></div>
+<span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">rr</span>, 
+               main <span class="op">=</span> <span class="st">"Reliability Ratios"</span>, 
+               xlab <span class="op">=</span> <span class="st">"Reliability Ratios"</span><span class="op">)</span></pre></div>
 <p><img src="fast_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </li>
 </ul>

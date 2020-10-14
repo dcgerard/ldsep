@@ -153,18 +153,18 @@ to suit my visualization preferences.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for lddf</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(
-  <span class='kw'>x</span>,
-  element = <span class='st'>"r2"</span>,
-  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"upper"</span>, <span class='st'>"full"</span>, <span class='st'>"lower"</span>),
-  method = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"color"</span>, <span class='st'>"circle"</span>, <span class='st'>"square"</span>, <span class='st'>"ellipse"</span>, <span class='st'>"number"</span>, <span class='st'>"shade"</span>, <span class='st'>"pie"</span>),
-  diag = <span class='fl'>FALSE</span>,
-  is.corr = <span class='kw'>NULL</span>,
-  tl.pos = <span class='st'>"n"</span>,
-  title = <span class='kw'>NULL</span>,
-  na.label = <span class='st'>"square"</span>,
-  <span class='kw'>...</span>
-)</pre>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  element <span class='op'>=</span> <span class='st'>"r2"</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"upper"</span>, <span class='st'>"full"</span>, <span class='st'>"lower"</span><span class='op'>)</span>,
+  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"color"</span>, <span class='st'>"circle"</span>, <span class='st'>"square"</span>, <span class='st'>"ellipse"</span>, <span class='st'>"number"</span>, <span class='st'>"shade"</span>, <span class='st'>"pie"</span><span class='op'>)</span>,
+  diag <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  is.corr <span class='op'>=</span> <span class='cn'>NULL</span>,
+  tl.pos <span class='op'>=</span> <span class='st'>"n"</span>,
+  title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  na.label <span class='op'>=</span> <span class='st'>"square"</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -235,23 +235,23 @@ for the parameter options.</p>
     <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
 
 <span class='co'>## Simulate genotypes when true correlation is 0</span>
-<span class='kw'>nloci</span> <span class='op'>&lt;-</span> <span class='fl'>5</span>
-<span class='kw'>nind</span>  <span class='op'>&lt;-</span> <span class='fl'>100</span>
-<span class='kw'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span>
-<span class='kw'>nc</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
-<span class='kw'>genomat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span><span class='op'>:</span><span class='kw'>K</span>, <span class='kw'>nind</span> <span class='op'>*</span> <span class='kw'>nloci</span>, <span class='fl'>TRUE</span>), nrow = <span class='kw'>nloci</span>)
+<span class='va'>nloci</span> <span class='op'>&lt;-</span> <span class='fl'>5</span>
+<span class='va'>nind</span>  <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='va'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span>
+<span class='va'>nc</span> <span class='op'>&lt;-</span> <span class='fl'>1</span>
+<span class='va'>genomat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fl'>0</span><span class='op'>:</span><span class='va'>K</span>, <span class='va'>nind</span> <span class='op'>*</span> <span class='va'>nloci</span>, <span class='cn'>TRUE</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>nloci</span><span class='op'>)</span>
 
 <span class='co'>## Gametic LD estimates</span>
-<span class='kw'>lddf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mldest.html'>mldest</a></span>(geno = <span class='kw'>genomat</span>,
-               K = <span class='kw'>K</span>,
-               nc = <span class='kw'>nc</span>,
-               type = <span class='st'>"gam"</span>)
+<span class='va'>lddf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mldest.html'>mldest</a></span><span class='op'>(</span>geno <span class='op'>=</span> <span class='va'>genomat</span>,
+               K <span class='op'>=</span> <span class='va'>K</span>,
+               nc <span class='op'>=</span> <span class='va'>nc</span>,
+               type <span class='op'>=</span> <span class='st'>"gam"</span><span class='op'>)</span>
 
 <span class='co'>## Plot estimates of z</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>lddf</span>, element = <span class='st'>"z"</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>lddf</span>, element <span class='op'>=</span> <span class='st'>"z"</span><span class='op'>)</span>
 </div><div class='img'><img src='plot.lddf-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>

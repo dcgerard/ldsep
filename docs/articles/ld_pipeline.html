@@ -113,88 +113,76 @@
 <a href="#analysis" class="anchor"></a>Analysis</h1>
 <p>We will first load the ldsep package. We will also need to load the updog (Gerard et. al., 2018; Gerard and Ferrão, 2020) and corrplot (Wei and Simko, 2017) R packages for this vignette:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">ldsep</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">updog</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/taiyun/corrplot">corrplot</a></span>)
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ldsep</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">updog</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot">corrplot</a></span><span class="op">)</span></pre></div>
 <p>The data come from 10 (mostly arbitrary) SNPs from the tetraploid potato dataset of Uitdewilligen et. al. (2013). These SNPs are located close to each other on the same super scaffold. We genotyped these SNPs using the <code><a href="https://rdrr.io/pkg/updog/man/multidog.html">multidog()</a></code> function from the updog R package. The <code>uit</code> object is the resulting output.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"uit"</span>, package = <span class="st">"ldsep"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="kw">uit</span>)
-<span class="co">#&gt; [1] "multidog"</span>
-</pre></div>
+<span class="va">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"uit"</span>, package <span class="op">=</span> <span class="st">"ldsep"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">uit</span><span class="op">)</span>
+<span class="co">#&gt; [1] "multidog"</span></pre></div>
 <p>In order to estimate LD, we need to extract the genotype <em>log</em>-likelihoods from the updog fits using <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog()</a></code> from the updog package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">vvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="kw">ploidy</span>)
-<span class="kw">vvec</span>
+<span class="va">vvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span>
+<span class="va">vvec</span>
 <span class="co">#&gt; [1] "logL_0" "logL_1" "logL_2" "logL_3" "logL_4"</span>
-<span class="kw">genoarray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span>(x = <span class="kw">uit</span>, varname = <span class="kw">vvec</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">genoarray</span>)
-<span class="co">#&gt; [1] 10 84  5</span>
-</pre></div>
+<span class="va">genoarray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="va">vvec</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">genoarray</span><span class="op">)</span>
+<span class="co">#&gt; [1] 10 84  5</span></pre></div>
 <p>The array, <code>genoarray</code>, contains the genotype log-likelihoods with dimensions (SNPs <span class="math inline">\(\times\)</span> individuals <span class="math inline">\(\times\)</span> dosage). So <code>genoarray[i, j, k]</code> contains the genotype log-likelihood of SNP <code>i</code> for individual <code>j</code> at dosage <code>k-1</code>.</p>
 <p>It is not necessary to use the genotype log-likelihoods from updog. There are many other genotyping methods that produce genotype log-likelihoods and these could be used instead, as long as you have formatted the genotype log-likelihoods in terms of an array as above.</p>
 <p>Let’s estimate all pairwise LD using these genotype log-likelihoods:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">ldout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mldest.html">mldest</a></span>(geno = <span class="kw">genoarray</span>, K = <span class="kw">ploidy</span>, type = <span class="st">"gam"</span>)
-</pre></div>
+<span class="va">ldout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mldest.html">mldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">genoarray</span>, K <span class="op">=</span> <span class="va">ploidy</span>, type <span class="op">=</span> <span class="st">"gam"</span><span class="op">)</span></pre></div>
 <p>We can visualize LD with <code><a href="../reference/plot.lddf.html">plot.lddf()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(x = <span class="kw">ldout</span>, element = <span class="st">"D"</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span>, element <span class="op">=</span> <span class="st">"D"</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(x = <span class="kw">ldout</span>, element = <span class="st">"Dprime"</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span>, element <span class="op">=</span> <span class="st">"Dprime"</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-5-2.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(x = <span class="kw">ldout</span>, element = <span class="st">"r"</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span>, element <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-5-3.png" width="700"></p>
 <p>We can also obtain these LD estimates in matrix form by using <code><a href="../reference/format_lddf.html">format_lddf()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="kw">ldmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span>(obj = <span class="kw">ldout</span>, element = <span class="st">"D"</span>)
-<span class="kw">ldmat</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>]
+<span class="va">ldmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">ldout</span>, element <span class="op">=</span> <span class="st">"D"</span><span class="op">)</span>
+<span class="va">ldmat</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
 <span class="co">#&gt;               PotVar0029907 PotVar0029908 PotVar0029910 PotVar0029911</span>
 <span class="co">#&gt; PotVar0029907            NA     0.2449746    0.09149879     0.1996393</span>
 <span class="co">#&gt; PotVar0029908            NA            NA    0.09149879     0.1996393</span>
 <span class="co">#&gt; PotVar0029910            NA            NA            NA     0.1260232</span>
-<span class="co">#&gt; PotVar0029911            NA            NA            NA            NA</span>
-</pre></div>
+<span class="co">#&gt; PotVar0029911            NA            NA            NA            NA</span></pre></div>
 <p>Though not generally recommended, we get very similar performance in this case when we use posterior mean genotypes to obtain LD estimates.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">pmmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span>(x = <span class="kw">uit</span>, varname = <span class="st">"postmean"</span>)
-<span class="kw">ld_pm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mldest.html">mldest</a></span>(geno = <span class="kw">pmmat</span>, K = <span class="kw">ploidy</span>, type = <span class="st">"comp"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(x = <span class="kw">ld_pm</span>, element = <span class="st">"r"</span>)
-</pre></div>
+<span class="va">pmmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="st">"postmean"</span><span class="op">)</span>
+<span class="va">ld_pm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mldest.html">mldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">pmmat</span>, K <span class="op">=</span> <span class="va">ploidy</span>, type <span class="op">=</span> <span class="st">"comp"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ld_pm</span>, element <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="kw">r_hap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span>(obj = <span class="kw">ldout</span>, element = <span class="st">"r"</span>)
-<span class="kw">r_pm</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span>(obj = <span class="kw">ld_pm</span>, element = <span class="st">"r"</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(x = <span class="kw">r_hap</span>, 
-     y = <span class="kw">r_pm</span>, 
-     xlab = <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span>(<span class="kw">r</span>), <span class="st">" Using Genotype Likelihoods"</span>)), 
-     ylab = <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span>(<span class="kw">r</span>), <span class="st">" Using Posterior Mean"</span>)))
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span>(<span class="fl">0</span>, <span class="fl">1</span>, lty = <span class="fl">2</span>, col = <span class="fl">2</span>)
-</pre></div>
+<span class="va">r_hap</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">ldout</span>, element <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span>
+<span class="va">r_pm</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">ld_pm</span>, element <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">r_hap</span>, 
+     y <span class="op">=</span> <span class="va">r_pm</span>, 
+     xlab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, <span class="st">" Using Genotype Likelihoods"</span><span class="op">)</span><span class="op">)</span>, 
+     ylab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>, <span class="st">" Using Posterior Mean"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, lty <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>We can obtain shrunken LD estimates with <code><a href="../reference/ldshrink.html">ldshrink()</a></code>. This shrinkage uses adaptive shrinkage (Stephens, 2016) as proposed in Dey and Stephens (2018).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="kw">shrunkcor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldshrink.html">ldshrink</a></span>(obj = <span class="kw">ldout</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span>(corr    = <span class="kw">shrunkcor</span>, 
-         type    = <span class="st">"upper"</span>, 
-         method  = <span class="st">"color"</span>, 
-         diag    = <span class="fl">FALSE</span>, 
-         is.corr = <span class="fl">TRUE</span>, 
-         tl.pos  = <span class="st">"n"</span>)
-</pre></div>
+<span class="va">shrunkcor</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldshrink.html">ldshrink</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">ldout</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>corr    <span class="op">=</span> <span class="va">shrunkcor</span>, 
+         type    <span class="op">=</span> <span class="st">"upper"</span>, 
+         method  <span class="op">=</span> <span class="st">"color"</span>, 
+         diag    <span class="op">=</span> <span class="cn">FALSE</span>, 
+         is.corr <span class="op">=</span> <span class="cn">TRUE</span>, 
+         tl.pos  <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>To estimate pairwise LD along a sliding window, use <code><a href="../reference/sldest.html">sldest()</a></code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="kw">slout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sldest.html">sldest</a></span>(geno = <span class="kw">genoarray</span>, K = <span class="kw">ploidy</span>, win = <span class="fl">3</span>)
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span>(<span class="kw">slout</span>, element = <span class="st">"r"</span>)
-</pre></div>
+<span class="va">slout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sldest.html">sldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">genoarray</span>, K <span class="op">=</span> <span class="va">ploidy</span>, win <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">slout</span>, element <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span></pre></div>
 <p><img src="ld_pipeline_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 </div>
 <div id="references" class="section level1">

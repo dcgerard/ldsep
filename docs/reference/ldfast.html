@@ -147,15 +147,15 @@ these to correct the biases in linkage disequilibrium estimation
 caused by genotype uncertainty.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ldfast</span>(
-  <span class='kw'>gp</span>,
-  type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"r"</span>, <span class='st'>"r2"</span>, <span class='st'>"z"</span>, <span class='st'>"D"</span>, <span class='st'>"Dprime"</span>),
-  shrinkrr = <span class='fl'>TRUE</span>,
-  se = <span class='fl'>TRUE</span>,
-  thresh = <span class='fl'>TRUE</span>,
-  upper = <span class='fl'>10</span>,
-  mode = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"zero"</span>, <span class='st'>"estimate"</span>)
-)</pre>
+    <pre class="usage"><span class='fu'>ldfast</span><span class='op'>(</span>
+  <span class='va'>gp</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"r"</span>, <span class='st'>"r2"</span>, <span class='st'>"z"</span>, <span class='st'>"D"</span>, <span class='st'>"Dprime"</span><span class='op'>)</span>,
+  shrinkrr <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  se <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  thresh <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  upper <span class='op'>=</span> <span class='fl'>10</span>,
+  mode <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"zero"</span>, <span class='st'>"estimate"</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -294,10 +294,10 @@ shrinkage on the log of the reliability ratios.</p></dd>
     <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"gp"</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"gp"</span><span class='op'>)</span>
 
-<span class='kw'>ldout</span> <span class='op'>&lt;-</span> <span class='fu'>ldfast</span>(<span class='kw'>gp</span>, <span class='st'>"r"</span>)
-<span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>ldmat</span>
+<span class='va'>ldout</span> <span class='op'>&lt;-</span> <span class='fu'>ldfast</span><span class='op'>(</span><span class='va'>gp</span>, <span class='st'>"r"</span><span class='op'>)</span>
+<span class='va'>ldout</span><span class='op'>$</span><span class='va'>ldmat</span>
 </div><div class='output co'>#&gt;            [,1]      [,2]       [,3]         [,4]      [,5]      [,6]
 #&gt;  [1,] 1.0000000 1.0000000 0.43269941  0.831256306 0.6028276 0.6028276
 #&gt;  [2,] 1.0000000 1.0000000 0.43269941  0.831256306 0.6028276 0.6028276
@@ -319,9 +319,9 @@ shrinkage on the log of the reliability ratios.</p></dd>
 #&gt;  [7,] 1.00000000 1.00000000  0.079131179 0.8512614
 #&gt;  [8,] 1.00000000 1.00000000  0.079131179 0.8512614
 #&gt;  [9,] 0.07913118 0.07913118  1.000000000 0.1020791
-#&gt; [10,] 0.85126139 0.85126139  0.102079061 1.0000000</div><div class='input'><span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>rr</span>
+#&gt; [10,] 0.85126139 0.85126139  0.102079061 1.0000000</div><div class='input'><span class='va'>ldout</span><span class='op'>$</span><span class='va'>rr</span>
 </div><div class='output co'>#&gt;  [1] 1.005771 1.005771 1.003719 1.003953 1.001617 1.001617 1.003960 1.003960
-#&gt;  [9] 1.062503 1.032458</div><div class='input'><span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>semat</span>
+#&gt;  [9] 1.062503 1.032458</div><div class='input'><span class='va'>ldout</span><span class='op'>$</span><span class='va'>semat</span>
 </div><div class='output co'>#&gt;             [,1]       [,2]       [,3]       [,4]       [,5]       [,6]
 #&gt;  [1,]         NA         NA 0.09332343 0.03572633 0.06723054 0.06723054
 #&gt;  [2,]         NA         NA 0.09332343 0.03572633 0.06723054 0.06723054
@@ -344,8 +344,8 @@ shrinkage on the log of the reliability ratios.</p></dd>
 #&gt;  [8,]         NA         NA 0.1152616 0.04149810
 #&gt;  [9,] 0.11526155 0.11526155        NA 0.11264141
 #&gt; [10,] 0.04149810 0.04149810 0.1126414         NA</div><div class='input'>
-<span class='kw'>ldout</span> <span class='op'>&lt;-</span> <span class='fu'>ldfast</span>(<span class='kw'>gp</span>, <span class='st'>"D"</span>)
-<span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>ldmat</span>
+<span class='va'>ldout</span> <span class='op'>&lt;-</span> <span class='fu'>ldfast</span><span class='op'>(</span><span class='va'>gp</span>, <span class='st'>"D"</span><span class='op'>)</span>
+<span class='va'>ldout</span><span class='op'>$</span><span class='va'>ldmat</span>
 </div><div class='output co'>#&gt;             [,1]       [,2]       [,3]          [,4]       [,5]       [,6]
 #&gt;  [1,] 0.24316990 0.24316990 0.11133968  0.1890926874 0.14190970 0.14190970
 #&gt;  [2,] 0.24316990 0.24316990 0.11133968  0.1890926874 0.14190970 0.14190970
@@ -367,9 +367,9 @@ shrinkage on the log of the reliability ratios.</p></dd>
 #&gt;  [7,] 0.276790383 0.276790383  0.0093870857 0.19993638
 #&gt;  [8,] 0.276790383 0.276790383  0.0093870857 0.19993638
 #&gt;  [9,] 0.009387086 0.009387086  0.0508411413 0.01027538
-#&gt; [10,] 0.199936377 0.199936377  0.0102753754 0.19929976</div><div class='input'><span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>rr</span>
+#&gt; [10,] 0.199936377 0.199936377  0.0102753754 0.19929976</div><div class='input'><span class='va'>ldout</span><span class='op'>$</span><span class='va'>rr</span>
 </div><div class='output co'>#&gt;  [1] 1.011575 1.011575 1.007451 1.007921 1.003237 1.003237 1.007936 1.007936
-#&gt;  [9] 1.128912 1.065970</div><div class='input'><span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>semat</span>
+#&gt;  [9] 1.128912 1.065970</div><div class='input'><span class='va'>ldout</span><span class='op'>$</span><span class='va'>semat</span>
 </div><div class='output co'>#&gt;             [,1]       [,2]       [,3]       [,4]       [,5]       [,6]
 #&gt;  [1,]         NA         NA 0.03145416 0.03197325 0.03082308 0.03082308
 #&gt;  [2,]         NA         NA 0.03145416 0.03197325 0.03082308 0.03082308
@@ -392,8 +392,8 @@ shrinkage on the log of the reliability ratios.</p></dd>
 #&gt;  [8,]         NA         NA 0.01360690 0.02608113
 #&gt;  [9,] 0.01360690 0.01360690         NA 0.01132382
 #&gt; [10,] 0.02608113 0.02608113 0.01132382         NA</div><div class='input'>
-<span class='kw'>ldout</span> <span class='op'>&lt;-</span> <span class='fu'>ldfast</span>(<span class='kw'>gp</span>, <span class='st'>"Dprime"</span>)
-<span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>ldmat</span>
+<span class='va'>ldout</span> <span class='op'>&lt;-</span> <span class='fu'>ldfast</span><span class='op'>(</span><span class='va'>gp</span>, <span class='st'>"Dprime"</span><span class='op'>)</span>
+<span class='va'>ldout</span><span class='op'>$</span><span class='va'>ldmat</span>
 </div><div class='output co'>#&gt;             [,1]       [,2]       [,3]          [,4]      [,5]      [,6]
 #&gt;  [1,] 4.00000000 0.99234186 0.68861855  0.9333391533 1.1182071 1.1182071
 #&gt;  [2,] 0.99234186 4.00000000 0.68861855  0.9333391533 1.1182071 1.1182071
@@ -415,9 +415,9 @@ shrinkage on the log of the reliability ratios.</p></dd>
 #&gt;  [7,] 4.00000000 1.32871897  0.0549282885 1.23084578
 #&gt;  [8,] 1.32871897 4.00000000  0.0549282885 1.23084578
 #&gt;  [9,] 0.05492829 0.05492829  4.0000000000 0.07771872
-#&gt; [10,] 1.23084578 1.23084578  0.0777187155 4.00000000</div><div class='input'><span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>rr</span>
+#&gt; [10,] 1.23084578 1.23084578  0.0777187155 4.00000000</div><div class='input'><span class='va'>ldout</span><span class='op'>$</span><span class='va'>rr</span>
 </div><div class='output co'>#&gt;  [1] 1.011575 1.011575 1.007451 1.007921 1.003237 1.003237 1.007936 1.007936
-#&gt;  [9] 1.128912 1.065970</div><div class='input'><span class='kw'>ldout</span><span class='op'>$</span><span class='kw'>semat</span>
+#&gt;  [9] 1.128912 1.065970</div><div class='input'><span class='va'>ldout</span><span class='op'>$</span><span class='va'>semat</span>
 </div><div class='output co'>#&gt;             [,1]       [,2]       [,3]      [,4]       [,5]       [,6]
 #&gt;  [1,]         NA 0.13995724 0.19150934 0.1526757 0.21646378 0.21646378
 #&gt;  [2,] 0.13995724         NA 0.19150934 0.1526757 0.21646378 0.21646378

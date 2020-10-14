@@ -160,17 +160,17 @@ Pearson correlation. This function can be used for both
 diploids and polyploids.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ldest_gam</span>(
-  <span class='kw'>ga</span>,
-  <span class='kw'>gb</span>,
-  <span class='kw'>K</span>,
-  reltol = <span class='fl'>10</span><span class='op'>^</span><span class='op'>-</span><span class='fl'>8</span>,
-  nboot = <span class='fl'>100</span>,
-  useboot = <span class='fl'>FALSE</span>,
-  pen = <span class='fl'>2</span>,
-  grid_init = <span class='fl'>FALSE</span>,
-  se = <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>ldest_gam</span><span class='op'>(</span>
+  <span class='va'>ga</span>,
+  <span class='va'>gb</span>,
+  <span class='va'>K</span>,
+  reltol <span class='op'>=</span> <span class='fl'>10</span><span class='op'>^</span><span class='op'>-</span><span class='fl'>8</span>,
+  nboot <span class='op'>=</span> <span class='fl'>100</span>,
+  useboot <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pen <span class='op'>=</span> <span class='fl'>2</span>,
+  grid_init <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  se <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -323,27 +323,27 @@ will return LD estimates of <code>NA</code>.</p>
     <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1</span>)
-<span class='kw'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span> <span class='co'># sample size</span>
-<span class='kw'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span> <span class='co'># ploidy</span>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span> <span class='co'># sample size</span>
+<span class='va'>K</span> <span class='op'>&lt;-</span> <span class='fl'>6</span> <span class='co'># ploidy</span>
 
 <span class='co'>## generate some fake genotypes when LD = 0.</span>
-<span class='kw'>ga</span> <span class='op'>&lt;-</span> <span class='kw'>stats</span>::<span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(n = <span class='kw'>n</span>, size = <span class='kw'>K</span>, prob = <span class='fl'>0.5</span>)
-<span class='kw'>gb</span> <span class='op'>&lt;-</span> <span class='kw'>stats</span>::<span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(n = <span class='kw'>n</span>, size = <span class='kw'>K</span>, prob = <span class='fl'>0.5</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>ga</span>)
-</div><div class='output co'>#&gt; [1] 2 3 3 5 2 5</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>gb</span>)
+<span class='va'>ga</span> <span class='op'>&lt;-</span> <span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='va'>n</span>, size <span class='op'>=</span> <span class='va'>K</span>, prob <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span>
+<span class='va'>gb</span> <span class='op'>&lt;-</span> <span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='va'>n</span>, size <span class='op'>=</span> <span class='va'>K</span>, prob <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>ga</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 2 3 3 5 2 5</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>gb</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] 3 3 2 6 3 2</div><div class='input'>
 <span class='co'>## generate some fake genotype likelihoods when LD = 0.</span>
-<span class='kw'>gamat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span>(<span class='kw'>ga</span>, <span class='kw'>stats</span>::<span class='kw'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span>, x = <span class='fl'>0</span><span class='op'>:</span><span class='kw'>K</span>, sd = <span class='fl'>1</span>, log = <span class='fl'>TRUE</span>))
-<span class='kw'>gbmat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span>(<span class='kw'>gb</span>, <span class='kw'>stats</span>::<span class='kw'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span>, x = <span class='fl'>0</span><span class='op'>:</span><span class='kw'>K</span>, sd = <span class='fl'>1</span>, log = <span class='fl'>TRUE</span>))
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>gamat</span>)
+<span class='va'>gamat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='va'>ga</span>, <span class='fu'>stats</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span>, x <span class='op'>=</span> <span class='fl'>0</span><span class='op'>:</span><span class='va'>K</span>, sd <span class='op'>=</span> <span class='fl'>1</span>, log <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>gbmat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='va'>gb</span>, <span class='fu'>stats</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/r/stats/Normal.html'>dnorm</a></span>, x <span class='op'>=</span> <span class='fl'>0</span><span class='op'>:</span><span class='va'>K</span>, sd <span class='op'>=</span> <span class='fl'>1</span>, log <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>gamat</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;            [,1]      [,2]       [,3]       [,4]      [,5]       [,6]      [,7]
 #&gt; [1,]  -2.918939 -1.418939 -0.9189385 -1.4189385 -2.918939 -5.4189385 -8.918939
 #&gt; [2,]  -5.418939 -2.918939 -1.4189385 -0.9189385 -1.418939 -2.9189385 -5.418939
 #&gt; [3,]  -5.418939 -2.918939 -1.4189385 -0.9189385 -1.418939 -2.9189385 -5.418939
 #&gt; [4,] -13.418939 -8.918939 -5.4189385 -2.9189385 -1.418939 -0.9189385 -1.418939
 #&gt; [5,]  -2.918939 -1.418939 -0.9189385 -1.4189385 -2.918939 -5.4189385 -8.918939
-#&gt; [6,] -13.418939 -8.918939 -5.4189385 -2.9189385 -1.418939 -0.9189385 -1.418939</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>gbmat</span>)
+#&gt; [6,] -13.418939 -8.918939 -5.4189385 -2.9189385 -1.418939 -0.9189385 -1.418939</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>gbmat</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;            [,1]       [,2]       [,3]       [,4]      [,5]      [,6]       [,7]
 #&gt; [1,]  -5.418939  -2.918939 -1.4189385 -0.9189385 -1.418939 -2.918939 -5.4189385
 #&gt; [2,]  -5.418939  -2.918939 -1.4189385 -0.9189385 -1.418939 -2.918939 -5.4189385
@@ -352,17 +352,17 @@ will return LD estimates of <code>NA</code>.</p>
 #&gt; [5,]  -5.418939  -2.918939 -1.4189385 -0.9189385 -1.418939 -2.918939 -5.4189385
 #&gt; [6,]  -2.918939  -1.418939 -0.9189385 -1.4189385 -2.918939 -5.418939 -8.9189385</div><div class='input'>
 <span class='co'>## Gametic LD with genotypes</span>
-<span class='kw'>ldout1</span> <span class='op'>&lt;-</span> <span class='fu'>ldest_gam</span>(ga = <span class='kw'>ga</span>,
-                    gb = <span class='kw'>gb</span>,
-                    K = <span class='kw'>K</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>ldout1</span>)
+<span class='va'>ldout1</span> <span class='op'>&lt;-</span> <span class='fu'>ldest_gam</span><span class='op'>(</span>ga <span class='op'>=</span> <span class='va'>ga</span>,
+                    gb <span class='op'>=</span> <span class='va'>gb</span>,
+                    K <span class='op'>=</span> <span class='va'>K</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>ldout1</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;            D         D_se           r2        r2_se            r         r_se 
 #&gt; 0.0058365062 0.0286113348 0.0005454794 0.0053480254 0.0233554997 0.1144917775 </div><div class='input'>
 <span class='co'>## Gametic LD with genotype likelihoods</span>
-<span class='kw'>ldout2</span> <span class='op'>&lt;-</span> <span class='fu'>ldest_gam</span>(ga = <span class='kw'>gamat</span>,
-                    gb = <span class='kw'>gbmat</span>,
-                    K = <span class='kw'>K</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='kw'>ldout2</span>)
+<span class='va'>ldout2</span> <span class='op'>&lt;-</span> <span class='fu'>ldest_gam</span><span class='op'>(</span>ga <span class='op'>=</span> <span class='va'>gamat</span>,
+                    gb <span class='op'>=</span> <span class='va'>gbmat</span>,
+                    K <span class='op'>=</span> <span class='va'>K</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>ldout2</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;           D        D_se          r2       r2_se           r        r_se 
 #&gt; 0.020950505 0.097754998 0.007028751 0.065592168 0.083837645 0.391185656 </div><div class='input'>
 </div></pre>

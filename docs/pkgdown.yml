@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   fast: fast.html
   ld_pipeline: ld_pipeline.html
-last_built: 2020-09-14T19:21Z
+last_built: 2020-10-14T14:48Z
 urls:
   reference: https://dcgerard.github.io/ldsep//reference
   article: https://dcgerard.github.io/ldsep//articles
