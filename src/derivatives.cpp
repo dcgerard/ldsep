@@ -128,7 +128,7 @@ arma::vec dproballgeno_dprob(const arma::vec &gA,
 arma::mat dreal_to_simplex_dy(const arma::vec y) {
   int K = y.n_elem + 1;
 
-  arma::mat jacob(K, K - 1);
+  arma::mat jacob(K, K - 1, arma::fill::zeros);
 
   double recsum;
   double drecsum;
@@ -137,7 +137,11 @@ arma::mat dreal_to_simplex_dy(const arma::vec y) {
     recsum = 0.0;
     drecsum = 0.0;
     for (int i = 0; i < K; i++) {
-      zk = expit(y[i] + std::log(1.0 / ((double)K - ((double)i + 1))));
+      if (i < K - 1) {
+        zk = expit(y[i] + std::log(1.0 / ((double)K - ((double)i + 1))));
+      } else{
+        zk = expit(std::log(1.0 / ((double)K - ((double)i + 1))));
+      }
       if (i < j) {
         jacob(i, j) = 0.0;
       } else if (i == j) {
@@ -204,10 +208,12 @@ arma::vec dllike_geno_dpar(const arma::vec par,
                            const int K,
                            const arma::vec alpha) {
   if (par.n_elem != 3) {
-    Rcpp::stop("par needs to be length 3");
+    Rcpp::stop("dllike_geno_dpar: par needs to be length 3");
   }
 
-  arma::mat dp_dy = dreal_to_simplex_dy(par);
+  arma::mat dp_dy(4, 3, arma::fill::zeros);
+  dp_dy = dreal_to_simplex_dy(par);
+
   arma::vec prob = real_to_simplex(par);
   arma::vec df_dp = dproballgeno_dprob(gA, gB, K, prob) +
     dlprior_dprob(prob, alpha);
