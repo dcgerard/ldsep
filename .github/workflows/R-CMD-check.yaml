@@ -63,8 +63,8 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
-	  install.packages("BiocManager")
-	  BiocManager::install("VariantAnnotation")
+          install.packages("BiocManager")
+          BiocManager::install("VariantAnnotation")
         shell: Rscript {0}
 
       - name: Check
