@@ -1,0 +1,188 @@
+---
+title: "VariantAnnotation-updog-ldsep Pipeline from VCF"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pipeline from VCF}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+runthis <- requireNamespace("VariantAnnotation", quietly = TRUE) &&
+  requireNamespace("updog", quietly = TRUE)
+
+if (runthis) {
+  runthis <- packageVersion("updog") >= "2.0.2"
+}
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 5,
+  fig.height = 4,
+  echo = runthis
+)
+set.seed(1)
+```
+
+# Summary
+
+This vignette covers how to
+
+1. Load read-count data from a VCF file into R using `VariantAnnotation`,
+2. Format these data for input into `updog`,
+3. Format the `updog` output for use in `ldsep`, and
+4. Run `ldsep` on the formatted output.
+
+We will need the following packages:
+```{r setup, message=FALSE}
+library(VariantAnnotation)
+library(updog)
+library(ldsep)
+```
+
+If you do not have these packages installed, you can install them in R using:
+```{r, eval = FALSE}
+install.packages(c("ldsep", "updog", "BiocManager"))
+BiocManager::install("VariantAnnotation")
+```
+
+The following code chunks are only evaluated if all of these packages are installed.
+
+# Analysis
+
+## Extract data from a VCF file using `VariantAnnotation`
+
+The `ldsep` package comes with it a VCF file containing a small (arbitrarily chosen) subset of the data from Uitdewilligen et. al. (2013). These data consist of a diversity panel of autotetraploid *Solanum tuberosum* (2n = 4x = 48). The location of this file on your computer can be found with:
+```{r}
+uit_file <- system.file("extdata", "subuit.vcf", 
+                        package = "ldsep",
+                        mustWork = TRUE)
+```
+
+We will use the excellent `VariantAnnotation` package (Obenchain et. al., 2014) to load these data into R. You can read more about `VariantAnnotation` in its vignette: <https://bioconductor.org/packages/release/bioc/vignettes/VariantAnnotation/inst/doc/VariantAnnotation.pdf>
+```{r}
+subuit <- readVcf(file = uit_file)
+class(subuit)
+```
+
+A brief description of the genotype fields can be seen with
+```{r}
+geno(header(subuit))
+```
+
+See the Samtools website for a more detailed description of the format and the fields in a VCF file: <http://samtools.github.io/hts-specs/>
+
+To format these data for genotyping in `updog`, we need the total read-depth, which in this VCF file is the `DP` field, and we need the read-depth for the reference allele, which in this VCF file is the `RA` field.
+
+```{r}
+sizemat <- geno(subuit)$DP
+refmat <- geno(subuit)$RA
+```
+
+These are matrices where the rows index the loci and the columns index the individuals. That is, `sizemat[i, j]` is the total read-count at SNP `i` for individual `j`, while `refmat[i, j]` is the reference read-count at SNP `i` for individual `j`.
+
+## Genotype individuals using `updog`
+
+To genotype these individuals, we will use the `multidog()` function from the `updog` R package (Gerard et. al., 2018; Gerard and Ferrão, 2020). Make sure that your version of `updog` is at least 2.0.2.
+
+```{r}
+packageVersion("updog")
+```
+
+We will use `model = "norm"`, using 2 cores to genotype all 20 SNPs.
+```{r}
+ploidy <- 4
+mout <- multidog(refmat = refmat, 
+                 sizemat = sizemat, 
+                 ploidy = ploidy, 
+                 model = "norm",
+                 nc = 2)
+```
+
+We can plot some of the SNPs in a genotype plot (Gerard et. al., 2018) to evaluate the accuracy of the genotyping:
+```{r, warning=FALSE, fig.show="hold", out.width="25%", results='hide'}
+plot(mout, indices = sample(1:nrow(subuit), 3))
+```
+
+We probably want to filter out SNPs that are mostly monoallelic. We can do that with `filter_snp()`.
+
+```{r}
+msub <- filter_snp(x = mout, pmax(Pr_0, Pr_1, Pr_2, Pr_3, Pr_4) < 0.95)
+nrow(msub$snpdf)
+```
+
+We can obtain the genotype log-likelihoods, in the appropriate format used in `ldesp`, with `format_multidog()`.
+
+```{r}
+varnames <- paste0("logL_", 0:ploidy)
+varnames
+larray <- format_multidog(x = msub, varname = varnames)
+class(larray)
+dim(larray)
+```
+
+This is a three-way array of genotype *log*-likelihoods. The first dimension indexes the SNPs, the second dimension indexes the individuals, and the third dimension indexes the genotypes. That is, `larray[i, j, k]` is the genotype log-likelihood at SNP `i` for individual `j` and dosage `k - 1`.
+
+It is possible to also just use the posterior means for LD estimation (doing so will result in speed gain but a loss of accuracy). You can extract the posterior means also using `format_multidog()`.
+
+```{r}
+pmmat <- format_multidog(x = msub, varname = "postmean")
+class(pmmat)
+dim(pmmat)
+```
+
+This is a matrix of posterior mean genotypes. That is, `pmmat[i, j]` is the posterior mean genotype at SNP `i` for individual `j`.
+
+## Estimate LD using `ldsep`
+
+We will now demonstrate how to estimate LD using the `ldsep` package (Gerard, 2020). To estimate LD using maximum likelihood, directly from genotype likelihoods, we will use `mldest()` with the array of genotype log-likelihoods.
+
+```{r}
+like_ld <- mldest(geno = larray, K = ploidy, nc = 2, type = "comp")
+```
+
+We can visualize the LD estimates using `plot()`
+```{r, out.width="50%"}
+plot(like_ld)
+```
+
+The naive LD estimates (using just sample moments) with the posterior mean can also be found using `mldest()`:
+
+```{r}
+mom_ld <- mldest(geno = pmmat, K = ploidy, nc = 2, type = "comp")
+```
+
+The larger naive LD estimates are noticeably attenuated toward zero (due to the influence of genotype uncertainty).
+```{r, out.width="50%"}
+plot(mom_ld)
+```
+
+It is easier to see this attenuation in a scatterplot (the red, dashed line is the y=x line). The larger LD values are more attenuated using the naive approach.
+```{r}
+par(mar = c(2.4, 2.8, 0, 0) + 0.5, mgp = c(1.8, 0.6, 0))
+plot(mom_ld$r2, like_ld$r2, 
+     xlab = expression(paste(textstyle(Naive), ~~hat(r)^2)), 
+     ylab = expression(paste(textstyle(MLE), ~~hat(r)^2)), 
+     pch  = 20)
+abline(0, 1, lty = 2, col = 2)
+```
+
+
+# References
+
+- Gerard, David (2020). "Pairwise Linkage Disequilibrium Estimation for Polyploids." _bioRxiv_ [doi:10.1101/2020.08.03.234476](https://doi.org/10.1101/2020.08.03.234476).
+
+- Gerard D, Ferrão L (2020). "Priors for Genotyping Polyploids." _Bioinformatics_, *36*(6), 1795-1800. ISSN 1367-4803, [doi:10.1093/bioinformatics/btz852](https://doi.org/10.1093/bioinformatics/btz852).
+
+- Gerard D, Ferrão L, Garcia A, Stephens M (2018). "Genotyping Polyploids from Messy Sequencing Data." _Genetics_, *210*(3), 789-807. ISSN 0016-6731, [doi:10.1534/genetics.118.301468](https://doi.org/10.1534/genetics.118.301468).
+
+- Obenchain V, Lawrence M, Carey V, Gogarten S, Shannon P, Morgan M (2014). "VariantAnnotation: a Bioconductor package for exploration and annotation of genetic variants." _Bioinformatics_, *30*(14), 2076-2078. [doi:10.1093/bioinformatics/btu168](https://doi.org/10.1093/bioinformatics/btu168).
+
+- Uitdewilligen, Jan GAML, Anne-Marie A. Wolters, B. Bjorn, Theo JA Borm, Richard GF Visser, and Herman J. Van Eck (2013). "A next-generation sequencing method for genotyping-by-sequencing of highly heterozygous autotetraploid potato." _PloS one_ *8*(5), e62355. [doi:10.1371/journal.pone.0062355](https://doi.org/10.1371/journal.pone.0062355)
+
+
+
+
+
+
