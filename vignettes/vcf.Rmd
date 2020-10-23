@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 5,
   fig.height = 4,
-  echo = runthis
+  eval = runthis
 )
 set.seed(1)
 ```
