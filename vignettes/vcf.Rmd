@@ -1,5 +1,5 @@
 ---
-title: "VariantAnnotation-updog-ldsep Pipeline from VCF"
+title: "LD Estimation Pipeline from VCF"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Pipeline from VCF}
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 5,
   fig.height = 4,
-  echo = runthis
+  eval = runthis
 )
 set.seed(1)
 ```
@@ -90,7 +90,7 @@ To genotype these individuals, we will use the `multidog()` function from the `u
 packageVersion("updog")
 ```
 
-We will use `model = "norm"`, using 2 cores to genotype all 20 SNPs.
+We will use `model = "norm"`, using two cores to genotype all 20 SNPs.
 ```{r}
 ploidy <- 4
 mout <- multidog(refmat = refmat, 
