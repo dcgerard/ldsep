@@ -36,7 +36,8 @@ Suggests:
     covr,
     knitr,
     rmarkdown,
-    updog (>= 2.0.2)
+    updog (>= 2.0.2),
+    VariantAnnotation
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
