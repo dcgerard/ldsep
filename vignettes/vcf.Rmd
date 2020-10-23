@@ -84,7 +84,9 @@ These are matrices where the rows index the loci and the columns index the indiv
 
 ## Genotype individuals using `updog`
 
-To genotype these individuals, we will use the `multidog()` function from the `updog` R package (Gerard et. al., 2018; Gerard and Ferrão, 2020). Make sure that your version of `updog` is at least 2.0.2.
+To genotype these individuals, we will use the `multidog()` function from the `updog` R package (Gerard et. al., 2018; Gerard and Ferrão, 2020). We could use other genotyping programs, as long as they return genotype log-likelihoods.
+
+Make sure that your version of `updog` is at least 2.0.2.
 
 ```{r}
 packageVersion("updog")
@@ -165,6 +167,14 @@ plot(mom_ld$r2, like_ld$r2,
      ylab = expression(paste(textstyle(MLE), ~~hat(r)^2)), 
      pch  = 20)
 abline(0, 1, lty = 2, col = 2)
+```
+
+
+Finally, these LD estimates may be obtained in matrix form using `format_lddf()`.
+
+```{r}
+ldmat <- format_lddf(obj = like_ld, element = "r2")
+ldmat[1:4, 1:4]
 ```
 
 
