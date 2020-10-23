@@ -90,14 +90,13 @@ To genotype these individuals, we will use the `multidog()` function from the `u
 packageVersion("updog")
 ```
 
-We will use `model = "norm"`, using two cores to genotype all 20 SNPs.
+We will use `model = "norm"`.
 ```{r}
 ploidy <- 4
 mout <- multidog(refmat = refmat, 
                  sizemat = sizemat, 
                  ploidy = ploidy, 
-                 model = "norm",
-                 nc = 2)
+                 model = "norm")
 ```
 
 We can plot some of the SNPs in a genotype plot (Gerard et. al., 2018) to evaluate the accuracy of the genotyping:
@@ -139,7 +138,7 @@ This is a matrix of posterior mean genotypes. That is, `pmmat[i, j]` is the post
 We will now demonstrate how to estimate LD using the `ldsep` package (Gerard, 2020). To estimate LD using maximum likelihood, directly from genotype likelihoods, we will use `mldest()` with the array of genotype log-likelihoods.
 
 ```{r}
-like_ld <- mldest(geno = larray, K = ploidy, nc = 2, type = "comp")
+like_ld <- mldest(geno = larray, K = ploidy, type = "comp")
 ```
 
 We can visualize the LD estimates using `plot()`
@@ -150,7 +149,7 @@ plot(like_ld)
 The naive LD estimates (using just sample moments) with the posterior mean can also be found using `mldest()`:
 
 ```{r}
-mom_ld <- mldest(geno = pmmat, K = ploidy, nc = 2, type = "comp")
+mom_ld <- mldest(geno = pmmat, K = ploidy, type = "comp")
 ```
 
 The larger naive LD estimates are noticeably attenuated toward zero (due to the influence of genotype uncertainty).
