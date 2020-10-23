@@ -228,7 +228,9 @@ mldest_geno <- function(genomat,
   i <- 1
   outmat <- foreach::foreach(i = seq_len(nloci - 1),
                              .combine = rbind,
-                             .export = c("ldest")) %dopar% {
+                             .export = c("ldest",
+                                         "nullvec_hap",
+                                         "nullvec_comp")) %dopar% {
 
                                if (type == "gam") {
                                  ldnull <- nullvec_hap()
@@ -384,7 +386,9 @@ mldest_genolike <- function(genoarray,
   i <- 1
   outmat <- foreach::foreach(i = seq_len(nloci - 1),
                              .combine = rbind,
-                             .export = c("ldest")) %dopar% {
+                             .export = c("ldest",
+                                         "nullvec_hap",
+                                         "nullvec_comp")) %dopar% {
 
                                if (type == "gam") {
                                  ldnull <- nullvec_hap()
