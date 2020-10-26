@@ -69,8 +69,8 @@ double probgeno(const int &gA,
                 const arma::vec prob,
                 bool log_p = true) {
 
-  int minz = std::max(0, gA + gB - K);
-  int maxz = std::min(gA, gB);
+  int minz = std::round(std::max(0, gA + gB - K));
+  int maxz = std::round(std::min(gA, gB));
 
   if (std::abs(arma::sum(prob) - 1.0) > TOL) {
     Rcpp::stop("probgeno: prob should sum to 1");
