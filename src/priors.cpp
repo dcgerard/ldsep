@@ -26,8 +26,8 @@ double lprior(const arma::vec prob, const arma::vec alpha) {
   }
 
   double pl = std::lgamma(arma::sum(alpha)) -
-    arma::sum(arma::lgamma(alpha)) +
-    arma::sum((alpha - 1.0) % arma::log(prob));
+    (double)arma::sum(arma::lgamma(alpha)) +
+    (double)arma::sum((alpha - 1.0) % arma::log(prob));
 
   return pl;
 }

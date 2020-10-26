@@ -2,7 +2,7 @@
 title: "LD Estimation Pipeline from VCF"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Pipeline from VCF}
+  %\VignetteIndexEntry{LD Estimation Pipeline from VCF}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
