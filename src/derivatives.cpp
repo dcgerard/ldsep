@@ -137,7 +137,11 @@ arma::mat dreal_to_simplex_dy(const arma::vec y) {
     recsum = 0.0;
     drecsum = 0.0;
     for (int i = 0; i < K; i++) {
-      zk = expit(y[i] + std::log(1.0 / ((double)K - ((double)i + 1))));
+      if (i < K - 1) {
+        zk = expit(y[i] + std::log(1.0 / ((double)K - ((double)i + 1))));
+      } else{
+        zk = expit(std::log(1.0 / ((double)K - ((double)i + 1))));
+      }
       if (i < j) {
         jacob(i, j) = 0.0;
       } else if (i == j) {
