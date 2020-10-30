@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   vcf: vcf.html
-last_built: 2020-10-26T19:32Z
+last_built: 2020-10-30T14:34Z
 urls:
   reference: https://dcgerard.github.io/ldsep//reference
   article: https://dcgerard.github.io/ldsep//articles

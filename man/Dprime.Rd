@@ -31,9 +31,9 @@ maximum covariance conditional on the marginal allele frequencies.
 Note that when \code{type = "allele"} and \code{constrain = FALSE},
 the resulting D' is constrained to fall between -K and K, where
 K is the ploidy of the species. However, under HWE, this measure is
-equal to gametic D'. Using \code{constrain = TRUE} will result
+equal to haplotypic D'. Using \code{constrain = TRUE} will result
 in a measure that is constrained to lie between -1 and 1, but
-it will not equal gametic D' under HWE.
+it will not equal haplotypic D' under HWE.
 
 Using \code{type = "geno"} is its own thing and will not equal
 D' generally under HWE. When \code{type = "geno"}, then the

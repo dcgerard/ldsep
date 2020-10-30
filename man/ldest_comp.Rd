@@ -93,13 +93,13 @@ we fix genotype frequencies.}
 \item{\code{z_se}}{The standard error of the Fisher-z
 transformation of \code{r}.}
 \item{\code{p_ab}}{The estimated haplotype frequency of ab.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_aB}}{The estimated haplotype frequency of aB.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_AB}}{The estimated haplotype frequency of AB.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.}

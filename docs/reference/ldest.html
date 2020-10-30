@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="Pairwise LD estimation in polyploids. — ldest" />
-<meta property="og:description" content="Estimates either gametic or composite measures of LD using either
+<meta property="og:description" content="Estimates either haplotypic or composite measures of LD using either
 genotypes are genotype likelihoods. The usual measures of LD are
 estimated (D, D', and r) along with the Fisher-z transformation of
 r (called &quot;z&quot;). All estimates are returned with standard errors." />
@@ -140,7 +140,7 @@ r (called &quot;z&quot;). All estimates are returned with standard errors." />
     </div>
 
     <div class="ref-description">
-    <p>Estimates either gametic or composite measures of LD using either
+    <p>Estimates either haplotypic or composite measures of LD using either
 genotypes are genotype likelihoods. The usual measures of LD are
 estimated (D, D', and r) along with the Fisher-z transformation of
 r (called "z"). All estimates are returned with standard errors.</p>
@@ -151,9 +151,9 @@ r (called "z"). All estimates are returned with standard errors.</p>
   <span class='va'>gb</span>,
   <span class='va'>K</span>,
   se <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gam"</span>, <span class='st'>"comp"</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hap"</span>, <span class='st'>"comp"</span><span class='op'>)</span>,
   model <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"norm"</span>, <span class='st'>"flex"</span><span class='op'>)</span>,
-  pen <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>type</span> <span class='op'>==</span> <span class='st'>"gam"</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span>
+  pen <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>type</span> <span class='op'>==</span> <span class='st'>"hap"</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -201,8 +201,8 @@ should be pretty fast.</p></td>
     <tr>
       <th>type</th>
       <td><p>The type of LD to calculate. The available types are
-gametic LD (<code>type = "gam"</code>) or composite LD
-(<code>type = "comp"</code>). Gametic LD is only appropriate for
+haplotypic LD (<code>type = "hap"</code>) or composite LD
+(<code>type = "comp"</code>). Haplotypic LD is only appropriate for
 autopolyploids when the individuals are in Hardy-Weinberg
 equilibrium (HWE). The composite
 measures of LD are always applicable, and consistently estimate the
@@ -252,13 +252,13 @@ we fix genotype frequencies.</p></dd>
 <dt><code>z_se</code></dt><dd><p>The standard error of the Fisher-z
 transformation of <code>r</code>.</p></dd>
 <dt><code>p_ab</code></dt><dd><p>The estimated haplotype frequency of ab.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>p_Ab</code></dt><dd><p>The estimated haplotype frequency of Ab.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>p_aB</code></dt><dd><p>The estimated haplotype frequency of aB.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>p_AB</code></dt><dd><p>The estimated haplotype frequency of AB.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>q_ij</code></dt><dd><p>The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.</p></dd>
@@ -266,35 +266,35 @@ composite LD.</p></dd>
 
 </dl>
 
-    <h2 class="hasAnchor" id="gametic-ld"><a class="anchor" href="#gametic-ld"></a>Gametic LD</h2>
+    <h2 class="hasAnchor" id="haplotypic-ld"><a class="anchor" href="#haplotypic-ld"></a>Haplotypic LD</h2>
 
     
 
 
-<p>This section describes the methods used when <code>type = "gam"</code> is
+<p>This section describes the methods used when <code>type = "hap"</code> is
 selected.</p>
-<p>Gametic LD measures the association
-between two loci on the same gamete. When haplotypes are known, estimating
-gametic LD is simple using just the haplotypic frequencies.</p>
+<p>Haplotypic LD measures the association
+between two loci on the same haplotype. When haplotypes are known, estimating
+haplotypic LD is simple using just the haplotypic frequencies.</p>
 <p>When haplotypes are not known, we can still estimate haplotypic frequencies
 using the genotypes or genotype likelihoods
 <em>in autopolyploids as long as Hardy-Weinberg equilibrium (HWE) is satisfied</em>. We do
 this via maximum likelihood using gradient ascent. Gradient ascent is
 performed over the unconstrained parameterization of the 3-simplex from
 Betancourt (2012). The estimated haplotype frequencies are then used to
-estimate gametic LD.</p>
+estimate haplotypic LD.</p>
 <p>Standard errors are provided using standard maximum likelihood theory.
 In brief, the Hessian matrix of the log-likelihood is calculated at
 the MLE's of the haplotype frequencies. The negative inverse of this
 Hessian matrix is approximately the covariance matrix of the MLE's of the
-haplotype frequencies. Since all gametic LD measures are functions
+haplotype frequencies. Since all haplotypic LD measures are functions
 of the haplotype frequencies, we use the delta-method to obtain
 the standard errors for each LD estimate.</p>
 <p>A Dirichlet(2,2,2,2) prior is placed over the frequencies of
 haplotypes 00, 01, 10, and 11. This corresponds to the "add two" rule
 of Agresti (1998). You can change this prior via the <code>pen</code> argument.</p>
 <p>When you either do not have autopolyploids or when HWE is <em>not</em>
-satisfied, then the estimates using <code>type = "gam"</code>
+satisfied, then the estimates using <code>type = "hap"</code>
 are nonsensical. However, the composite measures of LD are still
 applicable (see below).</p>
     <h2 class="hasAnchor" id="composite-ld"><a class="anchor" href="#composite-ld"></a>Composite LD</h2>
@@ -306,8 +306,8 @@ applicable (see below).</p>
 selected.</p>
 <p>When HWE is not satisfied, haplotype frequencies are not estimable. However,
 measures of association between two loci are still estimable. These
-associations may be caused by LD either on the same gamete or between
-different gametes. Cockerham and Weir (1977) thus called such measures
+associations may be caused by LD either on the same haplotype or between
+different haplotypes. Cockerham and Weir (1977) thus called such measures
 "composite" measures of LD.</p>
 <p>When the genotypes are known, these composite measures have simple
 correspondences to well-known statistical measures of association.
@@ -319,13 +319,13 @@ and use these to estimate the composite measures of LD using
 genotype likelihoods. The distribution of genotypes is assumed to
 either follow a proportional bivariate normal model (by default) or
 a general categorical model.</p>
-<p>These estimates of composite measures of LD estimate the gametic
+<p>These estimates of composite measures of LD estimate the haplotypic
 measures of LD when HWE is fulfilled, but are still applicable when HWE
 is not fulfilled.</p>
 <p>When genotypes are known, standard errors are calculated using standard
 moment-based approaches. When genotypes are not known, standard
 errors are calculated using standard maximum likelihood theory,
-same as for the gametic LD estimates (see above), or using
+same as for the haplotypic LD estimates (see above), or using
 a bootstrap.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -351,8 +351,8 @@ for finite populations." Genetics Research 30, no. 2 (1977):
 pairs of a collection of SNPs.</p></dd>
 <dt><code><a href='sldest.html'>sldest</a>()</code></dt><dd><p>For calculating pairwise LD along a
 sliding window of SNPs.</p></dd>
-<dt><code><a href='ldest_gam.html'>ldest_gam</a>()</code></dt><dd><p>For the function that directly estimates
-gametic LD when HWE is fulfilled.</p></dd>
+<dt><code><a href='ldest_hap.html'>ldest_hap</a>()</code></dt><dd><p>For the function that directly estimates
+haplotypic LD when HWE is fulfilled.</p></dd>
 <dt><code><a href='ldest_comp.html'>ldest_comp</a>()</code></dt><dd><p>For the function that directly
 estimates composite LD.</p></dd>
 
@@ -391,19 +391,19 @@ estimates composite LD.</p></dd>
 #&gt; [4,] -18.918939 -13.418939 -8.9189385 -5.4189385 -2.918939 -1.418939 -0.9189385
 #&gt; [5,]  -5.418939  -2.918939 -1.4189385 -0.9189385 -1.418939 -2.918939 -5.4189385
 #&gt; [6,]  -2.918939  -1.418939 -0.9189385 -1.4189385 -2.918939 -5.418939 -8.9189385</div><div class='input'>
-<span class='co'>## Gametic LD with genotypes</span>
+<span class='co'>## Haplotypic LD with genotypes</span>
 <span class='va'>ldout1</span> <span class='op'>&lt;-</span> <span class='fu'>ldest</span><span class='op'>(</span>ga <span class='op'>=</span> <span class='va'>ga</span>,
                 gb <span class='op'>=</span> <span class='va'>gb</span>,
                 K <span class='op'>=</span> <span class='va'>K</span>,
-                type <span class='op'>=</span> <span class='st'>"gam"</span><span class='op'>)</span>
+                type <span class='op'>=</span> <span class='st'>"hap"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>ldout1</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;            D         D_se           r2        r2_se            r         r_se 
 #&gt; 0.0058365062 0.0286113348 0.0005454794 0.0053480254 0.0233554997 0.1144917775 </div><div class='input'>
-<span class='co'>## Gametic LD with genotype likelihoods</span>
+<span class='co'>## Haplotypic LD with genotype likelihoods</span>
 <span class='va'>ldout2</span> <span class='op'>&lt;-</span> <span class='fu'>ldest</span><span class='op'>(</span>ga <span class='op'>=</span> <span class='va'>gamat</span>,
                 gb <span class='op'>=</span> <span class='va'>gbmat</span>,
                 K <span class='op'>=</span> <span class='va'>K</span>,
-                type <span class='op'>=</span> <span class='st'>"gam"</span><span class='op'>)</span>
+                type <span class='op'>=</span> <span class='st'>"hap"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>ldout2</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;           D        D_se          r2       r2_se           r        r_se 
 #&gt; 0.020950505 0.097754998 0.007028751 0.065592168 0.083837645 0.391185656 </div><div class='input'>

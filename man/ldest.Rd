@@ -9,9 +9,9 @@ ldest(
   gb,
   K,
   se = TRUE,
-  type = c("gam", "comp"),
+  type = c("hap", "comp"),
   model = c("norm", "flex"),
-  pen = ifelse(type == "gam", 2, 1)
+  pen = ifelse(type == "hap", 2, 1)
 )
 }
 \arguments{
@@ -49,8 +49,8 @@ genotype likelihoods. Otherwise, standard error calculations
 should be pretty fast.}
 
 \item{type}{The type of LD to calculate. The available types are
-gametic LD (\code{type = "gam"}) or composite LD
-(\code{type = "comp"}). Gametic LD is only appropriate for
+haplotypic LD (\code{type = "hap"}) or composite LD
+(\code{type = "comp"}). Haplotypic LD is only appropriate for
 autopolyploids when the individuals are in Hardy-Weinberg
 equilibrium (HWE). The composite
 measures of LD are always applicable, and consistently estimate the
@@ -94,13 +94,13 @@ we fix genotype frequencies.}
 \item{\code{z_se}}{The standard error of the Fisher-z
 transformation of \code{r}.}
 \item{\code{p_ab}}{The estimated haplotype frequency of ab.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_aB}}{The estimated haplotype frequency of aB.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_AB}}{The estimated haplotype frequency of AB.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.}
@@ -108,20 +108,20 @@ composite LD.}
 }
 }
 \description{
-Estimates either gametic or composite measures of LD using either
+Estimates either haplotypic or composite measures of LD using either
 genotypes are genotype likelihoods. The usual measures of LD are
 estimated (D, D', and r) along with the Fisher-z transformation of
 r (called "z"). All estimates are returned with standard errors.
 }
-\section{Gametic LD}{
+\section{Haplotypic LD}{
 
 
-This section describes the methods used when \code{type = "gam"} is
+This section describes the methods used when \code{type = "hap"} is
 selected.
 
-Gametic LD measures the association
-between two loci on the same gamete. When haplotypes are known, estimating
-gametic LD is simple using just the haplotypic frequencies.
+Haplotypic LD measures the association
+between two loci on the same haplotype. When haplotypes are known, estimating
+haplotypic LD is simple using just the haplotypic frequencies.
 
 When haplotypes are not known, we can still estimate haplotypic frequencies
 using the genotypes or genotype likelihoods
@@ -129,13 +129,13 @@ using the genotypes or genotype likelihoods
 this via maximum likelihood using gradient ascent. Gradient ascent is
 performed over the unconstrained parameterization of the 3-simplex from
 Betancourt (2012). The estimated haplotype frequencies are then used to
-estimate gametic LD.
+estimate haplotypic LD.
 
 Standard errors are provided using standard maximum likelihood theory.
 In brief, the Hessian matrix of the log-likelihood is calculated at
 the MLE's of the haplotype frequencies. The negative inverse of this
 Hessian matrix is approximately the covariance matrix of the MLE's of the
-haplotype frequencies. Since all gametic LD measures are functions
+haplotype frequencies. Since all haplotypic LD measures are functions
 of the haplotype frequencies, we use the delta-method to obtain
 the standard errors for each LD estimate.
 
@@ -144,7 +144,7 @@ haplotypes 00, 01, 10, and 11. This corresponds to the "add two" rule
 of Agresti (1998). You can change this prior via the \code{pen} argument.
 
 When you either do not have autopolyploids or when HWE is \emph{not}
-satisfied, then the estimates using \code{type = "gam"}
+satisfied, then the estimates using \code{type = "hap"}
 are nonsensical. However, the composite measures of LD are still
 applicable (see below).
 }
@@ -157,8 +157,8 @@ selected.
 
 When HWE is not satisfied, haplotype frequencies are not estimable. However,
 measures of association between two loci are still estimable. These
-associations may be caused by LD either on the same gamete or between
-different gametes. Cockerham and Weir (1977) thus called such measures
+associations may be caused by LD either on the same haplotype or between
+different haplotypes. Cockerham and Weir (1977) thus called such measures
 "composite" measures of LD.
 
 When the genotypes are known, these composite measures have simple
@@ -173,14 +173,14 @@ genotype likelihoods. The distribution of genotypes is assumed to
 either follow a proportional bivariate normal model (by default) or
 a general categorical model.
 
-These estimates of composite measures of LD estimate the gametic
+These estimates of composite measures of LD estimate the haplotypic
 measures of LD when HWE is fulfilled, but are still applicable when HWE
 is not fulfilled.
 
 When genotypes are known, standard errors are calculated using standard
 moment-based approaches. When genotypes are not known, standard
 errors are calculated using standard maximum likelihood theory,
-same as for the gametic LD estimates (see above), or using
+same as for the haplotypic LD estimates (see above), or using
 a bootstrap.
 }
 
@@ -201,18 +201,18 @@ gbmat <- t(sapply(gb, stats::dnorm, x = 0:K, sd = 1, log = TRUE))
 head(gamat)
 head(gbmat)
 
-## Gametic LD with genotypes
+## Haplotypic LD with genotypes
 ldout1 <- ldest(ga = ga,
                 gb = gb,
                 K = K,
-                type = "gam")
+                type = "hap")
 head(ldout1)
 
-## Gametic LD with genotype likelihoods
+## Haplotypic LD with genotype likelihoods
 ldout2 <- ldest(ga = gamat,
                 gb = gbmat,
                 K = K,
-                type = "gam")
+                type = "hap")
 head(ldout2)
 
 ## Composite LD with genotypes
@@ -266,8 +266,8 @@ for finite populations." Genetics Research 30, no. 2 (1977):
 pairs of a collection of SNPs.}
 \item{\code{\link{sldest}()}}{For calculating pairwise LD along a
 sliding window of SNPs.}
-\item{\code{\link{ldest_gam}()}}{For the function that directly estimates
-gametic LD when HWE is fulfilled.}
+\item{\code{\link{ldest_hap}()}}{For the function that directly estimates
+haplotypic LD when HWE is fulfilled.}
 \item{\code{\link{ldest_comp}()}}{For the function that directly
 estimates composite LD.}
 }

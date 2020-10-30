@@ -149,9 +149,9 @@ foreach and doParallel packages.</p>
   <span class='va'>K</span>,
   win <span class='op'>=</span> <span class='fl'>50</span>,
   nc <span class='op'>=</span> <span class='fl'>1</span>,
-  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gam"</span>, <span class='st'>"comp"</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"hap"</span>, <span class='st'>"comp"</span><span class='op'>)</span>,
   model <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"norm"</span>, <span class='st'>"flex"</span><span class='op'>)</span>,
-  pen <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>type</span> <span class='op'>==</span> <span class='st'>"gam"</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span>,
+  pen <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>type</span> <span class='op'>==</span> <span class='st'>"hap"</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>)</span>,
   se <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
@@ -198,8 +198,8 @@ able to use fewer. Ask your admins if you are unsure.</p></td>
     <tr>
       <th>type</th>
       <td><p>The type of LD to calculate. The available types are
-gametic LD (<code>type = "gam"</code>) or composite LD
-(<code>type = "comp"</code>). Gametic LD is only appropriate for
+haplotypic LD (<code>type = "hap"</code>) or composite LD
+(<code>type = "comp"</code>). Haplotypic LD is only appropriate for
 autopolyploids when the individuals are in Hardy-Weinberg
 equilibrium (HWE). The composite
 measures of LD are always applicable, and consistently estimate the
@@ -264,13 +264,13 @@ we fix genotype frequencies.</p></dd>
 <dt><code>z_se</code></dt><dd><p>The standard error of the Fisher-z
 transformation of <code>r</code>.</p></dd>
 <dt><code>p_ab</code></dt><dd><p>The estimated haplotype frequency of ab.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>p_Ab</code></dt><dd><p>The estimated haplotype frequency of Ab.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>p_aB</code></dt><dd><p>The estimated haplotype frequency of aB.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>p_AB</code></dt><dd><p>The estimated haplotype frequency of AB.
-Only returned if estimating the gametic LD.</p></dd>
+Only returned if estimating the haplotypic LD.</p></dd>
 <dt><code>q_ij</code></dt><dd><p>The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.</p></dd>
