@@ -8,7 +8,24 @@ test_that("gl_to_gp works", {
   expect_true(all(apply(X = exp(glike) / gp2, MARGIN = c(1, 2), FUN = var) < 10^-5))
 })
 
+test_that("ldfast does not give NA", {
+  data("gp", package = "ldsep")
+
+  c1 <- ldfast(gp = gp, type = "r", shrinkrr = FALSE, se = TRUE)
+  expect_true(all(!is.na(c1$ldmat)))
+  c1 <- ldfast(gp = gp, type = "D", shrinkrr = FALSE, se = TRUE)
+  expect_true(all(!is.na(c1$ldmat)))
+  c1 <- ldfast(gp = gp, type = "Dprime", shrinkrr = FALSE, se = TRUE)
+  expect_true(all(!is.na(c1$ldmat)))
+  c1 <- ldfast(gp = gp, type = "z", shrinkrr = FALSE, se = TRUE)
+  expect_true(all(!is.na(c1$ldmat)))
+  c1 <- ldfast(gp = gp, type = "r2", shrinkrr = FALSE, se = TRUE)
+  expect_true(all(!is.na(c1$ldmat)))
+})
+
 test_that("ldfast versions are the same", {
+  skip_on_os(os = "windows")
+
   data("gp", package = "ldsep")
 
   c1 <- ldfast(gp = gp, type = "r", shrinkrr = FALSE, se = TRUE)
