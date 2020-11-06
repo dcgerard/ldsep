@@ -63,13 +63,13 @@
 #'   \item{\code{z_se}}{The standard error of the Fisher-z
 #'       transformation of \code{r}.}
 #'   \item{\code{p_ab}}{The estimated haplotype frequency of ab.
-#'       Only returned if estimating the gametic LD.}
+#'       Only returned if estimating the haplotypic LD.}
 #'   \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
-#'       Only returned if estimating the gametic LD.}
+#'       Only returned if estimating the haplotypic LD.}
 #'   \item{\code{p_aB}}{The estimated haplotype frequency of aB.
-#'       Only returned if estimating the gametic LD.}
+#'       Only returned if estimating the haplotypic LD.}
 #'   \item{\code{p_AB}}{The estimated haplotype frequency of AB.
-#'       Only returned if estimating the gametic LD.}
+#'       Only returned if estimating the haplotypic LD.}
 #'   \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 #'       and genotype j at locus 2. Only returned if estimating the
 #'       composite LD.}
@@ -114,9 +114,9 @@
 mldest <- function(geno,
                    K,
                    nc = 1,
-                   type = c("gam", "comp"),
+                   type = c("hap", "comp"),
                    model = c("norm", "flex"),
-                   pen = ifelse(type == "gam", 2, 1),
+                   pen = ifelse(type == "hap", 2, 1),
                    se = TRUE) {
   model <- match.arg(model)
   type <- match.arg(type)
@@ -172,11 +172,11 @@ mldest <- function(geno,
 #' nc <- 1
 #' genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 #'
-#' ## Gametic LD estimates
+#' ## Haplotypic LD estimates
 #' rdf_hap <- mldest_geno(genomat = genomat,
 #'                        K = K,
 #'                        nc = nc,
-#'                        type = "gam")
+#'                        type = "hap")
 #'
 #' ## Composite LD estimates
 #' rdf_comp <- mldest_geno(genomat = genomat,
@@ -184,10 +184,10 @@ mldest <- function(geno,
 #'                         nc = nc,
 #'                         type = "comp")
 #'
-#' ## Gametic and Composite LD are both close to 0
+#' ## Haplotypic and Composite LD are both close to 0
 #' ## (because HWE is fulfilled)
 #' ## But composite is more variable.
-#' Dmat <- cbind(Gametic = rdf_hap$D, Composite = rdf_comp$D)
+#' Dmat <- cbind(Haplotypic = rdf_hap$D, Composite = rdf_comp$D)
 #' boxplot(Dmat,
 #'         main = "Estimates of D",
 #'         ylab = "D Estimate",
@@ -199,8 +199,8 @@ mldest <- function(geno,
 mldest_geno <- function(genomat,
                         K,
                         nc = 1,
-                        type = c("gam", "comp"),
-                        pen = ifelse(type == "gam", 2, 1),
+                        type = c("hap", "comp"),
+                        pen = ifelse(type == "hap", 2, 1),
                         se = TRUE,
                         win = NULL) {
   type <- match.arg(type)
@@ -234,7 +234,7 @@ mldest_geno <- function(genomat,
                                          "nullvec_hap",
                                          "nullvec_comp")) %dopar% {
 
-                               if (type == "gam") {
+                               if (type == "hap") {
                                  ldnull <- nullvec_hap()
                                } else {
                                  ldnull <- nullvec_comp(K = K, model = "flex") ## stupid hack. "flex" otherwise you get slots for sigma and mu
@@ -330,19 +330,19 @@ mldest_geno <- function(genomat,
 #' genoarray[locnum, indnum, ]
 #' stats::dnorm(x = 0:K, mean = genomat[locnum, indnum], sd = 1, log = TRUE)
 #'
-#' ## Gametic LD estimates
+#' ## Haplotypic LD estimates
 #' rdf_hap <- mldest_genolike(genoarray = genoarray,
 #'                            nc = nc,
-#'                            type = "gam")
+#'                            type = "hap")
 #'
 #' ## Composite LD estimates
 #' rdf_comp <- mldest_genolike(genoarray = genoarray,
 #'                             nc = nc,
 #'                             type = "comp")
 #'
-#' ## Gametic and Composite LD are both close to 0.
+#' ## Haplotypic and Composite LD are both close to 0.
 #' ## But composite is more variable.
-#' Dmat <- cbind(Gametic = rdf_hap$D, Composite = rdf_comp$D)
+#' Dmat <- cbind(Haplotypic = rdf_hap$D, Composite = rdf_comp$D)
 #' boxplot(Dmat,
 #'         main = "Estimates of D",
 #'         ylab = "D Estimate",
@@ -352,9 +352,9 @@ mldest_geno <- function(genomat,
 #' @noRd
 mldest_genolike <- function(genoarray,
                             nc = 1,
-                            type = c("gam", "comp"),
+                            type = c("hap", "comp"),
                             model = c("norm", "flex"),
-                            pen = ifelse(type == "gam", 2, 1),
+                            pen = ifelse(type == "hap", 2, 1),
                             se = TRUE,
                             win = NULL) {
   type <- match.arg(type)
@@ -392,7 +392,7 @@ mldest_genolike <- function(genoarray,
                                          "nullvec_hap",
                                          "nullvec_comp")) %dopar% {
 
-                               if (type == "gam") {
+                               if (type == "hap") {
                                  ldnull <- nullvec_hap()
                                } else {
                                  ldnull <- nullvec_comp(K = K, model = model)

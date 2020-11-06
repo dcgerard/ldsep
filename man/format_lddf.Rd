@@ -35,11 +35,11 @@ K <- 6
 nc <- 1
 genomat <- matrix(sample(0:K, nind * nloci, TRUE), nrow = nloci)
 
-## Gametic LD estimates
+## Haplotypic LD estimates
 lddf <- mldest(geno = genomat,
                K = K,
                nc = nc,
-               type = "gam")
+               type = "hap")
 
 ## Obtain the D estimates in matrix form
 Dmat <- format_lddf(obj = lddf, element = "D")

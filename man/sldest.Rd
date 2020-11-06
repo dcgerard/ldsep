@@ -9,9 +9,9 @@ sldest(
   K,
   win = 50,
   nc = 1,
-  type = c("gam", "comp"),
+  type = c("hap", "comp"),
   model = c("norm", "flex"),
-  pen = ifelse(type == "gam", 2, 1),
+  pen = ifelse(type == "hap", 2, 1),
   se = TRUE
 )
 }
@@ -47,8 +47,8 @@ personal computer, but some environments are only
 able to use fewer. Ask your admins if you are unsure.}
 
 \item{type}{The type of LD to calculate. The available types are
-gametic LD (\code{type = "gam"}) or composite LD
-(\code{type = "comp"}). Gametic LD is only appropriate for
+haplotypic LD (\code{type = "hap"}) or composite LD
+(\code{type = "comp"}). Haplotypic LD is only appropriate for
 autopolyploids when the individuals are in Hardy-Weinberg
 equilibrium (HWE). The composite
 measures of LD are always applicable, and consistently estimate the
@@ -105,13 +105,13 @@ we fix genotype frequencies.}
 \item{\code{z_se}}{The standard error of the Fisher-z
 transformation of \code{r}.}
 \item{\code{p_ab}}{The estimated haplotype frequency of ab.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_Ab}}{The estimated haplotype frequency of Ab.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_aB}}{The estimated haplotype frequency of aB.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{p_AB}}{The estimated haplotype frequency of AB.
-Only returned if estimating the gametic LD.}
+Only returned if estimating the haplotypic LD.}
 \item{\code{q_ij}}{The estimated frequency of genotype i at locus 1
 and genotype j at locus 2. Only returned if estimating the
 composite LD.}

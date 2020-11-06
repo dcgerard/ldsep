@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "gerard.1787@gmail.com",
            comment = c(ORCID = "0000-0001-9450-5023"))
-Description: Estimate gametic or composite pairwise linkage disequilibrium
+Description: Estimate haplotypic or composite pairwise linkage disequilibrium
     (LD) in polyploids, using either genotypes or genotype likelihoods. 
     Support is provided to estimate the popular measures of LD: the LD 
     coefficient D, the standardized LD coefficient D', and the Pearson 

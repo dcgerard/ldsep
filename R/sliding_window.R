@@ -60,9 +60,9 @@ sldest <- function(geno,
                    K,
                    win = 50,
                    nc = 1,
-                   type = c("gam", "comp"),
+                   type = c("hap", "comp"),
                    model = c("norm", "flex"),
-                   pen = ifelse(type == "gam", 2, 1),
+                   pen = ifelse(type == "hap", 2, 1),
                    se = TRUE) {
   model <- match.arg(model)
   type <- match.arg(type)
