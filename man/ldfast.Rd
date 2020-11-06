@@ -73,9 +73,9 @@ caused by genotype uncertainty.
 Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
 The usual measures of LD are implemented: D, D', r, r2, and z
 (Fisher-z of r). These are all \emph{composite} measures of LD, not
-gametic measures of LD (see the description in \code{\link{ldest}()}).
+haplotypic measures of LD (see the description in \code{\link{ldest}()}).
 They are always appropriate measures of association
-between loci, but only correspond to gametic measures of LD when
+between loci, but only correspond to haplotypic measures of LD when
 Hardy-Weinberg equilibrium is fulfilled in polyploids.
 
 Calculating standard errors and performing hierarchical shrinkage of the
