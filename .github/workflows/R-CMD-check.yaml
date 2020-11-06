@@ -2,9 +2,11 @@ on:
   push:
     branches:
       - master
+      - fast
   pull_request:
     branches:
       - master
+      - fast
 
 name: R-CMD-check
 
