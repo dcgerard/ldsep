@@ -125,6 +125,7 @@ plot.lddf <- function(x,
                      tl.pos = tl.pos,
                      title = title,
                      na.label = na.label,
+                     mar = c(0,0,1,0),
                      ...)
 }
 
