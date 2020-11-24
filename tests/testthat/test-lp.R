@@ -35,6 +35,7 @@ test_that("maxq_from_allelef works", {
 })
 
 test_that("Dprime using moments is same as optimization", {
+  set.seed(1)
   K <- 6
   qmat <- matrix(stats::runif((K+1)^2), nrow = K+1)
   qmat <- qmat / sum(qmat)

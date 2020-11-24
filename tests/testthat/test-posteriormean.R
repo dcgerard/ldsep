@@ -79,6 +79,7 @@ test_that("NA's are not propogated", {
 })
 
 test_that("gradient for delta based on m works", {
+  set.seed(1)
   delta_from_m <- function(m, k) {
     stopifnot(length(m) == 7)
     stopifnot(length(k) == 1)
@@ -87,7 +88,6 @@ test_that("gradient for delta based on m works", {
       ((m[5] - m[1] * m[3]) / k)
   }
 
-  set.seed(1)
   m <- runif(7)
   k <- 6
 
@@ -111,6 +111,7 @@ test_that("gradient for delta based on m works", {
 
 
 test_that("gradient for delta prime based on m works", {
+  set.seed(1)
   deltaprime_from_m <- function(m, k) {
     stopifnot(length(m) == 7)
     stopifnot(length(k) == 1)
@@ -124,8 +125,6 @@ test_that("gradient for delta prime based on m works", {
     }
     return(delta / delta_m)
   }
-
-  set.seed(1)
 
   for (index in 1:50) {
     m <- runif(7)
@@ -150,6 +149,7 @@ test_that("gradient for delta prime based on m works", {
 
 
 test_that("gradient for rho based on m works", {
+  set.seed(1)
   rho_from_m <- function(m) {
     stopifnot(length(m) == 7)
     (sqrt(m[6] + m[2] - m[1]^2) / (m[2] - m[1]^2)) *
@@ -157,7 +157,7 @@ test_that("gradient for rho based on m works", {
       (m[5] - m[1] * m[3])
   }
 
-  set.seed(1)
+
   m <- runif(7)
 
   myenv <- new.env()

@@ -1,6 +1,7 @@
 context("hessian")
 
 test_that("hessian works", {
+  set.seed(1)
   n <- 100
   K <- 6
   ga <- stats::rbinom(n = n, size = K, prob = 0.5)
@@ -40,7 +41,7 @@ test_that("hessian works", {
 
 
 test_that("dD_dqlm works OK", {
-
+  set.seed(1)
   K <- 7
   qmat <- matrix(runif((K + 1) ^ 2), nrow = K + 1)
   qmat <- qmat / sum(qmat)
@@ -64,6 +65,7 @@ test_that("dD_dqlm works OK", {
 
 
 test_that("dr2_dqlm works OK", {
+  set.seed(1)
   K <- 6
   qmat <- matrix(runif((K + 1) ^ 2), nrow = K + 1)
   qmat <- qmat / sum(qmat)
@@ -89,6 +91,7 @@ test_that("dr2_dqlm works OK", {
 
 
 test_that("dr2_dqlm works OK", {
+  set.seed(1)
   f <- function(par, K) {
     gout <- matrix(par, nrow = K + 1)
     D <- Dfromg(gout)

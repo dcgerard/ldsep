@@ -1,6 +1,7 @@
 context("derivatives")
 
 test_that("dmulti_dprob works", {
+  set.seed(1)
   x <- c(1, 2, 0, 5)
   prob <- stats::runif(4)
   prob <- prob / sum(prob)
@@ -28,7 +29,7 @@ test_that("dmulti_dprob works", {
 })
 
 test_that("dprobgeno_dprob works", {
-
+  set.seed(1)
   gA <- 3
   gB <- 1
   K <- 4
@@ -65,7 +66,7 @@ test_that("dprobgeno_dprob works", {
 })
 
 test_that("dproballgeno_dprob works", {
-
+  set.seed(1)
   gA <- rep(0:4, each = 5)
   gB <- rep(0:4, 5)
   K <- 4
@@ -99,6 +100,7 @@ test_that("dproballgeno_dprob works", {
 
 
 test_that("derivative of real_to_simplex is correct", {
+  set.seed(1)
   y <- c(1, -2, 3)
 
   jacobmat <- dreal_to_simplex_dy(y = y)
@@ -131,6 +133,7 @@ test_that("derivative of real_to_simplex is correct", {
 })
 
 test_that("derivative of simplex_to_real is correct", {
+  set.seed(1)
   x <- c(0.1, 0.2, 0.3, 0.4)
 
   jacobmat <- dsimplex_to_real_dx(x = x)
@@ -160,7 +163,7 @@ test_that("derivative of simplex_to_real is correct", {
 })
 
 test_that("dllike_geno_dpar works", {
-
+  set.seed(1)
   gA <- rep(0:4, each = 5)
   gB <- rep(0:4, 5)
   K <- 4
@@ -198,6 +201,7 @@ test_that("dllike_geno_dpar works", {
 
 
 test_that("dD_dprob works", {
+  set.seed(1)
   D <- function(prob) { ## just the first three probabilities
     stopifnot(length(prob) == 3)
     p4 <- 1 - sum(prob)
@@ -219,6 +223,7 @@ test_that("dD_dprob works", {
 })
 
 test_that("dr2_dprob works", {
+  set.seed(1)
   r2 <- function(prob) { ## just the first three probabilities
     stopifnot(length(prob) == 3)
     p4 <- 1 - sum(prob)
@@ -243,6 +248,7 @@ test_that("dr2_dprob works", {
 })
 
 test_that("drDprime_dprob works", {
+  set.seed(1)
   Dprime <- function(prob) { ## just the first three probabilities
     stopifnot(length(prob) == 3)
     p4 <- 1 - sum(prob)
@@ -272,6 +278,7 @@ test_that("drDprime_dprob works", {
 })
 
 test_that("dprobgenolike_dprob works OK", {
+  set.seed(1)
   pgA <- log(c(0.1, 0.1, 0.3, 0.1, 0.05))
   pgB <- log(c(0.01, 0.1, 0.3, 0.4, 0.1))
   prob <- stats::runif(4)
@@ -294,6 +301,7 @@ test_that("dprobgenolike_dprob works OK", {
 
 
 test_that("dproballgenolike_dprob works OK", {
+  set.seed(1)
   n <- 10
   K <- 4
   pgA <- matrix(log(stats::runif(n * K)), nrow = n)
@@ -318,6 +326,7 @@ test_that("dproballgenolike_dprob works OK", {
 })
 
 test_that("dllike_genolike_dpar works OK", {
+  set.seed(1)
   n <- 10
   K <- 4
   pgA <- matrix(log(stats::runif(n * K)), nrow = n)
@@ -348,6 +357,7 @@ test_that("dllike_genolike_dpar works OK", {
 
 
 test_that("dlprior_par_dprob works OK", {
+  set.seed(1)
   alpha <- 1:4
   par <- stats::rnorm(3)
   derivvec <- dlprior_par_dprob(par = par, alpha = alpha)

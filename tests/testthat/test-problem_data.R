@@ -27,6 +27,7 @@
 # })
 
 test_that("Monoallelic snps don't cause issues", {
+  set.seed(1)
   K <- 6
   n <- 10
   ga <- rep(K, n)

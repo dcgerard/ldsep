@@ -1,7 +1,7 @@
 context("bulk calculations")
 
 test_that("get_dprobgeno_dprob_array works", {
-
+  set.seed(1)
   prob <- stats::runif(4)
   prob <- prob / sum(prob)
   K <- 4
@@ -30,6 +30,7 @@ test_that("get_dprobgeno_dprob_array works", {
 
 
 test_that("old and new progallgenolike are the same", {
+  set.seed(1)
   K <- 6
   n <- 100
   ga <- sample(0:K, n, TRUE)

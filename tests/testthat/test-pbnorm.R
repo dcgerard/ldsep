@@ -1,6 +1,7 @@
 context("pbnorm")
 
 test_that("pbnorm_dist sums to 1", {
+  set.seed(1)
   A <- matrix(stats::rnorm(4), nrow = 2)
   sigma <- crossprod(A) * 20
   mu <- c(1, 4)
