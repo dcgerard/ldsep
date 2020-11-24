@@ -13,10 +13,9 @@ Description: Estimate haplotypic or composite pairwise linkage disequilibrium
     coefficient D, the standardized LD coefficient D', and the Pearson 
     correlation coefficient r. All estimates are returned with corresponding 
     standard errors. These estimates and standard errors can then be used
-    for shrinkage estimation. The main functions are ldfast(), ldest(),
-    mldest(), sldest(), plot.lddf(), format_lddf(), and ldshrink().
-    Details of the methods implemented in this packages are described
-    in Gerard (2020) <doi:10.1101/2020.08.03.234476>.
+    for shrinkage estimation. The main functions are ldfast() ldest(), mldest(),
+    sldest(), plot.lddf(), format_lddf(), and ldshrink(). Details of the methods
+    are available in Gerard (2020) <doi:10.1101/2020.08.03.234476>.
 License: GPL-3
 BugReports: https://github.com/dcgerard/ldsep/issues
 Encoding: UTF-8
