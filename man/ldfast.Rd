@@ -39,7 +39,7 @@ to \code{TRUE}.}
 or not (\code{FALSE})? It is faster to not return standard errors.
 Defaults to \code{TRUE}.}
 
-\item{thresh}{A logical. Should we apply a upper bound on the reliability
+\item{thresh}{A logical. Should we apply an upper bound on the reliability
 ratios (\code{TRUE}) or not (\code{FALSE}).}
 
 \item{upper}{The upper bound on the reliability ratios if
@@ -58,7 +58,7 @@ A list with some or all of the following elements:
 \item{\code{rr}}{The estimated reliability ratio for each SNP. This
 is the multiplicative factor applied to the naive LD estimate
 for each SNP.}
-\item{\code{semat}}{A matrix 0f standard errors of the corresponding
+\item{\code{semat}}{A matrix of standard errors of the corresponding
 estimators of LD.}
 }
 }
@@ -70,13 +70,13 @@ caused by genotype uncertainty.
 \section{Details}{
 
 
-Returns consistent and bias-corrected estimates of Linkage Disequilibrium.
+Returns consistent and bias-corrected estimates of linkage disequilibrium.
 The usual measures of LD are implemented: D, D', r, r2, and z
 (Fisher-z of r). These are all \emph{composite} measures of LD, not
 haplotypic measures of LD (see the description in \code{\link{ldest}()}).
 They are always appropriate measures of association
 between loci, but only correspond to haplotypic measures of LD when
-Hardy-Weinberg equilibrium is fulfilled in polyploids.
+Hardy-Weinberg equilibrium is fulfilled in autopolyploids.
 
 Calculating standard errors and performing hierarchical shrinkage of the
 reliability ratios are both rather slow operations compared to just
@@ -85,8 +85,8 @@ standard errors, you can double your speed by setting
 \code{se = FALSE}. It is not recommended that you disable the
 hierarchical shrinkage.
 
-Due to sampling variability, the estimates sometimes lie outside of the
-theoretical boundary of the parameters being estimated. In such cases,
+Due to sampling variability, the estimates sometime lie outside of the
+theoretical boundaries of the parameters being estimated. In such cases,
 we truncate the estimates at the boundary and return \code{NA} for the
 standard errors.
 }
@@ -104,7 +104,7 @@ between loci 1 and 2,}
 }
 Then the estimated Pearson correlation between the genotypes at
 loci 1 and 2 is
-\deqn{[(a1 + b1)/a1][(a2 + b2)/a2]r.}
+\deqn{\sqrt{(a1 + b1)/a1}\sqrt{(a2 + b2)/a2}r.}
 All other LD calculations are based on this equation. In particular,
 the estimated genotype variances at loci 1 and 2 are
 \eqn{a1 + b1} and \eqn{a2 + b2}, respectively, which can be
