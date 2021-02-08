@@ -1,0 +1,11 @@
+pandoc: 2.11.2
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  fast: fast.html
+  vcf: vcf.html
+last_built: 2021-02-08T15:45Z
+urls:
+  reference: https://dcgerard.github.io/ldsep//reference
+  article: https://dcgerard.github.io/ldsep//articles
+
