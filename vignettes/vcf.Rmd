@@ -200,7 +200,7 @@ Note that for sequencing data, `updog` will generally perform better than `fitPo
 
 ## Estimate LD using `ldsep`
 
-We will now demonstrate how to estimate LD using the `ldsep` package (Gerard, 2020). To estimate LD using maximum likelihood, directly from genotype log-likelihoods, we will use `mldest()` with the array of genotype log-likelihoods.
+We will now demonstrate how to estimate LD using the `ldsep` package (Gerard, 2021). To estimate LD using maximum likelihood, directly from genotype log-likelihoods, we will use `mldest()` with the array of genotype log-likelihoods.
 
 ```{r}
 like_ld <- mldest(geno = larray, K = ploidy, type = "comp")
@@ -243,7 +243,7 @@ ldmat[1:4, 1:4]
 
 # References
 
-- Gerard, David (2020). "Pairwise Linkage Disequilibrium Estimation for Polyploids." _bioRxiv_ [doi:10.1101/2020.08.03.234476](https://doi.org/10.1101/2020.08.03.234476).
+- Gerard, David (2021). "Pairwise Linkage Disequilibrium Estimation for Polyploids." _Molecular Ecology Resources_. *Accepted Author Manuscript*. [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349). 
 
 - Gerard D, Ferrão L (2020). "Priors for Genotyping Polyploids." _Bioinformatics_, *36*(6), 1795-1800. ISSN 1367-4803, [doi:10.1093/bioinformatics/btz852](https://doi.org/10.1093/bioinformatics/btz852).
 

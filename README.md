@@ -23,7 +23,7 @@ provided to estimate the popular measures of LD: the LD coefficient *D*,
 the standardized LD coefficient *D*′, and the Pearson correlation
 coefficient *r*. All estimates are returned with corresponding standard
 errors. These estimates and standard errors can then be used for
-shrinkage estimation. The methods are described in Gerard (2020).
+shrinkage estimation. The methods are described in Gerard (2021).
 
 The main functions are:
 
@@ -67,9 +67,11 @@ By contributing to this project, you agree to abide by its terms.
 
 -   Dey, Kushal K., and Matthew Stephens. “CorShrink: Empirical Bayes
     shrinkage estimation of correlations, with applications.” *bioRxiv*
-    (2018): 368316.
+    (2018): 368316. [doi:10.1101/368316](https://doi.org/10.1101/368316)
 -   Gerard, David. “Pairwise Linkage Disequilibrium Estimation for
-    Polyploids.” *bioRxiv* (2020):
-    [doi:10.1101/2020.08.03.234476](https://doi.org/10.1101/2020.08.03.234476).
+    Polyploids.” *Molecular Ecology Resources*. Accepted Author
+    Manuscript. (2021)
+    [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349)
 -   Stephens, Matthew. “False discovery rates: a new deal.”
     *Biostatistics* 18, no. 2 (2017): 275-294.
+    [doi:10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041)

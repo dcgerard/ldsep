@@ -1,17 +1,16 @@
-citHeader("To cite ldsep in publications use:")
-
-citEntry(
-  entry    = "Article",
+bibentry(
+  bibtype  = "Article",
   title    = "Pairwise Linkage Disequilibrium Estimation for Polyploids",
-  author   = "David Gerard",
-  journal  = "bioRxiv",
-  year     = "2020",
-  doi      = "10.1101/2020.08.03.234476",
-  volume   = "",
+  author   = person(given  = "David",
+                    family = "Gerard",
+                    email  = "gerard.1787@gmail.com",
+                    comment = c(ORCID = "0000-0001-9450-5023")),
+  journal  = "Molecular Ecology Resources",
+  year     = "2021",
+  doi      = "10.1111/1755-0998.13349",
+  volume   = "Accepted Author Manuscript",
   number   = "",
   pages    = "",
   url      = "",
-  textVersion = paste(
-    "Gerard, David. 2020. \"Pairwise Linkage Disequilibrium Estimation for Polyploids.\" bioRxiv. https://doi.org/10.1101/2020.08.03.234476."
-  )
+  header   = "To cite ldsep in publications use:"
 )

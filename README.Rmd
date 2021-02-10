@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
-Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in polyploids, using either genotypes or genotype likelihoods. Support is provided to estimate the popular measures of LD: the LD coefficient $D$, the standardized LD coefficient $D'$, and the Pearson correlation coefficient $r$. All estimates are returned with corresponding standard errors. These estimates and standard errors can then be used for shrinkage estimation. The methods are described in Gerard (2020).
+Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in polyploids, using either genotypes or genotype likelihoods. Support is provided to estimate the popular measures of LD: the LD coefficient $D$, the standardized LD coefficient $D'$, and the Pearson correlation coefficient $r$. All estimates are returned with corresponding standard errors. These estimates and standard errors can then be used for shrinkage estimation. The methods are described in Gerard (2021).
 
 The main functions are:
 
@@ -59,7 +59,7 @@ Please note that the ldsep project is released with a [Contributor Code of Condu
 
 ## References
 
-- Dey, Kushal K., and Matthew Stephens. "CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications." _bioRxiv_ (2018): 368316.
-- Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." _bioRxiv_ (2020): [doi:10.1101/2020.08.03.234476](https://doi.org/10.1101/2020.08.03.234476).
-- Stephens, Matthew. "False discovery rates: a new deal." _Biostatistics_ 18, no. 2 (2017): 275-294.
+- Dey, Kushal K., and Matthew Stephens. "CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications." _bioRxiv_ (2018): 368316. [doi:10.1101/368316](https://doi.org/10.1101/368316)
+- Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." _Molecular Ecology Resources_. Accepted Author Manuscript. (2021) [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349)
+- Stephens, Matthew. "False discovery rates: a new deal." _Biostatistics_ 18, no. 2 (2017): 275-294. [doi:10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041)
 
