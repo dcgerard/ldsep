@@ -1,16 +1,34 @@
-bibentry(
-  bibtype  = "Article",
-  title    = "Pairwise Linkage Disequilibrium Estimation for Polyploids",
-  author   = person(given  = "David",
-                    family = "Gerard",
-                    email  = "gerard.1787@gmail.com",
-                    comment = c(ORCID = "0000-0001-9450-5023")),
-  journal  = "Molecular Ecology Resources",
-  year     = "2021",
-  doi      = "10.1111/1755-0998.13349",
-  volume   = "Accepted Author Manuscript",
-  number   = "",
-  pages    = "",
-  url      = "",
-  header   = "To cite ldsep in publications use:"
+c(
+  bibentry(
+    bibtype  = "Article",
+    title    = "Pairwise Linkage Disequilibrium Estimation for Polyploids",
+    author   = person(given  = "David",
+                      family = "Gerard",
+                      email  = "gerard.1787@gmail.com",
+                      comment = c(ORCID = "0000-0001-9450-5023")),
+    journal  = "Molecular Ecology Resources",
+    year     = "2021",
+    doi      = "10.1111/1755-0998.13349",
+    volume   = "Accepted Author Manuscript",
+    number   = "",
+    pages    = "",
+    url      = "",
+    header   = "To cite ldsep in publications use:"
+  ),
+  bibentry(
+    bibtype  = "Article",
+    title    = "Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty",
+    author   = person(given  = "David",
+                      family = "Gerard",
+                      email  = "gerard.1787@gmail.com",
+                      comment = c(ORCID = "0000-0001-9450-5023")),
+    journal  = "bioRxiv",
+    year     = "2021",
+    doi      = "10.1101/2021.02.08.430270",
+    volume   = "",
+    number   = "",
+    pages    = "",
+    url      = "",
+    header   = "If you use ldfast(), please cite:"
+  )
 )

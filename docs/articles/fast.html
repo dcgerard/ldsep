@@ -106,7 +106,7 @@
 <div id="abstract" class="section level1">
 <h1 class="hasAnchor">
 <a href="#abstract" class="anchor"></a>Abstract</h1>
-<p>We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the <code><a href="../reference/ldfast.html">ldfast()</a></code> function. The following code chunks are only evaluated if <code>updog</code> is installed with a version of at least 2.0.2.</p>
+<p>We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the <code><a href="../reference/ldfast.html">ldfast()</a></code> function. These methods are described in detail in Gerard (2021). The following code chunks are only evaluated if <code>updog</code> is installed with a version of at least 2.0.2.</p>
 </div>
 <div id="analysis" class="section level1">
 <h1 class="hasAnchor">
@@ -170,6 +170,14 @@
 </ul>
 <p>The slowest part of <code><a href="../reference/ldfast.html">ldfast()</a></code> is using hierarchical shrinkage on the log of the reliability ratios (<code>shrinkrr = TRUE</code>), but I wouldn’t disable this as some reliability ratios have high variance and are greatly improved through shrinkage.</p>
 <p>Other LD estimators are available: <code>D</code>, <code>Dprime</code>, <code>r</code>, and <code>z</code>. See the help file of <code><a href="../reference/ldfast.html">ldfast()</a></code> for details.</p>
+</div>
+<div id="references" class="section level1">
+<h1 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h1>
+<ul>
+<li>Gerard, David. “Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty.” <em>bioRxiv</em>. (2021) <a href="https://doi.org/10.1101/2021.02.08.430270">doi:10.1101/2021.02.08.430270</a>
+</li>
+</ul>
 </div>
   </div>
 

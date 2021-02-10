@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Abstract
 
-We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the `ldfast()` function. The following code chunks are only evaluated if `updog` is installed with a version of at least 2.0.2.
+We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the `ldfast()` function. These methods are described in detail in Gerard (2021). The following code chunks are only evaluated if `updog` is installed with a version of at least 2.0.2.
 
 # Analysis
 
@@ -93,3 +93,7 @@ ldout <- ldfast(gp = gp, type = "r2")
 The slowest part of `ldfast()` is using hierarchical shrinkage on the log of the reliability ratios (`shrinkrr = TRUE`), but I wouldn't disable this as some reliability ratios have high variance and are greatly improved through shrinkage.
 
 Other LD estimators are available: `D`, `Dprime`, `r`, and `z`. See the help file of `ldfast()` for details.
+
+# References
+
+-  Gerard, David. "Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty." _bioRxiv_. (2021) [doi:10.1101/2021.02.08.430270](https://doi.org/10.1101/2021.02.08.430270)
