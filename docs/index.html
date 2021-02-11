@@ -127,10 +127,10 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install the released version of ldsep from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
+<p>You can install the released version of ldsep from <a href="https://cran.r-project.org/package=ldsep">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"ldsep"</span><span class="op">)</span></code></pre></div>
-<p>And the development version from <a href="https://github.com/">GitHub</a> with:</p>
+<p>And the development version from <a href="https://github.com/dcgerard/ldsep">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"dcgerard/ldsep"</span><span class="op">)</span></code></pre></div>
@@ -138,43 +138,31 @@
 <div id="citation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
-<p>If you find the methods in this package useful, please run the following in R for citation information:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">citation</span>(<span class="st">"ldsep"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>To cite ldsep <span class="cf">in</span> publications use<span class="sc">:</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Gerard <span class="fu">D</span> (<span class="dv">2021</span>). <span class="st">"Pairwise Linkage Disequilibrium Estimation for</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="st">Polyploids."</span> _Molecular Ecology Resources_, <span class="sc">*</span>Accepted Author</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>Manuscript<span class="sc">*</span>. doi<span class="sc">:</span> <span class="fl">10.1111</span><span class="sc">/</span><span class="dv">1755</span><span class="fl">-0998.13349</span> (URL<span class="sc">:</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1111</span><span class="sc">/</span><span class="dv">1755</span><span class="fl">-0998.13349</span>).</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="sc">@</span>Article{,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    title <span class="ot">=</span> {Pairwise Linkage Disequilibrium Estimation <span class="cf">for</span> Polyploids},</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    author <span class="ot">=</span> {David Gerard},</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    journal <span class="ot">=</span> {Molecular Ecology Resources},</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2021</span>},</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1111</span><span class="sc">/</span><span class="dv">1755</span><span class="fl">-0998.13349</span>},</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    volume <span class="ot">=</span> {Accepted Author Manuscript},</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>If you use <span class="fu">ldfast</span>(), please cite<span class="sc">:</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>Gerard <span class="fu">D</span> (<span class="dv">2021</span>). <span class="st">"Scalable Bias-corrected Linkage Disequilibrium</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="st">Estimation Under Genotype Uncertainty."</span> _bioRxiv_. doi<span class="sc">:</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2021</span>.<span class="dv">02</span>.<span class="fl">08.430270</span> (URL<span class="sc">:</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>https<span class="sc">:</span><span class="er">//</span>doi.org<span class="sc">/</span><span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2021</span>.<span class="dv">02</span>.<span class="fl">08.430270</span>).</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>A BibTeX entry <span class="cf">for</span> LaTeX users is</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="sc">@</span>Article{,</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    title <span class="ot">=</span> {Scalable Bias<span class="sc">-</span>corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty},</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    author <span class="ot">=</span> {David Gerard},</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    journal <span class="ot">=</span> {bioRxiv},</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    year <span class="ot">=</span> {<span class="dv">2021</span>},</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    doi <span class="ot">=</span> {<span class="fl">10.1101</span><span class="sc">/</span><span class="dv">2021</span>.<span class="dv">02</span>.<span class="fl">08.430270</span>},</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  }</span></code></pre></div>
+<p>To cite <code>ldsep</code> in publications use:</p>
+<blockquote>
+<p>Gerard D (2021). “Pairwise Linkage Disequilibrium Estimation for Polyploids.” <em>Molecular Ecology Resources</em>, <em>Accepted Author Manuscript</em>. <a href="https://doi.org/10.1111/1755-0998.13349">doi:10.1111/1755-0998.13349</a>.</p>
+</blockquote>
+<p>A BibTeX entry for LaTeX users is</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode tex"><code class="sourceCode latex"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>@Article{,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  title = {Pairwise Linkage Disequilibrium Estimation for Polyploids},</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  author = {David Gerard},</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  journal = {Molecular Ecology Resources},</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  year = {2021},</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  doi = {10.1111/1755-0998.13349},</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  volume = {Accepted Author Manuscript},</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>If you use <code><a href="reference/ldfast.html">ldfast()</a></code>, please cite:</p>
+<blockquote>
+<p>Gerard D (2021). “Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty.” <em>bioRxiv</em>. <a href="https://doi.org/10.1101/2021.02.08.430270">doi:10.1101/2021.02.08.430270</a>.</p>
+</blockquote>
+<p>A BibTeX entry for LaTeX users is</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode tex"><code class="sourceCode latex"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>@Article{,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  title = {Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty},</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  author = {David Gerard},</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  journal = {bioRxiv},</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  year = {2021},</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  doi = {10.1101/2021.02.08.430270},</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="code-of-conduct" class="section level2">
 <h2 class="hasAnchor">
@@ -185,14 +173,10 @@
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <ul>
-<li>Dey, Kushal K., and Matthew Stephens. “CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications.” <em>bioRxiv</em> (2018): 368316. <a href="https://doi.org/10.1101/368316">doi:10.1101/368316</a>
-</li>
-<li>Gerard, David. “Pairwise Linkage Disequilibrium Estimation for Polyploids.” <em>Molecular Ecology Resources</em>. Accepted Author Manuscript. (2021a) <a href="https://doi.org/10.1111/1755-0998.13349">doi:10.1111/1755-0998.13349</a>
-</li>
-<li>Gerard, David. “Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty.” <em>bioRxiv</em>. (2021b) <a href="https://doi.org/10.1101/2021.02.08.430270">doi:10.1101/2021.02.08.430270</a>
-</li>
-<li>Stephens, Matthew. “False discovery rates: a new deal.” <em>Biostatistics</em> 18, no. 2 (2017): 275-294. <a href="https://doi.org/10.1093/biostatistics/kxw041">doi:10.1093/biostatistics/kxw041</a>
-</li>
+<li><p>Dey, Kushal K., and Matthew Stephens. “CorShrink: Empirical Bayes shrinkage estimation of correlations, with applications.” <em>bioRxiv</em> (2018): 368316. <a href="https://doi.org/10.1101/368316">doi:10.1101/368316</a></p></li>
+<li><p>Gerard, David. “Pairwise Linkage Disequilibrium Estimation for Polyploids.” <em>Molecular Ecology Resources</em>. Accepted Author Manuscript. (2021a) <a href="https://doi.org/10.1111/1755-0998.13349">doi:10.1111/1755-0998.13349</a></p></li>
+<li><p>Gerard, David. “Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty.” <em>bioRxiv</em>. (2021b) <a href="https://doi.org/10.1101/2021.02.08.430270">doi:10.1101/2021.02.08.430270</a></p></li>
+<li><p>Stephens, Matthew. “False discovery rates: a new deal.” <em>Biostatistics</em> 18, no. 2 (2017): 275-294. <a href="https://doi.org/10.1093/biostatistics/kxw041">doi:10.1093/biostatistics/kxw041</a></p></li>
 </ul>
 </div>
 </div>

@@ -1,14 +1,10 @@
-###################
-## Functions to estimate LD directly from genotypes
-###################
-
-
 #' Pairwise LD estimation in polyploids.
 #'
 #' Estimates either haplotypic or composite measures of LD using either
-#' genotypes are genotype likelihoods. The usual measures of LD are
-#' estimated (D, D', and r) along with the Fisher-z transformation of
-#' r (called "z"). All estimates are returned with standard errors.
+#' genotypes are genotype likelihoods via maximum likelihood.
+#' The usual measures of LD are estimated (D, D', and r) along with
+#' the Fisher-z transformation of r (called "z"). All estimates
+#' are returned with standard errors. See Gerard (2021) for details.
 #'
 #' @section Haplotypic LD:
 #'
@@ -243,14 +239,18 @@
 #' \itemize{
 #'   \item{Agresti, Alan, and Brent A. Coull. "Approximate is better than
 #'         "exact" for interval estimation of binomial proportions."
-#'         The American Statistician 52, no. 2 (1998): 119-126.}
+#'         \emph{The American Statistician} 52, no. 2 (1998): 119-126.}
 #'   \item{Betancourt, Michael. "Cruising the simplex: Hamiltonian Monte
-#'         Carlo and the Dirichlet distribution." In AIP Conference
-#'         Proceedings 31st, vol. 1443, no. 1, pp. 157-164. American
-#'         Institute of Physics, 2012.}
+#'         Carlo and the Dirichlet distribution." In
+#'         \emph{AIP Conference Proceedings 31st}, vol. 1443, no. 1,
+#'         pp. 157-164. American Institute of Physics, 2012.}
 #'   \item{Cockerham, C. Clark, and B. S. Weir. "Digenic descent measures
-#'         for finite populations." Genetics Research 30, no. 2 (1977):
+#'         for finite populations." \emph{Genetics Research} 30, no. 2 (1977):
 #'         121-147.}
+#'   \item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation
+#'         for Polyploids." \emph{Molecular Ecology Resources}.
+#'         Accepted Author Manuscript. (2021)
+#'         \href{https://doi.org/10.1111/1755-0998.13349}{doi:10.1111/1755-0998.13349}}
 #' }
 #'
 #' @export

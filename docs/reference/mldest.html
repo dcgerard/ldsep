@@ -50,8 +50,10 @@ genotype likelihoods. — mldest • ldsep</title>
 <meta property="og:title" content="Estimate all pair-wise LD's in a collection of SNPs using genotypes or
 genotype likelihoods. — mldest" />
 <meta property="og:description" content="This function is a wrapper to run ldest() for many pairs of
-SNPs. Support is provided for parallelization through the
-foreach and doParallel packages." />
+SNPs. This takes a maximum likelihood approach to LD estimation. See
+ldfast() for a method-of-moments approach to LD estimation.
+Support is provided for parallelization through the foreach and doParallel
+packages. See Gerard (2021) for details." />
 <meta property="og:image" content="https://dcgerard.github.io/ldsep/logo.png" />
 
 
@@ -146,8 +148,10 @@ genotype likelihoods.</h1>
 
     <div class="ref-description">
     <p>This function is a wrapper to run <code><a href='ldest.html'>ldest</a>()</code> for many pairs of
-SNPs. Support is provided for parallelization through the
-foreach and doParallel packages.</p>
+SNPs. This takes a maximum likelihood approach to LD estimation. See
+<code><a href='ldfast.html'>ldfast</a>()</code> for a method-of-moments approach to LD estimation.
+Support is provided for parallelization through the foreach and doParallel
+packages. See Gerard (2021) for details.</p>
     </div>
 
     <pre class="usage"><span class='fu'>mldest</span><span class='op'>(</span>
@@ -281,16 +285,23 @@ composite LD.</p></dd>
 
     <p>See <code><a href='ldest.html'>ldest</a>()</code> for details on the different types of LD
 estimators supported.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    
+<ul>
+<li><p>Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." <em>Molecular Ecology Resources</em>. Accepted Author Manuscript. (2021) <a href='https://doi.org/10.1111/1755-0998.13349'>doi:10.1111/1755-0998.13349</a></p></li>
+</ul>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'>
 <dl>
+<dt><code><a href='ldfast.html'>ldfast</a>()</code></dt><dd><p>Fast, moment-based approach to LD estimation
+that also accounts for genotype uncertainty.</p></dd>
 <dt><code><a href='ldest.html'>ldest</a>()</code></dt><dd><p>For the base function that estimates
 pairwise LD.</p></dd>
 <dt><code><a href='sldest.html'>sldest</a>()</code></dt><dd><p>For estimating pairwise LD along a
 sliding window.</p></dd>
-<dt><code><a href='ldfast.html'>ldfast</a>()</code></dt><dd><p>Fast, moment-based approach to LD estimation
-that also accounts for genotype uncertainty.</p></dd>
 <dt><code><a href='format_lddf.html'>format_lddf</a>()</code></dt><dd><p>For formatting the output of
 <code>mldest()</code> as a matrix.</p></dd>
 <dt><code><a href='plot.lddf.html'>plot.lddf</a>()</code></dt><dd><p>For plotting the output of

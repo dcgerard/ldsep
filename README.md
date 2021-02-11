@@ -44,13 +44,14 @@ The main functions are:
 ## Installation
 
 You can install the released version of ldsep from
-[CRAN](https://CRAN.R-project.org) with:
+[CRAN](https://cran.r-project.org/package=ldsep) with:
 
 ``` r
 install.packages("ldsep")
 ```
 
-And the development version from [GitHub](https://github.com/) with:
+And the development version from
+[GitHub](https://github.com/dcgerard/ldsep) with:
 
 ``` r
 # install.packages("devtools")
@@ -59,46 +60,42 @@ devtools::install_github("dcgerard/ldsep")
 
 ## Citation
 
-If you find the methods in this package useful, please run the following
-in R for citation information:
+To cite `ldsep` in publications use:
 
-``` r
-citation("ldsep")
-
-To cite ldsep in publications use:
-
-Gerard D (2021). "Pairwise Linkage Disequilibrium Estimation for
-Polyploids." _Molecular Ecology Resources_, *Accepted Author
-Manuscript*. doi: 10.1111/1755-0998.13349 (URL:
-https://doi.org/10.1111/1755-0998.13349).
+> Gerard D (2021). “Pairwise Linkage Disequilibrium Estimation for
+> Polyploids.” *Molecular Ecology Resources*, *Accepted Author
+> Manuscript*.
+> [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
 
 A BibTeX entry for LaTeX users is
 
-  @Article{,
-    title = {Pairwise Linkage Disequilibrium Estimation for Polyploids},
-    author = {David Gerard},
-    journal = {Molecular Ecology Resources},
-    year = {2021},
-    doi = {10.1111/1755-0998.13349},
-    volume = {Accepted Author Manuscript},
-  }
+``` tex
+@Article{,
+  title = {Pairwise Linkage Disequilibrium Estimation for Polyploids},
+  author = {David Gerard},
+  journal = {Molecular Ecology Resources},
+  year = {2021},
+  doi = {10.1111/1755-0998.13349},
+  volume = {Accepted Author Manuscript},
+}
+```
 
-If you use ldfast(), please cite:
+If you use `ldfast()`, please cite:
 
-Gerard D (2021). "Scalable Bias-corrected Linkage Disequilibrium
-Estimation Under Genotype Uncertainty." _bioRxiv_. doi:
-10.1101/2021.02.08.430270 (URL:
-https://doi.org/10.1101/2021.02.08.430270).
+> Gerard D (2021). “Scalable Bias-corrected Linkage Disequilibrium
+> Estimation Under Genotype Uncertainty.” *bioRxiv*.
+> [doi:10.1101/2021.02.08.430270](https://doi.org/10.1101/2021.02.08.430270).
 
 A BibTeX entry for LaTeX users is
 
-  @Article{,
-    title = {Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty},
-    author = {David Gerard},
-    journal = {bioRxiv},
-    year = {2021},
-    doi = {10.1101/2021.02.08.430270},
-  }
+``` tex
+@Article{,
+  title = {Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty},
+  author = {David Gerard},
+  journal = {bioRxiv},
+  year = {2021},
+  doi = {10.1101/2021.02.08.430270},
+}
 ```
 
 ## Code of Conduct
@@ -113,13 +110,16 @@ By contributing to this project, you agree to abide by its terms.
 -   Dey, Kushal K., and Matthew Stephens. “CorShrink: Empirical Bayes
     shrinkage estimation of correlations, with applications.” *bioRxiv*
     (2018): 368316. [doi:10.1101/368316](https://doi.org/10.1101/368316)
+
 -   Gerard, David. “Pairwise Linkage Disequilibrium Estimation for
     Polyploids.” *Molecular Ecology Resources*. Accepted Author
     Manuscript. (2021a)
     [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349)
+
 -   Gerard, David. “Scalable Bias-corrected Linkage Disequilibrium
     Estimation Under Genotype Uncertainty.” *bioRxiv*. (2021b)
     [doi:10.1101/2021.02.08.430270](https://doi.org/10.1101/2021.02.08.430270)
+
 -   Stephens, Matthew. “False discovery rates: a new deal.”
     *Biostatistics* 18, no. 2 (2017): 275-294.
     [doi:10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041)

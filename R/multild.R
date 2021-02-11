@@ -4,8 +4,10 @@
 #' genotype likelihoods.
 #'
 #' This function is a wrapper to run \code{\link{ldest}()} for many pairs of
-#' SNPs. Support is provided for parallelization through the
-#' foreach and doParallel packages.
+#' SNPs. This takes a maximum likelihood approach to LD estimation. See
+#' \code{\link{ldfast}()} for a method-of-moments approach to LD estimation.
+#' Support is provided for parallelization through the foreach and doParallel
+#' packages. See Gerard (2021) for details.
 #'
 #' See \code{\link{ldest}()} for details on the different types of LD
 #' estimators supported.
@@ -76,14 +78,19 @@
 #'   \item{\code{n}}{The number of individuals used to estimate pairwise LD.}
 #' }
 #'
+#' @references
+#' \itemize{
+#'   \item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." \emph{Molecular Ecology Resources}. Accepted Author Manuscript. (2021) \href{https://doi.org/10.1111/1755-0998.13349}{doi:10.1111/1755-0998.13349}}
+#' }
+#'
 #' @seealso
 #' \describe{
+#'   \item{\code{\link{ldfast}()}}{Fast, moment-based approach to LD estimation
+#'       that also accounts for genotype uncertainty.}
 #'   \item{\code{\link{ldest}()}}{For the base function that estimates
 #'       pairwise LD.}
 #'   \item{\code{\link{sldest}()}}{For estimating pairwise LD along a
 #'       sliding window.}
-#'   \item{\code{\link{ldfast}()}}{Fast, moment-based approach to LD estimation
-#'       that also accounts for genotype uncertainty.}
 #'   \item{\code{\link{format_lddf}()}}{For formatting the output of
 #'       \code{mldest()} as a matrix.}
 #'   \item{\code{\link{plot.lddf}()}}{For plotting the output of
