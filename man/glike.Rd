@@ -8,7 +8,7 @@
 A three-dimensional \code{array} object.
 }
 \source{
-\url{https://doi.org/10.1371/journal.pone.0062355}
+\doi{10.1371/journal.pone.0062355}
 }
 \usage{
 glike
@@ -21,7 +21,7 @@ at SNP \code{i}.
 }
 \references{
 \itemize{
-\item{Uitdewilligen, Jan GAML, Anne-Marie A. Wolters, B. Bjorn, Theo JA Borm, Richard GF Visser, and Herman J. Van Eck. "A next-generation sequencing method for genotyping-by-sequencing of highly heterozygous autotetraploid potato." \emph{PloS one} 8, no. 5 (2013): e62355. \href{https://doi.org/10.1371/journal.pone.0062355}{DOI:10.1371/journal.pone.0062355}}
+\item{Uitdewilligen, Jan GAML, Anne-Marie A. Wolters, B. Bjorn, Theo JA Borm, Richard GF Visser, and Herman J. Van Eck. "A next-generation sequencing method for genotyping-by-sequencing of highly heterozygous autotetraploid potato." \emph{PloS one} 8, no. 5 (2013): e62355. \doi{10.1371/journal.pone.0062355}}
 }
 }
 \seealso{

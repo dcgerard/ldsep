@@ -153,9 +153,9 @@ ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
 #'
 #' @references
 #' \itemize{
-#'   \item{Gerard, David. Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty. \emph{bioRxiv}, 2021. \href{https://doi.org/10.1101/2021.02.08.430270}{doi:10.1101/2021.02.08.430270}}
-#'   \item{T. Robertson and J. D. Cryer. An iterative procedure for estimating the mode. \emph{Journal of the American Statistical Association}, 69(348):1012–1016, 1974. \href{https://doi.org/10.1080/01621459.1974.10480246}{doi:10.1080/01621459.1974.10480246}.}
-#'   \item{M. Stephens. False discovery rates: a new deal. \emph{Biostatistics}, 18(2):275–294, 10 2016. ISSN 1465-4644 \href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}.}
+#'   \item{Gerard, David. Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty. \emph{bioRxiv}, 2021. \doi{10.1101/2021.02.08.430270}}
+#'   \item{T. Robertson and J. D. Cryer. An iterative procedure for estimating the mode. \emph{Journal of the American Statistical Association}, 69(348):1012–1016, 1974. \doi{10.1080/01621459.1974.10480246}.}
+#'   \item{M. Stephens. False discovery rates: a new deal. \emph{Biostatistics}, 18(2):275–294, 10 2016. ISSN 1465-4644 \doi{10.1093/biostatistics/kxw041}.}
 #' }
 #'
 #' @author David Gerard

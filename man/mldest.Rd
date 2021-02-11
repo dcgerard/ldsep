@@ -146,7 +146,7 @@ lddf[1:6, 1:6]
 }
 \references{
 \itemize{
-\item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." \emph{Molecular Ecology Resources}. Accepted Author Manuscript. (2021) \href{https://doi.org/10.1111/1755-0998.13349}{doi:10.1111/1755-0998.13349}}
+\item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." \emph{Molecular Ecology Resources}. Accepted Author Manuscript. (2021) \doi{10.1111/1755-0998.13349}}
 }
 }
 \seealso{

@@ -239,18 +239,20 @@
 #' \itemize{
 #'   \item{Agresti, Alan, and Brent A. Coull. "Approximate is better than
 #'         "exact" for interval estimation of binomial proportions."
-#'         \emph{The American Statistician} 52, no. 2 (1998): 119-126.}
+#'         \emph{The American Statistician} 52, no. 2 (1998): 119-126.
+#'         \doi{10.1080/00031305.1998.10480550}}
 #'   \item{Betancourt, Michael. "Cruising the simplex: Hamiltonian Monte
 #'         Carlo and the Dirichlet distribution." In
 #'         \emph{AIP Conference Proceedings 31st}, vol. 1443, no. 1,
-#'         pp. 157-164. American Institute of Physics, 2012.}
+#'         pp. 157-164. American Institute of Physics, 2012.
+#'         \doi{10.1063/1.3703631}}
 #'   \item{Cockerham, C. Clark, and B. S. Weir. "Digenic descent measures
 #'         for finite populations." \emph{Genetics Research} 30, no. 2 (1977):
-#'         121-147.}
+#'         121-147. \doi{10.1017/S0016672300017547}}
 #'   \item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation
 #'         for Polyploids." \emph{Molecular Ecology Resources}.
 #'         Accepted Author Manuscript. (2021)
-#'         \href{https://doi.org/10.1111/1755-0998.13349}{doi:10.1111/1755-0998.13349}}
+#'         \doi{10.1111/1755-0998.13349}}
 #' }
 #'
 #' @export
