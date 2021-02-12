@@ -1,4 +1,4 @@
-# ldsep 2.0.0
+# ldsep 2.0.1
 
 - Added `ldfast()`, a new LD estimation approach based on sample
   moments of marginal posterior genotype moments.
