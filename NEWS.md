@@ -1,3 +1,9 @@
+# ldsep 2.0.2
+
+- Removes `ldfast_old()` and `ldfast_calc()`, which were not used in any 
+  exported functions, because these functions had memory issues, detected 
+  by valgrind.
+
 # ldsep 2.0.1
 
 - Added `ldfast()`, a new LD estimation approach based on sample

@@ -555,20 +555,6 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// ldfast_calc
-void ldfast_calc(NumericMatrix& cormat, NumericMatrix& semat, NumericVector& rr, const arma::cube& gp, char type);
-RcppExport SEXP _ldsep_ldfast_calc(SEXP cormatSEXP, SEXP sematSEXP, SEXP rrSEXP, SEXP gpSEXP, SEXP typeSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type cormat(cormatSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix& >::type semat(sematSEXP);
-    Rcpp::traits::input_parameter< NumericVector& >::type rr(rrSEXP);
-    Rcpp::traits::input_parameter< const arma::cube& >::type gp(gpSEXP);
-    Rcpp::traits::input_parameter< char >::type type(typeSEXP);
-    ldfast_calc(cormat, semat, rr, gp, type);
-    return R_NilValue;
-END_RCPP
-}
 // secalc
 NumericMatrix secalc(const arma::cube& gp, const NumericMatrix& pm_mat, const NumericMatrix& pv_mat, char type);
 RcppExport SEXP _ldsep_secalc(SEXP gpSEXP, SEXP pm_matSEXP, SEXP pv_matSEXP, SEXP typeSEXP) {
@@ -777,7 +763,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_grad_delta_m", (DL_FUNC) &_ldsep_grad_delta_m, 3},
     {"_ldsep_grad_deltaprime_m", (DL_FUNC) &_ldsep_grad_deltaprime_m, 3},
     {"_ldsep_grad_rho_m", (DL_FUNC) &_ldsep_grad_rho_m, 2},
-    {"_ldsep_ldfast_calc", (DL_FUNC) &_ldsep_ldfast_calc, 5},
     {"_ldsep_secalc", (DL_FUNC) &_ldsep_secalc, 4},
     {"_ldsep_lprior", (DL_FUNC) &_ldsep_lprior, 2},
     {"_ldsep_dlprior_dprob", (DL_FUNC) &_ldsep_dlprior_dprob, 2},

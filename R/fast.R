@@ -2,51 +2,6 @@
 ## FAST LD Correction
 ###################
 
-#' Old version of ldfast.
-#'
-#' Does not allow for ash.
-#'
-#' @inherit ldfast
-#'
-#' @author David Gerard
-#'
-#' @noRd
-ldfast_old <- function(gp, type = c("r", "r2", "z", "D", "Dprime"), se = TRUE) {
-  stopifnot(inherits(gp, "array"))
-  stopifnot(length(dim(gp)) == 3)
-  stopifnot(is.logical(se))
-  stopifnot(length(se) == 1)
-  type <- match.arg(type)
-
-  ## Otherwise, go the slow way ----------------------------------------------
-  nsnp <- dim(gp)[[1]]
-  nind <- dim(gp)[[2]]
-  ploidy <- dim(gp)[[3]] - 1
-
-  ldmat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
-  semat <- matrix(NA_real_, ncol = nsnp, nrow = nsnp)
-  rr    <- rep(NA_real_, length.out = nsnp)
-
-  if (type == "D") {
-    ldfast_calc(cormat = ldmat, semat = semat, rr = rr, gp = gp, type = "a")
-  } else if (type == "Dprime") {
-    ldfast_calc(cormat = ldmat, semat = semat, rr = rr, gp = gp, type = "c")
-  } else {
-    ldfast_calc(cormat = ldmat, semat = semat, rr = rr, gp = gp, type = "b")
-  }
-
-  if (type == "r2") {
-    semat <- semat * abs(ldmat) * 2
-    ldmat <- ldmat ^ 2
-    rr <- rr ^ 2
-  } else if (type == "z") {
-    semat <- semat / (1 - ldmat ^ 2)
-    ldmat <- atanh(ldmat)
-  }
-
-  return(list(ldmat = ldmat, rr = rr, semat = semat))
-}
-
 #' Fast bias-correction for LD Estimation
 #'
 #' Estimates the reliability ratios from posterior marginal moments and uses

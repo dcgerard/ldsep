@@ -23,58 +23,12 @@ test_that("ldfast does not give NA", {
   expect_true(all(!is.na(c1$ldmat)))
 })
 
-test_that("ldfast versions are the same", {
-  skip_on_os(os = "windows")
-
-  data("gp", package = "ldsep")
-
-  c1 <- ldfast(gp = gp, type = "r", shrinkrr = FALSE, se = TRUE)
-  c2 <- ldfast_old(gp = gp, type = "r", se = TRUE)
-  expect_equal(c1$ldmat, c2$ldmat, tolerance = 10^-5)
-  expect_equal(c1$rr, c2$rr, tolerance = 10^-5)
-  expect_equal(c1$semat, c2$semat, tolerance = 10^-5)
-
-  c1 <- ldfast(gp = gp, type = "D", shrinkrr = FALSE, se = TRUE)
-  c2 <- ldfast_old(gp = gp, type = "D", se = TRUE)
-  expect_equal(c1$ldmat, c2$ldmat, tolerance = 10^-5)
-  expect_equal(c1$rr, c2$rr, tolerance = 10^-5)
-  expect_equal(c1$semat, c2$semat, tolerance = 10^-5)
-
-  c1 <- ldfast(gp = gp, type = "Dprime", shrinkrr = FALSE, se = TRUE)
-  c2 <- ldfast_old(gp = gp, type = "Dprime", se = TRUE)
-  expect_equal(c1$ldmat, c2$ldmat, tolerance = 10^-5)
-  expect_equal(c1$rr, c2$rr, tolerance = 10^-5)
-  expect_equal(c1$semat, c2$semat, tolerance = 10^-5)
-
-  c1 <- ldfast(gp = gp, type = "z", shrinkrr = FALSE, se = TRUE)
-  c2 <- ldfast_old(gp = gp, type = "z", se = TRUE)
-  expect_equal(c1$ldmat, c2$ldmat, tolerance = 10^-5)
-  expect_equal(c1$rr, c2$rr, tolerance = 10^-5)
-  expect_equal(c1$semat, c2$semat, tolerance = 10^-5)
-
-  c1 <- ldfast(gp = gp, type = "r2", shrinkrr = FALSE, se = TRUE)
-  c2 <- ldfast_old(gp = gp, type = "r2", se = TRUE)
-  expect_equal(c1$ldmat, c2$ldmat, tolerance = 10^-5)
-  expect_equal(c1$rr, c2$rr, tolerance = 10^-5)
-  expect_equal(c1$semat, c2$semat, tolerance = 10^-5)
-
-  # microbenchmark::microbenchmark(
-  #   ldfast(gp = gp, type = "r", shrinkrr = TRUE, se = TRUE),
-  #   ldfast(gp = gp, type = "r", shrinkrr = TRUE, se = FALSE),
-  #   ldfast(gp = gp, type = "r", shrinkrr = FALSE, se = TRUE),
-  #   ldfast(gp = gp, type = "r", shrinkrr = FALSE, se = FALSE),
-  #   ldfast_old(gp = gp, type = "r", se = TRUE)
-  # )
-})
-
 test_that("NA's are not propogated", {
   data("gp", package = "ldsep")
 
   gp[3, 1:10, 1] <- NA
 
   c1 <- ldfast(gp = gp, type = "r", shrinkrr = FALSE, se = TRUE)
-  c2 <- ldfast_old(gp = gp, type = "r", se = TRUE)
-  expect_true(all(!is.na(c2$ldmat[upper.tri(c2$ldmat)])))
   expect_true(all(!is.na(c1$ldmat[upper.tri(c1$ldmat)])))
 })
 

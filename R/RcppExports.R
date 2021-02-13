@@ -592,27 +592,6 @@ grad_rho_m <- function(M, grad) {
     invisible(.Call(`_ldsep_grad_rho_m`, M, grad))
 }
 
-#' Fast bias-correction for LD
-#'
-#' This one does not assume any information about prior moments.
-#' This modifies two empty matrices: the correlation and the standard error
-#' matrices.
-#'
-#' @param cormat The matrix that will hold the correlations.
-#' @param semat The matrix that will hold the standard errors.
-#' @param rr The vector that will hold the reliability ratios.
-#' @param gp A three-way array with dimensions SNPs by individuals by dosage.
-#'     That is, \code{gp[i, j, k]} is the posterior probability of
-#'     dosage \code{k-1} for individual \code{j} at SNP \code{i}.
-#' @param type a = D, b = r, c = D'
-#'
-#' @author David Gerard
-#'
-#' @noRd
-ldfast_calc <- function(cormat, semat, rr, gp, type) {
-    invisible(.Call(`_ldsep_ldfast_calc`, cormat, semat, rr, gp, type))
-}
-
 #' Calculate just the standard errors from genotype posterior array.
 #'
 #' Only pairwise complete observations are used to calculate standard errors.
