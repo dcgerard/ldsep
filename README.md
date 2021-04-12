@@ -62,9 +62,8 @@ devtools::install_github("dcgerard/ldsep")
 
 To cite `ldsep` in publications use:
 
-> Gerard D (2021). “Pairwise Linkage Disequilibrium Estimation for
-> Polyploids.” *Molecular Ecology Resources*, *Accepted Author
-> Manuscript*.
+> Gerard, David (2021). “Pairwise Linkage Disequilibrium Estimation for
+> Polyploids.” *Molecular Ecology Resources*, *21*(4), 1230–1242.
 > [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
 
 A BibTeX entry for LaTeX users is
@@ -76,13 +75,15 @@ A BibTeX entry for LaTeX users is
   journal = {Molecular Ecology Resources},
   year = {2021},
   doi = {10.1111/1755-0998.13349},
-  volume = {Accepted Author Manuscript},
+  volume = {21},
+  number = {4},
+  pages = {1230--1242},
 }
 ```
 
 If you use `ldfast()`, please cite:
 
-> Gerard D (2021). “Scalable Bias-corrected Linkage Disequilibrium
+> Gerard, David (2021). “Scalable Bias-corrected Linkage Disequilibrium
 > Estimation Under Genotype Uncertainty.” *bioRxiv*.
 > [doi:10.1101/2021.02.08.430270](https://doi.org/10.1101/2021.02.08.430270).
 
@@ -107,19 +108,18 @@ By contributing to this project, you agree to abide by its terms.
 
 ## References
 
--   Dey, Kushal K., and Matthew Stephens. “CorShrink: Empirical Bayes
-    shrinkage estimation of correlations, with applications.” *bioRxiv*
-    (2018): 368316. [doi:10.1101/368316](https://doi.org/10.1101/368316)
+-   Dey, Kushal K., and Matthew Stephens (2018). “CorShrink: Empirical
+    Bayes shrinkage estimation of correlations, with applications.”
+    *bioRxiv*. [doi:10.1101/368316](https://doi.org/10.1101/368316)
 
--   Gerard, David. “Pairwise Linkage Disequilibrium Estimation for
-    Polyploids.” *Molecular Ecology Resources*. Accepted Author
-    Manuscript. (2021a)
-    [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349)
+-   Gerard, David (2021a). “Pairwise Linkage Disequilibrium Estimation
+    for Polyploids.” *Molecular Ecology Resources*, 21(4), 1230–1242.
+    [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
 
--   Gerard, David. “Scalable Bias-corrected Linkage Disequilibrium
-    Estimation Under Genotype Uncertainty.” *bioRxiv*. (2021b)
+-   Gerard, David (2021b). “Scalable Bias-corrected Linkage
+    Disequilibrium Estimation Under Genotype Uncertainty.” *bioRxiv*.
     [doi:10.1101/2021.02.08.430270](https://doi.org/10.1101/2021.02.08.430270)
 
--   Stephens, Matthew. “False discovery rates: a new deal.”
-    *Biostatistics* 18, no. 2 (2017): 275-294.
+-   Stephens, Matthew (2017). “False discovery rates: a new deal.”
+    *Biostatistics* 18(2), 275–294.
     [doi:10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041)

@@ -80,7 +80,9 @@
 #'
 #' @references
 #' \itemize{
-#'   \item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation for Polyploids." \emph{Molecular Ecology Resources}. Accepted Author Manuscript. (2021) \doi{10.1111/1755-0998.13349}}
+#'   \item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation
+#'         for Polyploids." \emph{Molecular Ecology Resources} 21,
+#'         no. 4 (2021): 1230-1242. \doi{10.1111/1755-0998.13349}}
 #' }
 #'
 #' @seealso

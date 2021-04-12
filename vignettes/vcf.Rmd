@@ -243,7 +243,7 @@ ldmat[1:4, 1:4]
 
 # References
 
-- Gerard, David (2021). "Pairwise Linkage Disequilibrium Estimation for Polyploids." _Molecular Ecology Resources_. *Accepted Author Manuscript*. [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349). 
+-  Gerard, David (2021). "Pairwise Linkage Disequilibrium Estimation for Polyploids." _Molecular Ecology Resources_, *21*(4), 1230--1242. [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
 
 - Gerard D, Ferrão L (2020). "Priors for Genotyping Polyploids." _Bioinformatics_, *36*(6), 1795-1800. ISSN 1367-4803, [doi:10.1093/bioinformatics/btz852](https://doi.org/10.1093/bioinformatics/btz852).
 
@@ -257,7 +257,3 @@ ldmat[1:4, 1:4]
 
 - Zych K, Gort G, Maliepaard CA, Jansen RC, and Voorrips RE (2019). "FitTetra 2.0–improved
 genotype calling for tetraploids with multiple population and parental data support." _BMC bioinformatics_, *20*(1), 148. [doi:10.1186/s12859-019-2703-y](https://doi.org/10.1186/s12859-019-2703-y).
-
-
-
-

@@ -262,9 +262,8 @@ pp. 157-164. American Institute of Physics, 2012.
 for finite populations." \emph{Genetics Research} 30, no. 2 (1977):
 121-147. \doi{10.1017/S0016672300017547}}
 \item{Gerard, David. "Pairwise Linkage Disequilibrium Estimation
-for Polyploids." \emph{Molecular Ecology Resources}.
-Accepted Author Manuscript. (2021)
-\doi{10.1111/1755-0998.13349}}
+for Polyploids." \emph{Molecular Ecology Resources} 21,
+no. 4 (2021): 1230-1242. \doi{10.1111/1755-0998.13349}}
 }
 }
 \seealso{
