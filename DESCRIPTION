@@ -1,6 +1,6 @@
 Package: ldsep
 Title: Linkage Disequilibrium Shrinkage Estimation for Polyploids
-Version: 2.0.2
+Version: 2.0.3
 Authors@R: 
     person(given = "David",
            family = "Gerard",
