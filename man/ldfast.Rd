@@ -58,6 +58,9 @@ A list with some or all of the following elements:
 \item{\code{rr}}{The estimated reliability ratio for each SNP. This
 is the multiplicative factor applied to the naive LD estimate
 for each SNP.}
+\item{\code{rr_se}}{The standard errors for the \emph{log}-reliability
+ratios for each SNP. That is, we have sd(log(rr)) ~ rr_se. Only
+returned if \code{shrinkrr = TRUE}.}
 \item{\code{semat}}{A matrix of standard errors of the corresponding
 estimators of LD.}
 }
