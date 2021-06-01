@@ -102,9 +102,11 @@
 #'   \item{\code{rr}}{The estimated reliability ratio for each SNP. This
 #'       is the multiplicative factor applied to the naive LD estimate
 #'       for each SNP.}
-#'   \item{\code{rr_se}}{The standard errors for the \emph{log}-reliability
-#'       ratios for each SNP. That is, we have sd(log(rr)) ~ rr_se. Only
-#'       returned if \code{shrinkrr = TRUE}.}
+#'   \item{\code{rr_raw}}{The raw reliability ratios (for the covariance,
+#'       not the correlation). Only returned if \code{shrinkrr = TRUE}.}
+#'   \item{\code{rr_se}}{The standard errors for the \emph{log}-raw
+#'       reliability ratios for each SNP. That is, we have
+#'       sd(log(rr_raw)) ~ rr_se. Only returned if \code{shrinkrr = TRUE}.}
 #'   \item{\code{semat}}{A matrix of standard errors of the corresponding
 #'       estimators of LD.}
 #' }
@@ -173,7 +175,7 @@ ldfast <- function(gp,
 
   ## Calculate reliability ratios ---------------------------------------------
   ## after this step rr should be for correlation, *not* for covariance
-  rr <- (muy + varx) / varx
+  rr_raw <- (muy + varx) / varx
   if (shrinkrr) {
     amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
     mbar <- apply(X = amom, MARGIN = 3, FUN = rowMeans, na.rm = TRUE)
@@ -188,7 +190,7 @@ ldfast <- function(gp,
       1 / (mbar[, 2] - mbar[, 1]^2)
     gradmat[, 3] <-
       1 / (mbar[, 3] + mbar[, 2] - mbar[, 1]^2)
-    svec <- rep(NA_real_, nsnp) # Variances for log rr
+    svec <- rep(NA_real_, nsnp) # Variances for log rr_raw
     nvec <- rowSums(!is.na(pm_mat)) # missing values
     for (i in seq_len(nsnp)) {
       svec[[i]] <- gradmat[i, , drop = FALSE] %*% covarray[, , i, drop = TRUE] %*% t(gradmat[i, , drop = FALSE])
@@ -196,9 +198,9 @@ ldfast <- function(gp,
     svec <- svec / nvec
     svec[svec < 0] <- 0
     if (thresh) {
-      svec[rr > upper] <- Inf
+      svec[rr_raw > upper] <- Inf
     }
-    lvec <- log(rr)
+    lvec <- log(rr_raw)
     if (mode == "estimate") {
       modest <- modeest::hsm(x = lvec)
     } else if (mode == "zero") {
@@ -211,6 +213,7 @@ ldfast <- function(gp,
     rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
   } else {
     if (thresh) {
+      rr <- rr_raw
       rr[rr > upper] <- stats::median(rr)
     }
     rr <- sqrt(rr)
@@ -266,6 +269,7 @@ ldfast <- function(gp,
 
   ## Add standard errors of rr if shrinkrr = TRUE
   if (shrinkrr) {
+    retlist$rr_raw <- rr_raw
     retlist$rr_se <- sqrt(svec)
   }
 
