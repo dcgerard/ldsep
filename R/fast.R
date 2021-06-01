@@ -212,8 +212,8 @@ ldfast <- function(gp,
                         mode = modest)
     rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
   } else {
+    rr <- rr_raw
     if (thresh) {
-      rr <- rr_raw
       rr[rr > upper] <- stats::median(rr)
     }
     rr <- sqrt(rr)
