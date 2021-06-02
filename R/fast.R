@@ -85,7 +85,10 @@
 #'     we use zero as the mode (\code{mode = "zero"}) or estimate it using
 #'     the procedure of Robertson and Cryer (1974)
 #'     (\code{mode = "estimate"})?
-#'
+#' @param win A positive integer. The window size. This will constrain the
+#'     correlations calculated to those +/- the window size. This will
+#'     only improve speed if the window size is \emph{much} less than the
+#'     number of SNPs.
 #'
 #' @seealso
 #' \describe{
@@ -145,7 +148,8 @@ ldfast <- function(gp,
                    se = TRUE,
                    thresh = TRUE,
                    upper = 10,
-                   mode = c("zero", "estimate")) {
+                   mode = c("zero", "estimate"),
+                   win = NULL) {
   ## Check input -------------------------------------------------------------
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
@@ -157,6 +161,9 @@ ldfast <- function(gp,
   stopifnot(length(thresh) == 1)
   stopifnot(is.numeric(upper))
   stopifnot(length(numeric) == 1)
+  if (!is.null(win)) {
+    stopifnot(length(win) == 1, win > 0, win <= dim(gp)[[1]])
+  }
   type <- match.arg(type)
   mode <- match.arg(mode)
 
@@ -176,6 +183,7 @@ ldfast <- function(gp,
   ## Calculate reliability ratios ---------------------------------------------
   ## after this step rr should be for correlation, *not* for covariance
   rr_raw <- (muy + varx) / varx
+  rr_raw[is.nan(rr_raw)] <- NA_real_
   if (shrinkrr) {
     amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
     mbar <- apply(X = amom, MARGIN = 3, FUN = rowMeans, na.rm = TRUE)
@@ -220,7 +228,12 @@ ldfast <- function(gp,
   }
 
   ## Calculate Pearson correlation --------------------------------------------
-  ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
+  if (is.null(win)) {
+    ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
+  } else {
+    ldmat <- rr * slcor(t(pm_mat), win = win) * rep(rr, each = nsnp)
+  }
+
   if (type != "Dprime") {
     if (se) {
       which_truncate <- (ldmat > 1) | (ldmat < -1)

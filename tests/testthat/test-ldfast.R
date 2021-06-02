@@ -21,11 +21,19 @@ test_that("ldfast skips monomorphic sites", {
   gp[3, , 4] <- 0
   gp[3, , 5] <- 1
 
+  ## Check that everything only produces warnings (due to monomorphic SNPs).
   expect_warning(ldfast(gp = gp, type = "r", upper = 100))
   expect_warning(ldfast(gp = gp, type = "r2", upper = 100))
   expect_warning(ldfast(gp = gp, type = "z", upper = 100))
   expect_warning(ldfast(gp = gp, type = "D", upper = 100))
   expect_warning(ldfast(gp = gp, type = "Dprime", upper = 100))
+
+  ## Check sliding window
+  expect_error(ldfast(gp = gp, type = "r", win = 1, se = FALSE, thresh = FALSE, shrinkrr = FALSE), NA)
+  expect_error(ldfast(gp = gp, type = "r2", win = 1, se = FALSE, thresh = FALSE, shrinkrr = FALSE), NA)
+  expect_error(ldfast(gp = gp, type = "z", win = 1, se = FALSE, thresh = FALSE, shrinkrr = FALSE), NA)
+  expect_error(ldfast(gp = gp, type = "D", win = 1, se = FALSE, thresh = FALSE, shrinkrr = FALSE), NA)
+  expect_error(ldfast(gp = gp, type = "Dprime", win = 1, se = FALSE, thresh = FALSE, shrinkrr = FALSE), NA)
 
 })
 

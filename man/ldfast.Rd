@@ -11,7 +11,8 @@ ldfast(
   se = TRUE,
   thresh = TRUE,
   upper = 10,
-  mode = c("zero", "estimate")
+  mode = c("zero", "estimate"),
+  win = NULL
 )
 }
 \arguments{
@@ -50,6 +51,11 @@ hierarchical shrinkage on the log of the reliability ratios, should
 we use zero as the mode (\code{mode = "zero"}) or estimate it using
 the procedure of Robertson and Cryer (1974)
 (\code{mode = "estimate"})?}
+
+\item{win}{A positive integer. The window size. This will constrain the
+correlations calculated to those +/- the window size. This will
+only improve speed if the window size is \emph{much} less than the
+number of SNPs.}
 }
 \value{
 A list with some or all of the following elements:

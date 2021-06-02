@@ -247,7 +247,11 @@ double mycor(const arma::vec &x, const arma::vec &y) {
   xbar = xbar / n;
   ybar = ybar / n;
 
-  corval = (xysum - xbar * ybar * n) / std::sqrt((x2 - std::pow(xbar, 2.0) * n) * (y2 - std::pow(ybar, 2.0) * n));
+  if ((std::abs(x2 - std::pow(xbar, 2.0) * n) < TOL) || (std::abs(y2 - std::pow(ybar, 2.0) * n) < TOL)) {
+    corval = NA_REAL;
+  } else {
+    corval = (xysum - xbar * ybar * n) / std::sqrt((x2 - std::pow(xbar, 2.0) * n) * (y2 - std::pow(ybar, 2.0) * n));
+  }
 
   return corval;
 }
