@@ -775,3 +775,40 @@ simplex_to_real <- function(x) {
     .Call(`_ldsep_simplex_to_real`, x)
 }
 
+#' Pearson correlation between x and y using pairwise complete obs
+#'
+#' @noRd
+mycor <- function(x, y) {
+    .Call(`_ldsep_mycor`, x, y)
+}
+
+#' Sliding window correlation
+#'
+#' Calculates the pairwise Pearson correlation between all columns
+#' within a fixed window size (\code{win})
+#' using the \code{use = "pairwise.complete.obs"} option
+#' from \code{\link[stats]{cor}()}. That is, the correlation
+#' between each pair of variables is computed using all complete pairs
+#' of observations on those variables.
+#'
+#' @param x A numeric matrix. The variables index the columns.
+#' @param win The size of the window. Defaults to 1.
+#'
+#' @return A correlation matrix with only the observations within a window
+#'     containing calculated correlations.
+#'
+#' @export
+#'
+#' @examples
+#' set.seed(1)
+#' n <- 10
+#' p <- 100
+#' xmat <- matrix(rnorm(n * p), ncol = n)
+#' xmat[sample(n * p, size = 30)] <- NA_real_
+#' slcor(xmat, win = 2)
+#'
+#' @author David Gerard
+slcor <- function(x, win = 1L) {
+    .Call(`_ldsep_slcor`, x, win)
+}
+

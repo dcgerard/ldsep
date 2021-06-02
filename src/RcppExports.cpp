@@ -719,6 +719,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mycor
+double mycor(const arma::vec& x, const arma::vec& y);
+RcppExport SEXP _ldsep_mycor(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(mycor(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// slcor
+arma::mat slcor(const arma::mat& x, int win);
+RcppExport SEXP _ldsep_slcor(SEXP xSEXP, SEXP winSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    rcpp_result_gen = Rcpp::wrap(slcor(x, win));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dmulti_dprob", (DL_FUNC) &_ldsep_dmulti_dprob, 3},
@@ -777,6 +801,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_expit", (DL_FUNC) &_ldsep_expit, 1},
     {"_ldsep_real_to_simplex", (DL_FUNC) &_ldsep_real_to_simplex, 1},
     {"_ldsep_simplex_to_real", (DL_FUNC) &_ldsep_simplex_to_real, 1},
+    {"_ldsep_mycor", (DL_FUNC) &_ldsep_mycor, 2},
+    {"_ldsep_slcor", (DL_FUNC) &_ldsep_slcor, 2},
     {NULL, NULL, 0}
 };
 

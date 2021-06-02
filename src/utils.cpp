@@ -215,16 +215,93 @@ arma::vec simplex_to_real(const arma::vec x) {
 }
 
 
+//' Pearson correlation between x and y using pairwise complete obs
+//'
+//' @noRd
+// [[Rcpp::export]]
+double mycor(const arma::vec &x, const arma::vec &y) {
 
+  double xysum = 0.0;
+  double x2 = 0.0;
+  double y2 = 0.0;
+  double xbar = 0.0;
+  double ybar = 0.0;
+  double n = 0.0;
+  int p = x.n_elem;
+  double corval;
 
+  if (x.n_elem != y.n_elem) {
+    Rcpp::stop("mycor: x and y need to have the same number of elements");
+  }
 
+  for (int i = 0; i < p; i++) {
+    if (arma::is_finite(x(i)) && arma::is_finite(y(i))) {
+      xysum += x(i) * y(i);
+      x2 += std::pow(x(i), 2.0);
+      y2 += std::pow(y(i), 2.0);
+      xbar += x(i);
+      ybar += y(i);
+      n++;
+    }
+  }
+  xbar = xbar / n;
+  ybar = ybar / n;
 
+  corval = (xysum - xbar * ybar * n) / std::sqrt((x2 - std::pow(xbar, 2.0) * n) * (y2 - std::pow(ybar, 2.0) * n));
 
+  return corval;
+}
 
+//' Sliding window correlation
+//'
+//' Calculates the pairwise Pearson correlation between all columns
+//' within a fixed window size (\code{win})
+//' using the \code{use = "pairwise.complete.obs"} option
+//' from \code{\link[stats]{cor}()}. That is, the correlation
+//' between each pair of variables is computed using all complete pairs
+//' of observations on those variables.
+//'
+//' @param x A numeric matrix. The variables index the columns.
+//' @param win The size of the window. Defaults to 1.
+//'
+//' @return A correlation matrix with only the observations within a window
+//'     containing calculated correlations.
+//'
+//' @export
+//'
+//' @examples
+//' set.seed(1)
+//' n <- 10
+//' p <- 100
+//' xmat <- matrix(rnorm(n * p), ncol = n)
+//' xmat[sample(n * p, size = 30)] <- NA_real_
+//' slcor(xmat, win = 2)
+//'
+//' @author David Gerard
+// [[Rcpp::export]]
+arma::mat slcor(const arma::mat &x, int win = 1) {
 
+  int p = x.n_cols;
+  int endit;
 
+  arma::mat cormat(p, p);
+  cormat.fill(NA_REAL);
 
+  for (int i = 0; i < p; i++) {
+    if (i + win + 1 < p) {
+      endit = i + win + 1;
+    } else {
+      endit = p;
+    }
+    for (int j = i; j < endit; j++) {
+      if (i == j) {
+        cormat(i, j) = 1.0;
+      } else {
+        cormat(i, j) = mycor(x.unsafe_col(i), x.unsafe_col(j));
+        cormat(j, i) = cormat(i, j);
+      }
+    }
+  }
 
-
-
-
+  return cormat;
+}
