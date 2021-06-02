@@ -1,5 +1,31 @@
 test_that("ldfast skips monomorphic sites", {
+  set.seed(1)
+  n <- 100
+  p <- 10
+  ploidy <- 4
 
+  ## Generate random data
+  gp <- array(stats::runif(n * p * (ploidy + 1)), dim = c(p, n, (ploidy + 1)))
+  gp <- sweep(x = gp, MARGIN = c(1, 2), STATS = apply(gp, c(1, 2), sum), FUN = `/`)
+
+  ## Add a couple monomorphic SNPs
+  gp[4, , 1] <- 1
+  gp[4, , 2] <- 0
+  gp[4, , 3] <- 0
+  gp[4, , 4] <- 0
+  gp[4, , 5] <- 0
+
+  gp[3, , 1] <- 0
+  gp[3, , 2] <- 0
+  gp[3, , 3] <- 0
+  gp[3, , 4] <- 0
+  gp[3, , 5] <- 1
+
+  expect_warning(ldfast(gp = gp, type = "r", upper = 100))
+  expect_warning(ldfast(gp = gp, type = "r2", upper = 100))
+  expect_warning(ldfast(gp = gp, type = "z", upper = 100))
+  expect_warning(ldfast(gp = gp, type = "D", upper = 100))
+  expect_warning(ldfast(gp = gp, type = "Dprime", upper = 100))
 
 })
 

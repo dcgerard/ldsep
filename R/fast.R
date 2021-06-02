@@ -245,9 +245,8 @@ ldfast <- function(gp,
     deltam_pos <- pmin(outer(X = mux, Y = ploidy - mux, FUN = `*`),
                        outer(X = ploidy - mux, Y = mux, FUN = `*`)) / ploidy ^ 2
 
-    ldmat[ldmat < 0] <- ldmat[ldmat < 0] / deltam_neg[ldmat < 0]
-    ldmat[ldmat > 0] <- ldmat[ldmat > 0] / deltam_pos[ldmat > 0]
-
+    ldmat[ldmat < 0 & !is.na(ldmat)] <- ldmat[ldmat < 0 & !is.na(ldmat)] / deltam_neg[ldmat < 0 & !is.na(ldmat)]
+    ldmat[ldmat > 0 & !is.na(ldmat)] <- ldmat[ldmat > 0 & !is.na(ldmat)] / deltam_pos[ldmat > 0 & !is.na(ldmat)]
 
     if (se) {
       which_truncate <- (ldmat > ploidy) | (ldmat < -ploidy)
