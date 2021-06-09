@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Tests if an argument is a lddf object. — is.lddf • ldsep</title>
+<title>Sliding window correlation — slcor • ldsep</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,13 @@
 
 
 
-<meta property="og:title" content="Tests if an argument is a lddf object. — is.lddf" />
-<meta property="og:description" content="Tests if an argument is a lddf object." />
+<meta property="og:title" content="Sliding window correlation — slcor" />
+<meta property="og:description" content="Calculates the pairwise Pearson correlation between all columns
+within a fixed window size (win)
+using the use = &quot;pairwise.complete.obs&quot; option
+from cor(). That is, the correlation
+between each pair of variables is computed using all complete pairs
+of observations on those variables." />
 <meta property="og:image" content="https://dcgerard.github.io/ldsep/logo.png" />
 
 
@@ -134,38 +139,72 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Tests if an argument is a <code>lddf</code> object.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/dcgerard/ldsep/blob/master/R/generics.R'><code>R/generics.R</code></a></small>
-    <div class="hidden name"><code>is.lddf.Rd</code></div>
+    <h1>Sliding window correlation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/dcgerard/ldsep/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
+    <div class="hidden name"><code>slcor.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Tests if an argument is a <code>lddf</code> object.</p>
+    <p>Calculates the pairwise Pearson correlation between all columns
+within a fixed window size (<code>win</code>)
+using the <code>use = "pairwise.complete.obs"</code> option
+from <code><a href='https://rdrr.io/r/stats/cor.html'>cor</a>()</code>. That is, the correlation
+between each pair of variables is computed using all complete pairs
+of observations on those variables.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>is.lddf</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>slcor</span><span class='op'>(</span><span class='va'>x</span>, win <span class='op'>=</span> <span class='fl'>1L</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Anything.</p></td>
+      <td><p>A numeric matrix. The variables index the columns.</p></td>
+    </tr>
+    <tr>
+      <th>win</th>
+      <td><p>The size of the window. Defaults to 1.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A logical. <code>TRUE</code> if <code>x</code> is a <code>lddf</code> object,
-and <code>FALSE</code> otherwise.</p>
+    <p>A correlation matrix with only the observations within a window
+containing calculated correlations.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>is.lddf</span><span class='op'>(</span><span class='st'>"anything"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'><span class='co'># FALSE</span>
-
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>10</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
+<span class='va'>xmat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>
+<span class='va'>xmat</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span>, size <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='cn'>NA_real_</span>
+<span class='fu'>slcor</span><span class='op'>(</span><span class='va'>xmat</span>, win <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;              [,1]        [,2]        [,3]        [,4]        [,5]        [,6]
+#&gt;  [1,]  1.00000000 -0.01630404  0.04259209          NA          NA          NA
+#&gt;  [2,] -0.01630404  1.00000000 -0.07108527 -0.00698654          NA          NA
+#&gt;  [3,]  0.04259209 -0.07108527  1.00000000  0.06059139 -0.02902797          NA
+#&gt;  [4,]          NA -0.00698654  0.06059139  1.00000000  0.08572247 -0.13856139
+#&gt;  [5,]          NA          NA -0.02902797  0.08572247  1.00000000 -0.04491246
+#&gt;  [6,]          NA          NA          NA -0.13856139 -0.04491246  1.00000000
+#&gt;  [7,]          NA          NA          NA          NA  0.03849965  0.01209165
+#&gt;  [8,]          NA          NA          NA          NA          NA -0.12981911
+#&gt;  [9,]          NA          NA          NA          NA          NA          NA
+#&gt; [10,]          NA          NA          NA          NA          NA          NA
+#&gt;              [,7]        [,8]        [,9]      [,10]
+#&gt;  [1,]          NA          NA          NA         NA
+#&gt;  [2,]          NA          NA          NA         NA
+#&gt;  [3,]          NA          NA          NA         NA
+#&gt;  [4,]          NA          NA          NA         NA
+#&gt;  [5,]  0.03849965          NA          NA         NA
+#&gt;  [6,]  0.01209165 -0.12981911          NA         NA
+#&gt;  [7,]  1.00000000  0.12268533 -0.01350859         NA
+#&gt;  [8,]  0.12268533  1.00000000 -0.04209290 0.06735998
+#&gt;  [9,] -0.01350859 -0.04209290  1.00000000 0.21561209
+#&gt; [10,]          NA  0.06735998  0.21561209 1.00000000</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

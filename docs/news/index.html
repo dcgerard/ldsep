@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -137,6 +137,15 @@
       <small>Source: <a href='https://github.com/dcgerard/ldsep/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="ldsep-210" class="section level1">
+<h1 class="page-header" data-toc-text="2.1.0">
+<a href="#ldsep-210" class="anchor"></a>ldsep 2.1.0<small> Unreleased </small>
+</h1>
+<ul>
+<li>Includes a <code>win</code> argument in <code><a href="../reference/ldfast.html">ldfast()</a></code>, which implements the moment-based LD correction along a sliding window.</li>
+<li>Fixes a bug where monomorphic SNPs were causing errors when <code>type = "Dprime</code> was selected in <code><a href="../reference/ldfast.html">ldfast()</a></code>. Now we just return <code>NA</code>’s for LD with monormorphic SNPs.</li>
+</ul>
+</div>
     <div id="ldsep-202" class="section level1">
 <h1 class="page-header" data-toc-text="2.0.2">
 <a href="#ldsep-202" class="anchor"></a>ldsep 2.0.2<small> 2021-02-17 </small>

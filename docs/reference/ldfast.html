@@ -83,7 +83,7 @@ Gerard (2021)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -156,7 +156,8 @@ Gerard (2021).</p>
   se <span class='op'>=</span> <span class='cn'>TRUE</span>,
   thresh <span class='op'>=</span> <span class='cn'>TRUE</span>,
   upper <span class='op'>=</span> <span class='fl'>10</span>,
-  mode <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"zero"</span>, <span class='st'>"estimate"</span><span class='op'>)</span>
+  mode <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"zero"</span>, <span class='st'>"estimate"</span><span class='op'>)</span>,
+  win <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -211,6 +212,13 @@ we use zero as the mode (<code>mode = "zero"</code>) or estimate it using
 the procedure of Robertson and Cryer (1974)
 (<code>mode = "estimate"</code>)?</p></td>
     </tr>
+    <tr>
+      <th>win</th>
+      <td><p>A positive integer. The window size. This will constrain the
+correlations calculated to those +/- the window size. This will
+only improve speed if the window size is <em>much</em> less than the
+number of SNPs.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -220,6 +228,11 @@ the procedure of Robertson and Cryer (1974)
 <dt><code>rr</code></dt><dd><p>The estimated reliability ratio for each SNP. This
 is the multiplicative factor applied to the naive LD estimate
 for each SNP.</p></dd>
+<dt><code>rr_raw</code></dt><dd><p>The raw reliability ratios (for the covariance,
+not the correlation). Only returned if <code>shrinkrr = TRUE</code>.</p></dd>
+<dt><code>rr_se</code></dt><dd><p>The standard errors for the <em>log</em>-raw
+reliability ratios for each SNP. That is, we have
+sd(log(rr_raw)) ~ rr_se. Only returned if <code>shrinkrr = TRUE</code>.</p></dd>
 <dt><code>semat</code></dt><dd><p>A matrix of standard errors of the corresponding
 estimators of LD.</p></dd>
 
