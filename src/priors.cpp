@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-const double TOL = std::sqrt(DOUBLE_EPS);
+const double TOL = std::sqrt(DBL_EPSILON);
 arma::vec real_to_simplex(const arma::vec y);
 arma::mat dreal_to_simplex_dy(const arma::vec y);
 

@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-const double TOL = std::sqrt(DOUBLE_EPS);
+const double TOL = std::sqrt(DBL_EPSILON);
 double dmulti_double(const arma::vec x,
                      const arma::vec prob,
                      bool log_p = true);

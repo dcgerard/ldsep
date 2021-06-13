@@ -3,7 +3,7 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-const double TOL = std::sqrt(DOUBLE_EPS);
+const double TOL = std::sqrt(DBL_EPSILON);
 double log_sum_exp_2(double x, double y);
 double probgeno(const int &gA,
                 const int &gB,
