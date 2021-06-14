@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 
-const double TOL = std::sqrt(DOUBLE_EPS);
+const double TOL = std::sqrt(DBL_EPSILON);
 
 //' Log-sum-exponential trick.
 //'

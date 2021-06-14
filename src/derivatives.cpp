@@ -8,7 +8,7 @@ double log_sum_exp_2(double x, double y);
 double dmulti_double(const arma::vec x, const arma::vec prob, bool log_p);
 arma::vec plog_sum_exp(const arma::vec &x, const arma::vec &y);
 arma::vec real_to_simplex(const arma::vec y);
-const double TOL = std::sqrt(DOUBLE_EPS);
+const double TOL = std::sqrt(DBL_EPSILON);
 arma::vec dlprior_dprob(const arma::vec prob, const arma::vec alpha);
 
 //' Derivative of multinomial pdf
