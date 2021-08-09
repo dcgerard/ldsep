@@ -2,6 +2,7 @@
 
 - `DOUBLE_EPS` -> `DOUBLE_EPSILON`.
 - Modified citation to point to *Heredity*.
+- Adds notes about the necessity of using adaptive priors in `ldfast()`.
 
 # ldsep 2.1.0
 

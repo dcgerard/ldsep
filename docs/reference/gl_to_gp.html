@@ -49,8 +49,8 @@
 <meta property="og:title" content="Normalize genotype likelihoods to posterior probabilities. — gl_to_gp" />
 <meta property="og:description" content="This will take genotype log-likelihoods and normalize them to
 sum to one. This corresponds to using a naive discrete uniform prior
-over the genotypes, which is typically OK if we are not adaptively
-estimating likelihood elements using this prior." />
+over the genotypes. It is not generally recommended that you use this
+function." />
 <meta property="og:image" content="https://dcgerard.github.io/ldsep/logo.png" />
 
 
@@ -145,8 +145,8 @@ estimating likelihood elements using this prior." />
     <div class="ref-description">
     <p>This will take genotype log-likelihoods and normalize them to
 sum to one. This corresponds to using a naive discrete uniform prior
-over the genotypes, which is typically OK if we are not adaptively
-estimating likelihood elements using this prior.</p>
+over the genotypes. It is not generally recommended that you use this
+function.</p>
     </div>
 
     <pre class="usage"><span class='fu'>gl_to_gp</span><span class='op'>(</span><span class='va'>gl</span><span class='op'>)</span></pre>

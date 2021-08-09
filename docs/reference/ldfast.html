@@ -50,7 +50,7 @@
 <meta property="og:description" content="Estimates the reliability ratios from posterior marginal moments and uses
 these to correct the biases in linkage disequilibrium estimation
 caused by genotype uncertainty. These methods are described in
-Gerard (2021)." />
+Gerard (in press)." />
 <meta property="og:image" content="https://dcgerard.github.io/ldsep/logo.png" />
 
 
@@ -146,7 +146,7 @@ Gerard (2021)." />
     <p>Estimates the reliability ratios from posterior marginal moments and uses
 these to correct the biases in linkage disequilibrium estimation
 caused by genotype uncertainty. These methods are described in
-Gerard (2021).</p>
+Gerard (in press).</p>
     </div>
 
     <pre class="usage"><span class='fu'>ldfast</span><span class='op'>(</span>
@@ -250,6 +250,16 @@ haplotypic measures of LD (see the description in <code><a href='ldest.html'>lde
 They are always appropriate measures of association
 between loci, but only correspond to haplotypic measures of LD when
 Hardy-Weinberg equilibrium is fulfilled in autopolyploids.</p>
+<p>In order for these estimates to perform well, you need to use
+posterior genotype probabilities that have been calculated using
+adaptive priors, i.e. empirical/hierarchical Bayes approaches. There
+are many approaches that do this, such as
+<a href='https://cran.r-project.org/package=updog'><code>updog</code></a>,
+<a href='https://cran.r-project.org/package=polyRAD'><code>polyRAD</code></a>,
+<a href='https://cran.r-project.org/package=fitPoly'><code>fitPoly</code></a>, or
+<a href='https://github.com/guilherme-pereira/vcf2sm'><code>SuperMASSA</code></a>.
+Note that <a href='https://gatk.broadinstitute.org/'>GATK</a>
+uses a uniform prior, so would be inappropriate for use in <code>ldfast()</code>.</p>
 <p>Calculating standard errors and performing hierarchical shrinkage of the
 reliability ratios are both rather slow operations compared to just
 raw method-of-moments based estimation for LD. If you don't need
@@ -300,8 +310,6 @@ using the central limit theorem and the delta-method.</p>
 
     <div class='dont-index'>
 <dl>
-<dt><code><a href='gl_to_gp.html'>gl_to_gp</a>()</code></dt><dd><p>Normalize genotype likelihoods to
-posterior probabilities using naive uniform prior.</p></dd>
 <dt><code><a href='https://rdrr.io/pkg/ashr/man/ash.html'>ash</a>()</code></dt><dd><p>Function used to perform hierarchical
 shrinkage on the log of the reliability ratios.</p></dd>
 <dt><code><a href='ldest.html'>ldest</a>()</code>, <code><a href='mldest.html'>mldest</a>()</code>, <code><a href='sldest.html'>sldest</a>()</code></dt><dd><p>Maximum likelihood estimation of linkage disequilibrium.</p></dd>

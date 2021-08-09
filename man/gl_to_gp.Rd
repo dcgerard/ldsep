@@ -18,8 +18,8 @@ containing the posterior probabilities of each dosage.
 \description{
 This will take genotype log-likelihoods and normalize them to
 sum to one. This corresponds to using a naive discrete uniform prior
-over the genotypes, which is typically OK if we are not adaptively
-estimating likelihood elements using this prior.
+over the genotypes. It is not generally recommended that you use this
+function.
 }
 \examples{
 data("glike")

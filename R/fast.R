@@ -7,7 +7,7 @@
 #' Estimates the reliability ratios from posterior marginal moments and uses
 #' these to correct the biases in linkage disequilibrium estimation
 #' caused by genotype uncertainty. These methods are described in
-#' Gerard (2021).
+#' Gerard (in press).
 #'
 #' @section Details:
 #'
@@ -18,6 +18,17 @@
 #' They are always appropriate measures of association
 #' between loci, but only correspond to haplotypic measures of LD when
 #' Hardy-Weinberg equilibrium is fulfilled in autopolyploids.
+#'
+#' In order for these estimates to perform well, you need to use
+#' posterior genotype probabilities that have been calculated using
+#' adaptive priors, i.e. empirical/hierarchical Bayes approaches. There
+#' are many approaches that do this, such as
+#' \href{https://cran.r-project.org/package=updog}{\code{updog}},
+#' \href{https://cran.r-project.org/package=polyRAD}{\code{polyRAD}},
+#' \href{https://cran.r-project.org/package=fitPoly}{\code{fitPoly}}, or
+#' \href{https://github.com/guilherme-pereira/vcf2sm}{\code{SuperMASSA}}.
+#' Note that \href{https://gatk.broadinstitute.org/}{GATK}
+#' uses a uniform prior, so would be inappropriate for use in \code{ldfast()}.
 #'
 #' Calculating standard errors and performing hierarchical shrinkage of the
 #' reliability ratios are both rather slow operations compared to just
@@ -92,8 +103,6 @@
 #'
 #' @seealso
 #' \describe{
-#'   \item{\code{\link{gl_to_gp}()}}{Normalize genotype likelihoods to
-#'       posterior probabilities using naive uniform prior.}
 #'   \item{\code{\link[ashr]{ash}()}}{Function used to perform hierarchical
 #'       shrinkage on the log of the reliability ratios.}
 #'   \item{\code{\link{ldest}()}, \code{\link{mldest}()}, \code{\link{sldest}()}}{Maximum likelihood estimation of linkage disequilibrium.}
@@ -311,8 +320,8 @@ ldfast <- function(gp,
 #'
 #' This will take genotype log-likelihoods and normalize them to
 #' sum to one. This corresponds to using a naive discrete uniform prior
-#' over the genotypes, which is typically OK if we are not adaptively
-#' estimating likelihood elements using this prior.
+#' over the genotypes. It is not generally recommended that you use this
+#' function.
 #'
 #' @param gl A three dimensional array of genotype \emph{log}-likelihoods.
 #'     Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
