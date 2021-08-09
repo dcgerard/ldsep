@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Abstract
 
-We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the `ldfast()` function. These methods are described in detail in Gerard (2021). The following code chunks are only evaluated if `updog` is installed with a version of at least 2.0.2.
+We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the `ldfast()` function. These methods are described in detail in Gerard (in press). The following code chunks are only evaluated if `updog` is installed with a version of at least 2.0.2.
 
 # Analysis
 
@@ -96,4 +96,4 @@ Other LD estimators are available: `D`, `Dprime`, `r`, and `z`. See the help fil
 
 # References
 
--  Gerard, David. "Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty." _bioRxiv_. (2021) [doi:10.1101/2021.02.08.430270](https://doi.org/10.1101/2021.02.08.430270)
+-  Gerard, David. "Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty." _Heredity_. (in press) [doi:10.1038/s41437-021-00462-5](https://doi.org/10.1038/s41437-021-00462-5)

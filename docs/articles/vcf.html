@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@
 
       
 
-      </header><script src="vcf_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="vcf_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>LD Estimation Pipeline from VCF</h1>
@@ -124,7 +124,7 @@
 <p>The following code chunks are only evaluated if all of these packages are installed. In particular, you need to make sure that your version of <code>updog</code> is at least 2.0.2.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"updog"</span><span class="op">)</span>
-<span class="co">#&gt; [1] '2.1.0'</span></code></pre></div>
+<span class="co">#&gt; [1] '2.1.1'</span></code></pre></div>
 </div>
 <div id="analysis" class="section level1">
 <h1 class="hasAnchor">
@@ -325,9 +325,9 @@
 <code class="sourceCode R"><span class="va">ldmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format_lddf.html">format_lddf</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">like_ld</span>, element <span class="op">=</span> <span class="st">"r2"</span><span class="op">)</span>
 <span class="va">ldmat</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
 <span class="co">#&gt;               PotVar0070390 PotVar0070392 PotVar0070393 PotVar0070394</span>
-<span class="co">#&gt; PotVar0070390            NA    0.01382935    0.01321029    0.52716731</span>
-<span class="co">#&gt; PotVar0070392            NA            NA    0.45718539    0.03636373</span>
-<span class="co">#&gt; PotVar0070393            NA            NA            NA    0.05912795</span>
+<span class="co">#&gt; PotVar0070390            NA    0.01382084    0.01314104    0.52714843</span>
+<span class="co">#&gt; PotVar0070392            NA            NA    0.45734767    0.03634882</span>
+<span class="co">#&gt; PotVar0070393            NA            NA            NA    0.05895743</span>
 <span class="co">#&gt; PotVar0070394            NA            NA            NA            NA</span></code></pre></div>
 </div>
 </div>
