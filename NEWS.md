@@ -1,4 +1,4 @@
-# ldsep 2.1.1
+# ldsep 2.1.2
 
 - `DOUBLE_EPS` -> `DOUBLE_EPSILON`.
 - Modified citation to point to *Heredity*.

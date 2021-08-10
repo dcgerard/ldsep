@@ -27,8 +27,8 @@
 #' \href{https://cran.r-project.org/package=polyRAD}{\code{polyRAD}},
 #' \href{https://cran.r-project.org/package=fitPoly}{\code{fitPoly}}, or
 #' \href{https://github.com/guilherme-pereira/vcf2sm}{\code{SuperMASSA}}.
-#' Note that \href{https://gatk.broadinstitute.org/}{GATK}
-#' uses a uniform prior, so would be inappropriate for use in \code{ldfast()}.
+#' Note that GATK uses a uniform prior, so would be inappropriate for
+#' use in \code{ldfast()}.
 #'
 #' Calculating standard errors and performing hierarchical shrinkage of the
 #' reliability ratios are both rather slow operations compared to just
