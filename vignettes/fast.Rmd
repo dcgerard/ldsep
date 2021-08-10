@@ -48,7 +48,7 @@ The first dimension indexes the SNPs, the second dimension indexes the individua
 
 You can use other genotyping programs to obtain these posterior probabilities, but they have to be formatted as an array with the dimensions in the correct order (SNPs by individuals by dosages). 
 
-**However**, in order for these estimates to perform well, you need to use posterior genotype probabilities that have been calculated using adaptive priors, i.e. empirical/hierarchical Bayes approaches. There are many approaches that do this, such as [`{updog}`](https://cran.r-project.org/package=updog), [`{polyRAD}`](https://cran.r-project.org/package=polyRAD), [`{fitPoly}`](https://cran.r-project.org/package=fitPoly), or [`{SuperMASSA}`](https://github.com/guilherme-pereira/vcf2sm). Note that GATK uses a uniform prior, so would be inappropriate for use in \code{ldfast()}.
+**However**, in order for these estimates to perform well, you need to use posterior genotype probabilities that have been calculated using adaptive priors, i.e. empirical/hierarchical Bayes approaches. There are many approaches that do this, such as [`{updog}`](https://cran.r-project.org/package=updog), [`{polyRAD}`](https://cran.r-project.org/package=polyRAD), [`{fitPoly}`](https://cran.r-project.org/package=fitPoly), or [`{SuperMASSA}`](https://github.com/guilherme-pereira/vcf2sm). Note that GATK uses a uniform prior, so would be inappropriate for use in `ldfast()`.
 
 Let's use our genotype posterior probabilities (`gp`) to estimate LD.
 
