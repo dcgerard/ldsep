@@ -23,8 +23,8 @@ provided to estimate the popular measures of LD: the LD coefficient *D*,
 the standardized LD coefficient *D*′, and the Pearson correlation
 coefficient *r*. All estimates are returned with corresponding standard
 errors. These estimates and standard errors can then be used for
-shrinkage estimation. The methods are described in Gerard (2021) and
-Gerard (*in press*).
+shrinkage estimation. The methods are described in Gerard (2021a) and
+Gerard (2021b).
 
 The main functions are:
 
@@ -83,8 +83,8 @@ A BibTeX entry for LaTeX users is
 
 If you use `ldfast()`, please cite:
 
-> Gerard, David (in press). “Scalable Bias-corrected Linkage
-> Disequilibrium Estimation Under Genotype Uncertainty.” *Heredity*.
+> Gerard, David (2021). “Scalable Bias-corrected Linkage Disequilibrium
+> Estimation Under Genotype Uncertainty.” *Heredity*, *127*(4), 357–362.
 > [doi:10.1038/s41437-021-00462-5](https://doi.org/10.1038/s41437-021-00462-5).
 
 A BibTeX entry for LaTeX users is
@@ -94,10 +94,10 @@ A BibTeX entry for LaTeX users is
   title = {Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty},
   author = {David Gerard},
   journal = {Heredity},
-  year = {in press},
-  volume = {},
-  number = {},
-  pages = {},
+  year = {2021},
+  volume = {127},
+  number = {4},
+  pages = {357--362},
   doi = {10.1038/s41437-021-00462-5},
 }
 ```
@@ -115,12 +115,13 @@ By contributing to this project, you agree to abide by its terms.
     Bayes shrinkage estimation of correlations, with applications.”
     *bioRxiv*. [doi:10.1101/368316](https://doi.org/10.1101/368316)
 
--   Gerard, David (2021). “Pairwise Linkage Disequilibrium Estimation
-    for Polyploids.” *Molecular Ecology Resources*, 21(4), 1230–1242.
+-   Gerard, David (2021a). “Pairwise Linkage Disequilibrium Estimation
+    for Polyploids.” *Molecular Ecology Resources*, *21*(4), 1230–1242.
     [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
 
--   Gerard, David (in press). “Scalable Bias-corrected Linkage
-    Disequilibrium Estimation Under Genotype Uncertainty.” *Heredity*.
+-   Gerard, David (2021b). “Scalable Bias-corrected Linkage
+    Disequilibrium Estimation Under Genotype Uncertainty.” *Heredity*,
+    *127*(4), 357–362.
     [doi:10.1038/s41437-021-00462-5](https://doi.org/10.1038/s41437-021-00462-5).
 
 -   Stephens, Matthew (2017). “False discovery rates: a new deal.”

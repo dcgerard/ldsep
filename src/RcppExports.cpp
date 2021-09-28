@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // dmulti_dprob
 arma::vec dmulti_dprob(const arma::vec x, const arma::vec prob, bool log_p);
 RcppExport SEXP _ldsep_dmulti_dprob(SEXP xSEXP, SEXP probSEXP, SEXP log_pSEXP) {

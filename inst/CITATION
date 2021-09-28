@@ -23,11 +23,11 @@ c(
                       email  = "gerard.1787@gmail.com",
                       comment = c(ORCID = "0000-0001-9450-5023")),
     journal  = "Heredity",
-    year     = "in press",
+    year     = "2021",
     doi      = "10.1038/s41437-021-00462-5",
-    volume   = "",
-    number   = "",
-    pages    = "",
+    volume   = "127",
+    number   = "4",
+    pages    = "357--362",
     url      = "",
     header   = "If you use ldfast(), please cite:"
   )
