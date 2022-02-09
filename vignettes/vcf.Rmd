@@ -101,7 +101,7 @@ mout <- multidog(refmat = refmat,
 
 We can plot some of the SNPs in a genotype plot (Gerard et. al., 2018) to evaluate the accuracy of the genotyping:
 ```{r, warning=FALSE, fig.show="hold", out.width="25%", results='hide'}
-plot(mout, indices = sample(1:nrow(subuit), 3))
+plot(mout, indices = c(1, 14, 19))
 ```
 
 We probably want to filter out SNPs that are mostly monoallelic. We can do that with `filter_snp()`.
