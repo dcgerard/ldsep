@@ -17,8 +17,8 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![R build status](https://github.com/dcgerard/ldsep/workflows/R-CMD-check/badge.svg)](https://github.com/dcgerard/ldsep/actions)
-[![codecov](https://codecov.io/gh/dcgerard/ldsep/branch/master/graph/badge.svg?token=J3ZRB8PAHY)](https://codecov.io/gh/dcgerard/ldsep)
+[![R-CMD-check](https://github.com/dcgerard/ldsep/workflows/R-CMD-check/badge.svg)](https://github.com/dcgerard/ldsep/actions)
+[![codecov](https://codecov.io/gh/dcgerard/ldsep/branch/master/graph/badge.svg?token=J3ZRB8PAHY)](https://app.codecov.io/gh/dcgerard/ldsep)
 [![CRAN status](https://www.r-pkg.org/badges/version/ldsep)](https://CRAN.R-project.org/package=ldsep)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ldsep)](https://cran.r-project.org/package=ldsep)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
