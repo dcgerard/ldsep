@@ -183,8 +183,8 @@ format_lddf <- function(obj,
     rownames(cormat) <- seq_len(nloci)
     colnames(cormat) <- seq_len(nloci)
   } else {
-    agdf1 <- stats::aggregate(formula = snpi ~ i, data = obj, FUN = `unique`)
-    agdf2 <- stats::aggregate(formula = snpj ~ j, data = obj, FUN = `unique`)
+    agdf1 <- stats::aggregate(snpi ~ i, data = obj, FUN = `unique`)
+    agdf2 <- stats::aggregate(snpj ~ j, data = obj, FUN = `unique`)
     names(agdf2) <- c("i", "snpi")
     agdf <- merge(x = agdf1,
                   y = agdf2,

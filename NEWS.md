@@ -1,3 +1,7 @@
+# ldsep 2.1.4
+
+- Use unnamed formula argument in `aggregate()` to account for change in R.
+
 # ldsep 2.1.2
 
 - `DOUBLE_EPS` -> `DOUBLE_EPSILON`.

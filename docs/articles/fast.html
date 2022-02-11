@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -74,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/dcgerard/ldsep/">
+  <a href="https://github.com/dcgerard/ldsep/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -89,48 +85,48 @@
 
       
 
-      </header><script src="fast_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Fast LD Estimation</h1>
-                        <h4 class="author">David Gerard</h4>
+                        <h4 data-toc-skip class="author">David Gerard</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dcgerard/ldsep/blob/master/vignettes/fast.Rmd"><code>vignettes/fast.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dcgerard/ldsep/blob/HEAD/vignettes/fast.Rmd" class="external-link"><code>vignettes/fast.Rmd</code></a></small>
       <div class="hidden name"><code>fast.Rmd</code></div>
 
     </div>
 
     
     
-<div id="abstract" class="section level1">
-<h1 class="hasAnchor">
-<a href="#abstract" class="anchor"></a>Abstract</h1>
-<p>We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the <code><a href="../reference/ldfast.html">ldfast()</a></code> function. These methods are described in detail in Gerard (2021). The following code chunks are only evaluated if <a href="http://github.com/dcgerard/updog/">updog</a> is installed with a version of at least 2.0.2.</p>
+<div class="section level2">
+<h2 id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
+</h2>
+<p>We demonstrate our new moment-based linkage disequilibrium (LD) estimators, as implemented in the <code><a href="../reference/ldfast.html">ldfast()</a></code> function. These methods are described in detail in Gerard (2021). The following code chunks are only evaluated if <a href="https://github.com/dcgerard/updog/" class="external-link">updog</a> is installed with a version of at least 2.0.2.</p>
 </div>
-<div id="analysis" class="section level1">
-<h1 class="hasAnchor">
-<a href="#analysis" class="anchor"></a>Analysis</h1>
+<div class="section level2">
+<h2 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
+</h2>
 <p>We will load the packages and data that we will need</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/dcgerard/updog/">updog</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ldsep</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot">corrplot</a></span><span class="op">)</span>
-<span class="co">#&gt; corrplot 0.90 loaded</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"uit"</span>, package <span class="op">=</span> <span class="st">"ldsep"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">uit</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dcgerard/updog/" class="external-link">updog</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ldsep</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot" class="external-link">corrplot</a></span><span class="op">)</span>
+<span class="co">#&gt; corrplot 0.92 loaded</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"uit"</span>, package <span class="op">=</span> <span class="st">"ldsep"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">uit</span><span class="op">)</span>
 <span class="co">#&gt; [1] "multidog"</span></code></pre></div>
-<p>We need the posterior probabilities for each genotype for each individual at each SNP. In <a href="http://github.com/dcgerard/updog/">updog</a>, this corresponds to the <code>Pr_n</code> variables in its output, where <code>n</code> varies from 0 to the ploidy. We can use <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">updog::format_multidog()</a></code> to extract these values into an array with the proper dimensions.</p>
+<p>We need the posterior probabilities for each genotype for each individual at each SNP. In <a href="https://github.com/dcgerard/updog/" class="external-link">updog</a>, this corresponds to the <code>Pr_n</code> variables in its output, where <code>n</code> varies from 0 to the ploidy. We can use <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">updog::format_multidog()</a></code> to extract these values into an array with the proper dimensions.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span>
-<span class="va">gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span>
+<span class="va">gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span>
 <span class="co">#&gt; [1] "array"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span>
 <span class="co">#&gt; [1] 10 84  5</span></code></pre></div>
 <p>The first dimension indexes the SNPs, the second dimension indexes the individuals, and the third dimension indexes the possible dosages. So <code>gp[i, j, k]</code> contains the posterior probability that individual <code>j</code> has dosage <code>k-1</code> at SNP <code>i</code>.</p>
 <p>You can use other genotyping programs to obtain these posterior probabilities, but they have to be formatted as an array with the dimensions in the correct order (SNPs by individuals by dosages).</p>
-<p><strong>However</strong>, in order for these estimates to perform well, you need to use posterior genotype probabilities that have been calculated using adaptive priors, i.e. empirical/hierarchical Bayes approaches. There are many approaches that do this, such as <a href="https://cran.r-project.org/package=updog"><code>{updog}</code></a>, <a href="https://cran.r-project.org/package=polyRAD"><code>{polyRAD}</code></a>, <a href="https://cran.r-project.org/package=fitPoly"><code>{fitPoly}</code></a>, or <a href="https://github.com/guilherme-pereira/vcf2sm"><code>{SuperMASSA}</code></a>. Note that GATK uses a uniform prior, so would be inappropriate for use in <code><a href="../reference/ldfast.html">ldfast()</a></code>.</p>
+<p><strong>However</strong>, in order for these estimates to perform well, you need to use posterior genotype probabilities that have been calculated using adaptive priors, i.e. empirical/hierarchical Bayes approaches. There are many approaches that do this, such as <a href="https://cran.r-project.org/package=updog" class="external-link"><code>{updog}</code></a>, <a href="https://cran.r-project.org/package=polyRAD" class="external-link"><code>{polyRAD}</code></a>, <a href="https://cran.r-project.org/package=fitPoly" class="external-link"><code>{fitPoly}</code></a>, or <a href="https://github.com/guilherme-pereira/vcf2sm" class="external-link"><code>{SuperMASSA}</code></a>. Note that GATK uses a uniform prior, so would be inappropriate for use in <code><a href="../reference/ldfast.html">ldfast()</a></code>.</p>
 <p>Let’s use our genotype posterior probabilities (<code>gp</code>) to estimate LD.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ldout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ldfast.html">ldfast</a></span><span class="op">(</span>gp <span class="op">=</span> <span class="va">gp</span>, type <span class="op">=</span> <span class="st">"r2"</span><span class="op">)</span></code></pre></div>
@@ -139,7 +135,7 @@
 <li>
 <p><code>ldmat</code>: The estimated squared correlation coefficients, adjusted for genotype uncertainty.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>corr <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">ldmat</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span>corr <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">ldmat</span>, 
          method <span class="op">=</span> <span class="st">"color"</span>, 
          type <span class="op">=</span> <span class="st">"upper"</span>,
          diag <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -149,7 +145,7 @@
 <li>
 <p><code>semat</code>: The estimated standard errors for the squared correlation coefficient estimates.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html">corrplot</a></span><span class="op">(</span>corr <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">semat</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a></span><span class="op">(</span>corr <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">semat</span>, 
          method <span class="op">=</span> <span class="st">"color"</span>, 
          type <span class="op">=</span> <span class="st">"upper"</span>,
          diag <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -160,7 +156,7 @@
 <li>
 <p><code>rr</code>: The estimated “reliability ratios”, the multiplicative effects applied to the naive LD estimates using just the posterior mean genotypes.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">rr</span>, 
+<code class="sourceCode R"><span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">rr</span>, 
                main <span class="op">=</span> <span class="st">"Reliability Ratios"</span>, 
                xlab <span class="op">=</span> <span class="st">"Reliability Ratios"</span><span class="op">)</span></code></pre></div>
 <p><img src="fast_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
@@ -169,11 +165,11 @@
 <p>The slowest part of <code><a href="../reference/ldfast.html">ldfast()</a></code> is using hierarchical shrinkage on the log of the reliability ratios (<code>shrinkrr = TRUE</code>), but I wouldn’t disable this as some reliability ratios have high variance and are greatly improved through shrinkage.</p>
 <p>Other LD estimators are available: <code>D</code>, <code>Dprime</code>, <code>r</code>, and <code>z</code>. See the help file of <code><a href="../reference/ldfast.html">ldfast()</a></code> for details.</p>
 </div>
-<div id="references" class="section level1">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <ul>
-<li>Gerard, David (2021). “Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty.” <em>Heredity</em>, <em>127</em>(4), 357–362. <a href="https://doi.org/10.1038/s41437-021-00462-5">doi:10.1038/s41437-021-00462-5</a>.</li>
+<li>Gerard, David (2021). “Scalable Bias-corrected Linkage Disequilibrium Estimation Under Genotype Uncertainty.” <em>Heredity</em>, <em>127</em>(4), 357–362. <a href="https://doi.org/10.1038/s41437-021-00462-5" class="external-link">doi:10.1038/s41437-021-00462-5</a>.</li>
 </ul>
 </div>
   </div>
@@ -189,11 +185,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by David Gerard.</p>
+  <p></p>
+<p>Developed by David Gerard.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -201,6 +199,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
@@ -74,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/dcgerard/ldsep/">
+  <a href="https://github.com/dcgerard/ldsep/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -89,22 +85,22 @@
 
       
 
-      </header><script src="vcf_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>LD Estimation Pipeline from VCF</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dcgerard/ldsep/blob/master/vignettes/vcf.Rmd"><code>vignettes/vcf.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dcgerard/ldsep/blob/HEAD/vignettes/vcf.Rmd" class="external-link"><code>vignettes/vcf.Rmd</code></a></small>
       <div class="hidden name"><code>vcf.Rmd</code></div>
 
     </div>
 
     
     
-<div id="summary" class="section level1">
-<h1 class="hasAnchor">
-<a href="#summary" class="anchor"></a>Summary</h1>
+<div class="section level2">
+<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h2>
 <p>This vignette covers how to</p>
 <ol style="list-style-type: decimal">
 <li>Load read-count data from a VCF file into R using <code>VariantAnnotation</code>,</li>
@@ -114,40 +110,39 @@
 </ol>
 <p>We will need the following packages:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">VariantAnnotation</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/dcgerard/updog/">updog</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">ldsep</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">VariantAnnotation</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dcgerard/updog/" class="external-link">updog</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">ldsep</span><span class="op">)</span></code></pre></div>
 <p>If you do not have these packages installed, you can install them in R using:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ldsep"</span>, <span class="st">"updog"</span>, <span class="st">"BiocManager"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"VariantAnnotation"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ldsep"</span>, <span class="st">"updog"</span>, <span class="st">"BiocManager"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"VariantAnnotation"</span><span class="op">)</span></code></pre></div>
 <p>The following code chunks are only evaluated if all of these packages are installed. In particular, you need to make sure that your version of <code>updog</code> is at least 2.0.2.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"updog"</span><span class="op">)</span>
-<span class="co">#&gt; [1] '2.1.1'</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"updog"</span><span class="op">)</span>
+<span class="co">#&gt; [1] '2.1.2'</span></code></pre></div>
 </div>
-<div id="analysis" class="section level1">
-<h1 class="hasAnchor">
-<a href="#analysis" class="anchor"></a>Analysis</h1>
-<div id="extract-data-from-a-vcf-file-using-variantannotation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#extract-data-from-a-vcf-file-using-variantannotation" class="anchor"></a>Extract data from a VCF file using <code>VariantAnnotation</code>
+<div class="section level2">
+<h2 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
 </h2>
+<div class="section level3">
+<h3 id="extract-data-from-a-vcf-file-using-variantannotation">Extract data from a VCF file using <code>VariantAnnotation</code><a class="anchor" aria-label="anchor" href="#extract-data-from-a-vcf-file-using-variantannotation"></a>
+</h3>
 <p>The <code>ldsep</code> package comes with a VCF file containing a small (arbitrarily chosen) subset of the data from Uitdewilligen et. al. (2013). These data consist of a diversity panel of autotetraploid <em>Solanum tuberosum</em> (2n = 4x = 48). The location of this file on your computer can be found with:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">uit_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"subuit.vcf"</span>, 
+<code class="sourceCode R"><span class="va">uit_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"subuit.vcf"</span>, 
                         package <span class="op">=</span> <span class="st">"ldsep"</span>,
                         mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p>We will use the excellent <code>VariantAnnotation</code> package (Obenchain et. al., 2014) to load these data into R. You can read more about <code>VariantAnnotation</code> in its vignette: <a href="https://bioconductor.org/packages/release/bioc/vignettes/VariantAnnotation/inst/doc/VariantAnnotation.pdf" class="uri">https://bioconductor.org/packages/release/bioc/vignettes/VariantAnnotation/inst/doc/VariantAnnotation.pdf</a></p>
+<p>We will use the excellent <code>VariantAnnotation</code> package (Obenchain et. al., 2014) to load these data into R. You can read more about <code>VariantAnnotation</code> in its vignette: <a href="https://bioconductor.org/packages/release/bioc/vignettes/VariantAnnotation/inst/doc/VariantAnnotation.pdf" class="external-link uri">https://bioconductor.org/packages/release/bioc/vignettes/VariantAnnotation/inst/doc/VariantAnnotation.pdf</a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">subuit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/readVcf-methods.html">readVcf</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">uit_file</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">subuit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/readVcf-methods.html" class="external-link">readVcf</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">uit_file</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span>
 <span class="co">#&gt; [1] "CollapsedVCF"</span>
 <span class="co">#&gt; attr(,"package")</span>
 <span class="co">#&gt; [1] "VariantAnnotation"</span></code></pre></div>
 <p>A brief description of the genotype fields can be seen with</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCF-class.html">geno</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCFHeader-class.html">header</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCF-class.html" class="external-link">geno</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCFHeader-class.html" class="external-link">header</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; DataFrame with 8 rows and 3 columns</span>
 <span class="co">#&gt;         Number        Type            Description</span>
 <span class="co">#&gt;    &lt;character&gt; &lt;character&gt;            &lt;character&gt;</span>
@@ -159,22 +154,21 @@
 <span class="co">#&gt; AA           1     Integer Alternate allele obs..</span>
 <span class="co">#&gt; SR           1     Integer Number of reference ..</span>
 <span class="co">#&gt; SA           1     Integer Number of alternate ..</span></code></pre></div>
-<p>See the Samtools website for a more detailed description of the format and the genotype fields in a VCF file: <a href="http://samtools.github.io/hts-specs/" class="uri">http://samtools.github.io/hts-specs/</a></p>
-<p>To format these data for genotyping in <code>updog</code>, we need the total read-depth, which in this VCF file is the <code>DP</code> field, and we need the read-depth for the reference allele, which in this VCF file is the <code>RA</code> field. You should read the <a href="http://samtools.github.io/hts-specs/">VCF documentation</a> (and the documentation of the software that created the VCF) very carefully, because you might need to work with other genotype fields to obtain read-counts. For example, in many VCF files you need to work with the <code>AD</code> field that contains the read-depth for each allele.</p>
+<p>See the Samtools website for a more detailed description of the format and the genotype fields in a VCF file: <a href="http://samtools.github.io/hts-specs/" class="external-link uri">http://samtools.github.io/hts-specs/</a></p>
+<p>To format these data for genotyping in <code>updog</code>, we need the total read-depth, which in this VCF file is the <code>DP</code> field, and we need the read-depth for the reference allele, which in this VCF file is the <code>RA</code> field. You should read the <a href="http://samtools.github.io/hts-specs/" class="external-link">VCF documentation</a> (and the documentation of the software that created the VCF) very carefully, because you might need to work with other genotype fields to obtain read-counts. For example, in many VCF files you need to work with the <code>AD</code> field that contains the read-depth for each allele.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sizemat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCF-class.html">geno</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span><span class="op">$</span><span class="va">DP</span>
-<span class="va">refmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCF-class.html">geno</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span><span class="op">$</span><span class="va">RA</span></code></pre></div>
+<code class="sourceCode R"><span class="va">sizemat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCF-class.html" class="external-link">geno</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span><span class="op">$</span><span class="va">DP</span>
+<span class="va">refmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/VariantAnnotation/man/VCF-class.html" class="external-link">geno</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span><span class="op">$</span><span class="va">RA</span></code></pre></div>
 <p>These are matrices where the rows index the loci and the columns index the individuals. That is, <code>sizemat[i, j]</code> is the total read-count at SNP <code>i</code> for individual <code>j</code>, while <code>refmat[i, j]</code> is the reference read-count at SNP <code>i</code> for individual <code>j</code>.</p>
 </div>
-<div id="genotype-individuals-using-updog" class="section level2">
-<h2 class="hasAnchor">
-<a href="#genotype-individuals-using-updog" class="anchor"></a>Genotype individuals using <code>updog</code>
-</h2>
-<p>To genotype these individuals, we will use the <code><a href="https://rdrr.io/pkg/updog/man/multidog.html">multidog()</a></code> function from the <code>updog</code> R package (Gerard et. al., 2018; Gerard and Ferrão, 2020). We could use other genotyping programs, as long as they return genotype log-likelihoods.</p>
+<div class="section level3">
+<h3 id="genotype-individuals-using-updog">Genotype individuals using <code>updog</code><a class="anchor" aria-label="anchor" href="#genotype-individuals-using-updog"></a>
+</h3>
+<p>To genotype these individuals, we will use the <code><a href="https://rdrr.io/pkg/updog/man/multidog.html" class="external-link">multidog()</a></code> function from the <code>updog</code> R package (Gerard et. al., 2018; Gerard and Ferrão, 2020). We could use other genotyping programs, as long as they return genotype log-likelihoods.</p>
 <p>We will use <code>model = "norm"</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span>
-<span class="va">mout</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/multidog.html">multidog</a></span><span class="op">(</span>refmat <span class="op">=</span> <span class="va">refmat</span>, 
+<span class="va">mout</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/multidog.html" class="external-link">multidog</a></span><span class="op">(</span>refmat <span class="op">=</span> <span class="va">refmat</span>, 
                  sizemat <span class="op">=</span> <span class="va">sizemat</span>, 
                  ploidy <span class="op">=</span> <span class="va">ploidy</span>, 
                  model <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span>
@@ -211,48 +205,47 @@
 <span class="co">#&gt; done!</span></code></pre></div>
 <p>We can plot some of the SNPs in a genotype plot (Gerard et. al., 2018) to evaluate the accuracy of the genotyping:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mout</span>, indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">subuit</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mout</span>, indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">14</span>, <span class="fl">19</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="vcf_files/figure-html/unnamed-chunk-9-1.png" width="25%"><img src="vcf_files/figure-html/unnamed-chunk-9-2.png" width="25%"><img src="vcf_files/figure-html/unnamed-chunk-9-3.png" width="25%"></p>
-<p>We probably want to filter out SNPs that are mostly monoallelic. We can do that with <code><a href="https://rdrr.io/pkg/updog/man/filter_snp.html">filter_snp()</a></code>.</p>
+<p>We probably want to filter out SNPs that are mostly monoallelic. We can do that with <code><a href="https://rdrr.io/pkg/updog/man/filter_snp.html" class="external-link">filter_snp()</a></code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">msub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/filter_snp.html">filter_snp</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mout</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">Pr_0</span>, <span class="va">Pr_1</span>, <span class="va">Pr_2</span>, <span class="va">Pr_3</span>, <span class="va">Pr_4</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.95</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">msub</span><span class="op">$</span><span class="va">snpdf</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">msub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/filter_snp.html" class="external-link">filter_snp</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">mout</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">Pr_0</span>, <span class="va">Pr_1</span>, <span class="va">Pr_2</span>, <span class="va">Pr_3</span>, <span class="va">Pr_4</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.95</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">msub</span><span class="op">$</span><span class="va">snpdf</span><span class="op">)</span>
 <span class="co">#&gt; [1] 10</span></code></pre></div>
-<p>We can obtain the genotype log-likelihoods, in the appropriate format used in <code>ldesp</code>, with <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog()</a></code>.</p>
+<p>We can obtain the genotype log-likelihoods, in the appropriate format used in <code>ldesp</code>, with <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">format_multidog()</a></code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">varnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">varnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span>
 <span class="va">varnames</span>
 <span class="co">#&gt; [1] "logL_0" "logL_1" "logL_2" "logL_3" "logL_4"</span>
-<span class="va">larray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">msub</span>, varname <span class="op">=</span> <span class="va">varnames</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">larray</span><span class="op">)</span>
+<span class="va">larray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">msub</span>, varname <span class="op">=</span> <span class="va">varnames</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">larray</span><span class="op">)</span>
 <span class="co">#&gt; [1] "array"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">larray</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">larray</span><span class="op">)</span>
 <span class="co">#&gt; [1] 10 84  5</span></code></pre></div>
 <p>This is a three-way array of genotype <em>log</em>-likelihoods. The first dimension indexes the SNPs, the second dimension indexes the individuals, and the third dimension indexes the genotypes. That is, <code>larray[i, j, k]</code> is the genotype log-likelihood at SNP <code>i</code> for individual <code>j</code> and dosage <code>k - 1</code>.</p>
-<p>It is possible to also just use the posterior means for LD estimation (doing so will result in speed gains but a loss of accuracy). You can extract the posterior means also using <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog()</a></code>.</p>
+<p>It is possible to also just use the posterior means for LD estimation (doing so will result in speed gains but a loss of accuracy). You can extract the posterior means also using <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">format_multidog()</a></code>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pmmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">msub</span>, varname <span class="op">=</span> <span class="st">"postmean"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">pmmat</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">pmmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">msub</span>, varname <span class="op">=</span> <span class="st">"postmean"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">pmmat</span><span class="op">)</span>
 <span class="co">#&gt; [1] "matrix" "array"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">pmmat</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">pmmat</span><span class="op">)</span>
 <span class="co">#&gt; [1] 10 84</span></code></pre></div>
 <p>This is a matrix of posterior mean genotypes. That is, <code>pmmat[i, j]</code> is the posterior mean genotype at SNP <code>i</code> for individual <code>j</code>.</p>
 </div>
-<div id="extracting-log-likelihoods-using-fitpoly" class="section level2">
-<h2 class="hasAnchor">
-<a href="#extracting-log-likelihoods-using-fitpoly" class="anchor"></a>Extracting Log-likelihoods using <code>fitPoly</code>
-</h2>
+<div class="section level3">
+<h3 id="extracting-log-likelihoods-using-fitpoly">Extracting Log-likelihoods using <code>fitPoly</code><a class="anchor" aria-label="anchor" href="#extracting-log-likelihoods-using-fitpoly"></a>
+</h3>
 <p>We will also demonstrate how to use the genotyping program, <code>fitPoly</code> (Voorrips et. al., 2011; Zych et. al., 2019), to obtain genotype log-likelihoods. None of these code chunks are run by default because I did not want to include more dependencies that are just used in the vignette. You can run these code chunks manually. Makes sure you have the <code>fitPoly</code> and <code>reshape2</code> packages installed:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages(c("fitPoly", "reshape2"))</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">fitPoly</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape">reshape2</a></span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">fitPoly</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape" class="external-link">reshape2</a></span><span class="op">)</span></code></pre></div>
 <p>We will first need to format the VCF data appropriately for use in <code>fitPoly</code>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ratiodf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html">melt</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">refmat</span> <span class="op">/</span> <span class="va">sizemat</span>, 
-                varnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span><span class="op">)</span>, 
+<code class="sourceCode R"><span class="va">ratiodf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">refmat</span> <span class="op">/</span> <span class="va">sizemat</span>, 
+                varnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span><span class="op">)</span>, 
                 value.name <span class="op">=</span> <span class="st">"ratio"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/fitPoly/man/saveMarkerModels.html">saveMarkerModels</a></span><span class="op">(</span>ploidy <span class="op">=</span> <span class="va">ploidy</span>, 
+<span class="fu"><a href="https://rdrr.io/pkg/fitPoly/man/saveMarkerModels.html" class="external-link">saveMarkerModels</a></span><span class="op">(</span>ploidy <span class="op">=</span> <span class="va">ploidy</span>, 
                  data <span class="op">=</span> <span class="va">ratiodf</span>, 
                  filePrefix <span class="op">=</span> <span class="st">"uit"</span>,
                  rdaFiles <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
@@ -263,28 +256,28 @@
 </ol>
 <p>We’ll load these data frames into R now.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"./uit_scores.RData"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"./uit_models.RData"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"./uit_scores.RData"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"./uit_models.RData"</span><span class="op">)</span></code></pre></div>
 <p>We will again filter out SNPs that are monoallelic:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">modeldata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">modeldata</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">P0</span>, <span class="va">P1</span>, <span class="va">P2</span>, <span class="va">P3</span>, <span class="va">P4</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.95</span><span class="op">)</span>
-<span class="va">scores</span> <span class="op">&lt;-</span> <span class="va">scores</span><span class="op">[</span><span class="va">scores</span><span class="op">$</span><span class="va">MarkerName</span> <span class="op">%in%</span> <span class="va">modeldata</span><span class="op">$</span><span class="va">MarkerName</span>, <span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span class="va">modeldata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/subset.html" class="external-link">subset</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">modeldata</span>, subset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">P0</span>, <span class="va">P1</span>, <span class="va">P2</span>, <span class="va">P3</span>, <span class="va">P4</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.95</span><span class="op">)</span>
+<span class="va">scores</span> <span class="op">&lt;-</span> <span class="va">scores</span><span class="op">[</span><span class="va">scores</span><span class="op">$</span><span class="va">MarkerName</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">modeldata</span><span class="op">$</span><span class="va">MarkerName</span>, <span class="op">]</span></code></pre></div>
 <p><code>fitPoly</code> only provides posterior genotype probabilities (in the <code>scores</code> data frame), not genotype likelihoods. But we can divide these posterior probabilities by the provided prior probabilities (in the <code>modeldata</code> data frame) and use these as genotype likelihoods. They aren’t quite genotype likelihoods, but they are up to a proportional constant that does not depend on any parameters, and so would result in the same MLEs as using the real genotype likelihoods. This does create a little bit more work for us, formatting-wise, however.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mergedf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">scores</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, 
-                 y <span class="op">=</span> <span class="va">modeldata</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, 
+<code class="sourceCode R"><span class="va">mergedf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">scores</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, 
+                 y <span class="op">=</span> <span class="va">modeldata</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>, 
                  by <span class="op">=</span> <span class="st">"MarkerName"</span>, 
                  all.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">current_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="va">i</span>, <span class="st">".x"</span><span class="op">)</span>
-  <span class="va">current_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="va">i</span>, <span class="st">".y"</span><span class="op">)</span>  
-  <span class="va">current_ll</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="va">i</span><span class="op">)</span>
-  <span class="va">mergedf</span><span class="op">[[</span><span class="va">current_ll</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">mergedf</span><span class="op">[[</span><span class="va">current_post</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">mergedf</span><span class="op">[[</span><span class="va">current_prior</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+  <span class="va">current_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="va">i</span>, <span class="st">".x"</span><span class="op">)</span>
+  <span class="va">current_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"P"</span>, <span class="va">i</span>, <span class="st">".y"</span><span class="op">)</span>  
+  <span class="va">current_ll</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="va">i</span><span class="op">)</span>
+  <span class="va">mergedf</span><span class="op">[[</span><span class="va">current_ll</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">mergedf</span><span class="op">[[</span><span class="va">current_post</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">mergedf</span><span class="op">[[</span><span class="va">current_prior</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="va">fp_llarray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/cast.html">acast</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html">melt</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mergedf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
-       id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span><span class="op">)</span>, 
+<span class="va">fp_llarray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/cast.html" class="external-link">acast</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html" class="external-link">melt</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mergedf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"logL_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>,
+       id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MarkerName"</span>, <span class="st">"SampleName"</span><span class="op">)</span>, 
        variable.name <span class="op">=</span> <span class="st">"dosage"</span>, 
        value.name <span class="op">=</span> <span class="st">"logl"</span><span class="op">)</span>,
   formula <span class="op">=</span> <span class="st">"MarkerName ~ SampleName ~ dosage"</span>, 
@@ -293,32 +286,31 @@
 <p>We can now, if we choose, use <code>fp_llarray</code> instead of <code>larray</code> in what follows. That is, <code>fp_llarray[i, j, k]</code> is the genotype log-likelihood at SNP <code>i</code> for individual <code>j</code> and dosage <code>k - 1</code>.</p>
 <p>Note that for sequencing data, <code>updog</code> will generally perform better than <code>fitPoly</code>, as <code>fitPoly</code> was designed for microarray data. But for microarray data, <code>fitPoly</code> works really well.</p>
 </div>
-<div id="estimate-ld-using-ldsep" class="section level2">
-<h2 class="hasAnchor">
-<a href="#estimate-ld-using-ldsep" class="anchor"></a>Estimate LD using <code>ldsep</code>
-</h2>
+<div class="section level3">
+<h3 id="estimate-ld-using-ldsep">Estimate LD using <code>ldsep</code><a class="anchor" aria-label="anchor" href="#estimate-ld-using-ldsep"></a>
+</h3>
 <p>We will now demonstrate how to estimate LD using the <code>ldsep</code> package (Gerard, 2021). To estimate LD using maximum likelihood, directly from genotype log-likelihoods, we will use <code><a href="../reference/mldest.html">mldest()</a></code> with the array of genotype log-likelihoods.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">like_ld</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mldest.html">mldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">larray</span>, K <span class="op">=</span> <span class="va">ploidy</span>, type <span class="op">=</span> <span class="st">"comp"</span><span class="op">)</span></code></pre></div>
-<p>We can visualize the LD estimates using <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code></p>
+<p>We can visualize the LD estimates using <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">like_ld</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">like_ld</span><span class="op">)</span></code></pre></div>
 <p><img src="vcf_files/figure-html/unnamed-chunk-19-1.png" width="50%"></p>
 <p>The naive LD estimates (using just sample moments) with the posterior mean can also be found using <code><a href="../reference/mldest.html">mldest()</a></code>:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mom_ld</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mldest.html">mldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">pmmat</span>, K <span class="op">=</span> <span class="va">ploidy</span>, type <span class="op">=</span> <span class="st">"comp"</span><span class="op">)</span></code></pre></div>
 <p>The larger naive LD estimates are noticeably attenuated toward zero (due to the influence of genotype uncertainty).</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mom_ld</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mom_ld</span><span class="op">)</span></code></pre></div>
 <p><img src="vcf_files/figure-html/unnamed-chunk-21-1.png" width="50%"></p>
 <p>It is easier to see this attenuation in a scatterplot. The red, dashed line is the y=x line and any points above this line are pairs of SNPs where the LD was estimated to be larger by the MLE method compared to the naive method. The larger LD values are much more attenuated using the naive approach.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.4</span>, <span class="fl">2.8</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span>, mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.8</span>, <span class="fl">0.6</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">mom_ld</span><span class="op">$</span><span class="va">r2</span>, <span class="va">like_ld</span><span class="op">$</span><span class="va">r2</span>, 
-     xlab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">textstyle</a></span><span class="op">(</span><span class="va">Naive</span><span class="op">)</span>, <span class="op">~</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, 
-     ylab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">textstyle</a></span><span class="op">(</span><span class="va">MLE</span><span class="op">)</span>, <span class="op">~</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html">hat</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, 
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.4</span>, <span class="fl">2.8</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span>, mgp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.8</span>, <span class="fl">0.6</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mom_ld</span><span class="op">$</span><span class="va">r2</span>, <span class="va">like_ld</span><span class="op">$</span><span class="va">r2</span>, 
+     xlab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">textstyle</a></span><span class="op">(</span><span class="va">Naive</span><span class="op">)</span>, <span class="op">~</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, 
+     ylab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">textstyle</a></span><span class="op">(</span><span class="va">MLE</span><span class="op">)</span>, <span class="op">~</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/grDevices/plotmath.html" class="external-link">hat</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, 
      pch  <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, lty <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, lty <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p><img src="vcf_files/figure-html/unnamed-chunk-22-1.png" width="480"></p>
 <p>Finally, these LD estimates may be obtained in matrix form using <code><a href="../reference/format_lddf.html">format_lddf()</a></code>.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
@@ -326,22 +318,22 @@
 <span class="va">ldmat</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
 <span class="co">#&gt;               PotVar0070390 PotVar0070392 PotVar0070393 PotVar0070394</span>
 <span class="co">#&gt; PotVar0070390            NA    0.01382084    0.01314104    0.52714843</span>
-<span class="co">#&gt; PotVar0070392            NA            NA    0.45734767    0.03635891</span>
-<span class="co">#&gt; PotVar0070393            NA            NA            NA    0.05895740</span>
+<span class="co">#&gt; PotVar0070392            NA            NA    0.45734767    0.03634882</span>
+<span class="co">#&gt; PotVar0070393            NA            NA            NA    0.05895743</span>
 <span class="co">#&gt; PotVar0070394            NA            NA            NA            NA</span></code></pre></div>
 </div>
 </div>
-<div id="references" class="section level1">
-<h1 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h1>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <ul>
-<li><p>Gerard, David (2021). “Pairwise Linkage Disequilibrium Estimation for Polyploids.” <em>Molecular Ecology Resources</em>, <em>21</em>(4), 1230–1242. <a href="https://doi.org/10.1111/1755-0998.13349">doi:10.1111/1755-0998.13349</a>.</p></li>
-<li><p>Gerard D, Ferrão L (2020). “Priors for Genotyping Polyploids.” <em>Bioinformatics</em>, <em>36</em>(6), 1795-1800. ISSN 1367-4803, <a href="https://doi.org/10.1093/bioinformatics/btz852">doi:10.1093/bioinformatics/btz852</a>.</p></li>
-<li><p>Gerard D, Ferrão L, Garcia A, Stephens M (2018). “Genotyping Polyploids from Messy Sequencing Data.” <em>Genetics</em>, <em>210</em>(3), 789-807. ISSN 0016-6731, <a href="https://doi.org/10.1534/genetics.118.301468">doi:10.1534/genetics.118.301468</a>.</p></li>
-<li><p>Obenchain V, Lawrence M, Carey V, Gogarten S, Shannon P, Morgan M (2014). “VariantAnnotation: a Bioconductor package for exploration and annotation of genetic variants.” <em>Bioinformatics</em>, <em>30</em>(14), 2076-2078. <a href="https://doi.org/10.1093/bioinformatics/btu168">doi:10.1093/bioinformatics/btu168</a>.</p></li>
-<li><p>Uitdewilligen JGAML, Wolters AA, D’hoop BB, Borm TJA, Visser RGF, and van Eck HJ (2013). “A next-generation sequencing method for genotyping-by-sequencing of highly heterozygous autotetraploid potato.” <em>PloS one</em> <em>8</em>(5), e62355. <a href="https://doi.org/10.1371/journal.pone.0062355">doi:10.1371/journal.pone.0062355</a></p></li>
-<li><p>Voorrips RE, Gort G, and Vosman B (2011). “Genotype calling in tetraploid species from bi-allelic marker data using mixture models.” <em>BMC Bioinformatics</em>, <em>12</em>(1), 172. <a href="https://doi.org/10.1186/1471-2105-12-172">doi:10.1186/1471-2105-12-172</a>.</p></li>
-<li><p>Zych K, Gort G, Maliepaard CA, Jansen RC, and Voorrips RE (2019). “FitTetra 2.0–improved genotype calling for tetraploids with multiple population and parental data support.” <em>BMC bioinformatics</em>, <em>20</em>(1), 148. <a href="https://doi.org/10.1186/s12859-019-2703-y">doi:10.1186/s12859-019-2703-y</a>.</p></li>
+<li><p>Gerard, David (2021). “Pairwise Linkage Disequilibrium Estimation for Polyploids.” <em>Molecular Ecology Resources</em>, <em>21</em>(4), 1230–1242. <a href="https://doi.org/10.1111/1755-0998.13349" class="external-link">doi:10.1111/1755-0998.13349</a>.</p></li>
+<li><p>Gerard D, Ferrão L (2020). “Priors for Genotyping Polyploids.” <em>Bioinformatics</em>, <em>36</em>(6), 1795-1800. ISSN 1367-4803, <a href="https://doi.org/10.1093/bioinformatics/btz852" class="external-link">doi:10.1093/bioinformatics/btz852</a>.</p></li>
+<li><p>Gerard D, Ferrão L, Garcia A, Stephens M (2018). “Genotyping Polyploids from Messy Sequencing Data.” <em>Genetics</em>, <em>210</em>(3), 789-807. ISSN 0016-6731, <a href="https://doi.org/10.1534/genetics.118.301468" class="external-link">doi:10.1534/genetics.118.301468</a>.</p></li>
+<li><p>Obenchain V, Lawrence M, Carey V, Gogarten S, Shannon P, Morgan M (2014). “VariantAnnotation: a Bioconductor package for exploration and annotation of genetic variants.” <em>Bioinformatics</em>, <em>30</em>(14), 2076-2078. <a href="https://doi.org/10.1093/bioinformatics/btu168" class="external-link">doi:10.1093/bioinformatics/btu168</a>.</p></li>
+<li><p>Uitdewilligen JGAML, Wolters AA, D’hoop BB, Borm TJA, Visser RGF, and van Eck HJ (2013). “A next-generation sequencing method for genotyping-by-sequencing of highly heterozygous autotetraploid potato.” <em>PloS one</em> <em>8</em>(5), e62355. <a href="https://doi.org/10.1371/journal.pone.0062355" class="external-link">doi:10.1371/journal.pone.0062355</a></p></li>
+<li><p>Voorrips RE, Gort G, and Vosman B (2011). “Genotype calling in tetraploid species from bi-allelic marker data using mixture models.” <em>BMC Bioinformatics</em>, <em>12</em>(1), 172. <a href="https://doi.org/10.1186/1471-2105-12-172" class="external-link">doi:10.1186/1471-2105-12-172</a>.</p></li>
+<li><p>Zych K, Gort G, Maliepaard CA, Jansen RC, and Voorrips RE (2019). “FitTetra 2.0–improved genotype calling for tetraploids with multiple population and parental data support.” <em>BMC bioinformatics</em>, <em>20</em>(1), 148. <a href="https://doi.org/10.1186/s12859-019-2703-y" class="external-link">doi:10.1186/s12859-019-2703-y</a>.</p></li>
 </ul>
 </div>
   </div>
@@ -357,11 +349,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by David Gerard.</p>
+  <p></p>
+<p>Developed by David Gerard.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -369,6 +363,8 @@
 
   
 
+
+  
 
   </body>
 </html>
