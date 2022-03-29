@@ -1,3 +1,7 @@
+# ldsep 2.1.5
+
+- Bug fix: Use `&&` instead of `&` in C++ source.
+
 # ldsep 2.1.4
 
 - Use unnamed formula argument in `aggregate()` to account for change in R.
@@ -32,12 +36,12 @@
 
 # ldsep 1.1.0
 
-* I have changed the terminology from "gametic LD" to "haplotypic" LD,
+- I have changed the terminology from "gametic LD" to "haplotypic" LD,
   and so all instances of "gametic" have changed to "haplotypic". A breaking
   change is that all options that were `"gam"` are now `"hap"`.
-* Fixed an issue where the title in `plot.lddf()` was being cut off.
-* Added a reference to the preprint where the methodology is developed.
-* Updated the vignette to also take a user through uploading a VCF file
+- Fixed an issue where the title in `plot.lddf()` was being cut off.
+- Added a reference to the preprint where the methodology is developed.
+- Updated the vignette to also take a user through uploading a VCF file
   into R using the `VariantAnnotation` package. We also provided
   examples on formatting genotype likelihoods from `updog` and 
   `fitpoly`.

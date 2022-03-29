@@ -333,17 +333,17 @@ arma::vec dDprime_dprob(const arma::vec prob) {
   double ddenom_dp2;
   double ddenom_dp3;
 
-  if ((D < 0.0) & (pA * pB > (1.0 - pA) * (1.0 - pB))) {
+  if ((D < 0.0) && (pA * pB > (1.0 - pA) * (1.0 - pB))) {
     denom = (1.0 - pA) * (1.0 - pB);
     ddenom_dp1 = (1.0 - pB) + (1.0 - pA);
     ddenom_dp2 = (1.0 - pA);
     ddenom_dp3 = (1.0 - pB);
-  } else if ((D < 0.0) & (pA * pB < (1.0 - pA) * (1.0 - pB))) {
+  } else if ((D < 0.0) && (pA * pB < (1.0 - pA) * (1.0 - pB))) {
     denom = pA * pB;
     ddenom_dp1 = -pB - pA;
     ddenom_dp2 = -pA;
     ddenom_dp3 = -pB;
-  } else if ((D > 0.0) & (pA * (1.0 - pB) > (1.0 - pA) * pB)) {
+  } else if ((D > 0.0) && (pA * (1.0 - pB) > (1.0 - pA) * pB)) {
     denom = (1.0 - pA) * pB;
     ddenom_dp1 = pB - (1.0 - pA);
     ddenom_dp2 = -(1.0 - pA);

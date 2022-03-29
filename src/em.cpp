@@ -100,8 +100,8 @@ arma::vec em_fix(const arma::vec &p,
       }
     }
   }
-  if ((alpha(0) > 1.0) & (alpha(1) > 1.0) &
-      (alpha(2) > 1.0) & (alpha(3) > 1.0)) {
+  if ((alpha(0) > 1.0) && (alpha(1) > 1.0) &
+      (alpha(2) > 1.0) && (alpha(3) > 1.0)) {
     pnew = plog_sum_exp(pnew, arma::log(alpha - 1.0));
     pnew = arma::exp(pnew - log_sum_exp(pnew));
   } else {
@@ -225,7 +225,7 @@ arma::vec genolike_em(arma::vec p,
 
   double err = tol + 1.0;
   int iternum = 0;
-  while ((err > tol) & (iternum < maxit)) {
+  while ((err > tol) && (iternum < maxit)) {
     pold = p;
 
     if (!square) {
@@ -331,7 +331,7 @@ arma::mat em_jointgeno(arma::mat p,
   // EM-algorithm -------------------------------------------------------------
   double err = tol + 1.0;
   int iternum = 0;
-  while ((err > tol) & (iternum < maxit)) {
+  while ((err > tol) && (iternum < maxit)) {
     lval_old = lval;
 
     // EM-iteration -----------------------------------------------------------
@@ -598,7 +598,7 @@ arma::vec ddprime_dqlm(arma::mat p, arma::vec dgrad, double D, double Dm) {
   double ddeltam_dqlm;
   int ind;
 
-  if ((D < 0) & ((ega * egb) < (((double)K - ega) * ((double)K - egb)))) {
+  if ((D < 0) && ((ega * egb) < (((double)K - ega) * ((double)K - egb)))) {
     for (int i = 0; i <= K; i++) {
       for (int j = 0; j <= K; j++) {
         ind = j * (K + 1) + i;
@@ -606,7 +606,7 @@ arma::vec ddprime_dqlm(arma::mat p, arma::vec dgrad, double D, double Dm) {
         grad(ind) += -1.0 * D * ddeltam_dqlm / std::pow(Dm, 2.0);
       }
     }
-  } else if ((D < 0) & ((ega * egb) > (((double)K - ega) * ((double)K - egb)))) {
+  } else if ((D < 0) && ((ega * egb) > (((double)K - ega) * ((double)K - egb)))) {
     for (int i = 0; i <= K; i++) {
       for (int j = 0; j <= K; j++) {
         ind = j * (K + 1) + i;
@@ -614,7 +614,7 @@ arma::vec ddprime_dqlm(arma::mat p, arma::vec dgrad, double D, double Dm) {
         grad(ind) += -1.0 * D * ddeltam_dqlm / std::pow(Dm, 2.0);
       }
     }
-  } else if ((D > 0) & ((ega * ((double)K - egb)) < (((double)K - ega) * egb))) {
+  } else if ((D > 0) && ((ega * ((double)K - egb)) < (((double)K - ega) * egb))) {
     for (int i = 0; i <= K; i++) {
       for (int j = 0; j <= K; j++) {
         ind = j * (K + 1) + i;
