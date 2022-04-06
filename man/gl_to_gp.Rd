@@ -4,16 +4,16 @@
 \alias{gl_to_gp}
 \title{Normalize genotype log-likelihoods to posterior probabilities.}
 \usage{
-gl_to_gp(gl, prior = log(rep(1/dim(gl)[[3]], dim(gl)[[3]])))
+gl_to_gp(gl, prior_mat = NULL)
 }
 \arguments{
 \item{gl}{A three dimensional array of genotype \emph{log}-likelihoods.
 Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
 \code{k} for individual \code{j} at SNP \code{i}.}
 
-\item{prior}{A vector of log-prior probabilities for each genotype. Element
-\code{k} is the log-prior probability of genotype \code{k}. Default
-is a uniform prior.}
+\item{prior_mat}{A matrix of log-prior probabilities for each genotype.
+\code{prior_mat[i, k]} is the log-prior probability of genotype \code{k}
+at locus \code{j}. Default is a uniform prior at all loci.}
 }
 \value{
 A three-dimensional array, of the same dimensions as \code{gl},

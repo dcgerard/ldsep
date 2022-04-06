@@ -7,6 +7,7 @@
 ldfast(
   gp,
   type = c("r", "r2", "z", "D", "Dprime"),
+  prior_type = c("adaptive", "unif"),
   shrinkrr = TRUE,
   se = TRUE,
   thresh = TRUE,
@@ -30,6 +31,10 @@ dosage \code{k-1} for individual \code{j} at SNP \code{i}.}
 }
 Note that these are all \emph{composite} measures of LD (see
 the description in \code{\link{ldest}()}).}
+
+\item{prior_type}{What type of prior did you use to get \code{gp}?
+An adaptive prior (\code{"adaptive"}) or a uniform prior
+(\code{"unif"})?}
 
 \item{shrinkrr}{A logical. Should we use adaptive shrinkage
 (Stephens, 2016) to shrink the reliability ratios (\code{TRUE})

@@ -7,9 +7,10 @@ test_that("gl_to_gp works", {
   expect_true(all(abs(apply(X = gp2, MARGIN = c(1, 2), FUN = sum) - 1) < 10^-5))
   expect_true(all(apply(X = exp(glike) / gp2, MARGIN = c(1, 2), FUN = var) < 10^-5))
 
-  prior_vec <- 1:5
-  prior_vec <- log(prior_vec / sum(prior_vec))
-  gp3 <- ldsep::gl_to_gp(gl = glike, prior = prior_vec)
+  prior_mat <- 1:prod(dim(glike)[c(1, 3)])
+  dim(prior_mat) <- dim(glike)[c(1, 3)]
+  prior_mat <- log(prior_mat / rowSums(prior_mat))
+  gp3 <- ldsep::gl_to_gp(gl = glike, prior = prior_mat)
   expect_true(all(abs(apply(X = gp3, MARGIN = c(1, 2), FUN = sum) - 1) < 10^-5))
 })
 

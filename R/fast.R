@@ -80,6 +80,9 @@
 #'     }
 #'     Note that these are all \emph{composite} measures of LD (see
 #'     the description in \code{\link{ldest}()}).
+#' @param prior_type What type of prior did you use to get \code{gp}?
+#'     An adaptive prior (\code{"adaptive"}) or a uniform prior
+#'     (\code{"unif"})?
 #' @param se Should we also return a matrix of standard errors (\code{TRUE})
 #'     or not (\code{FALSE})? It is faster to not return standard errors.
 #'     Defaults to \code{TRUE}.
@@ -153,6 +156,7 @@
 #' @export
 ldfast <- function(gp,
                    type = c("r", "r2", "z", "D", "Dprime"),
+                   prior_type = c("adaptive", "unif"),
                    shrinkrr = TRUE,
                    se = TRUE,
                    thresh = TRUE,
@@ -174,6 +178,7 @@ ldfast <- function(gp,
     stopifnot(length(win) == 1, win > 0, win <= dim(gp)[[1]])
   }
   type <- match.arg(type)
+  prior_type <- match.arg(prior_type)
   mode <- match.arg(mode)
 
   nsnp <- dim(gp)[[1]]
@@ -189,11 +194,18 @@ ldfast <- function(gp,
   varx <- matrixStats::rowVars(x = pm_mat, na.rm = TRUE)
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
 
-  ## Calculate reliability ratios ---------------------------------------------
-  ## after this step rr should be for correlation, *not* for covariance
-  rr_raw <- (muy + varx) / varx
-  rr_raw[is.nan(rr_raw)] <- NA_real_
-  if (shrinkrr) {
+  ## Calculate reliability ratios for covariance ------------------------------
+  if (prior_type == "adaptive") {
+    rr_raw <- (muy + varx) / varx
+    rr_raw[is.nan(rr_raw)] <- NA_real_
+  } else if (prior_type == "unif") {
+    rr_raw <- varx / (varx - muy)
+    rr_raw[is.nan(rr_raw)] <- NA_real_
+  }
+
+  ## Possible shrinkage and get final reliability ratios ----------------------
+  ## After this step rr should be for correlation, *not* for covariance
+  if (shrinkrr & prior_type == "adaptive") {
     amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
     mbar <- apply(X = amom, MARGIN = 3, FUN = rowMeans, na.rm = TRUE)
     covarray <- apply(X = amom, MARGIN = 1, FUN = stats::cov, use = "pairwise.complete.obs")
@@ -228,11 +240,20 @@ ldfast <- function(gp,
                         mixcompdist = "uniform",
                         mode = modest)
     rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
-  } else {
+  } else if (shrinkrr & prior_type == "unif") {
+    stop("shrinkrr = TRUE and prior_type = \"unif\" is not supported yet")
+  } else if (prior_type == "adaptive") {
     rr <- rr_raw
     if (thresh) {
       rr[rr > upper] <- stats::median(rr)
     }
+    rr <- sqrt(rr)
+  } else if (prior_type == "unif") {
+    rr <- rr_raw
+    if (thresh) {
+      rr[rr > upper] <- stats::median(rr)
+    }
+    rr[rr < 0] <- stats::median(rr)
     rr <- sqrt(rr)
   }
 
@@ -326,9 +347,9 @@ ldfast <- function(gp,
 #' @param gl A three dimensional array of genotype \emph{log}-likelihoods.
 #'     Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
 #'     \code{k} for individual \code{j} at SNP \code{i}.
-#' @param prior A vector of log-prior probabilities for each genotype. Element
-#'     \code{k} is the log-prior probability of genotype \code{k}. Default
-#'     is a uniform prior.
+#' @param prior_mat A matrix of log-prior probabilities for each genotype.
+#'     \code{prior_mat[i, k]} is the log-prior probability of genotype \code{k}
+#'     at locus \code{j}. Default is a uniform prior at all loci.
 #'
 #' @return A three-dimensional array, of the same dimensions as \code{gl},
 #'     containing the posterior probabilities of each dosage. This is not
@@ -343,15 +364,24 @@ ldfast <- function(gp,
 #' gl_to_gp(glike)
 #'
 #' @export
-gl_to_gp <- function(gl, prior = log(rep(1 / dim(gl)[[3]], dim(gl)[[3]]))) {
+gl_to_gp <- function(gl, prior_mat = NULL) {
+  if (is.null(prior_mat)) {
+    prior_mat <- log(matrix(1 / dim(gl)[[3]], nrow = dim(gl)[[1]], ncol = dim(gl)[[3]]))
+  }
   stopifnot(inherits(gl, "array"))
   stopifnot(length(dim(gl)) == 3)
-  stopifnot(length(prior) == dim(gl)[[3]],
-            exp(prior) <= 1,
-            abs(log_sum_exp(prior)) < sqrt(.Machine$double.eps))
+  stopifnot(dim(prior_mat) == dim(gl)[c(1, 3)],
+            exp(prior_mat) <= 1,
+            apply(prior_mat, 1, function(x) abs(log_sum_exp(x))) < sqrt(.Machine$double.eps))
 
-  gp <- apply(X = gl, MARGIN = c(1, 2), FUN = function(x) exp(x + prior - log_sum_exp(x + prior)))
-  gp <- aperm(gp, c(2, 3, 1))
+  gp <- array(NA_real_, dim = dim(gl))
+
+  for (i in seq_len(dim(gl)[[1]])) {
+    for (j in seq_len(dim(gl)[[2]])) {
+      gp[i, j, ] <- exp(gl[i, j, ] + prior_mat[i, ] - log_sum_exp(gl[i, j, ] + prior_mat[i, ]))
+    }
+  }
+
   return(gp)
 }
 
