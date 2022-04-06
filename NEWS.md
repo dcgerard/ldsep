@@ -18,6 +18,13 @@
 - Fixes a bug where monomorphic SNPs were causing errors when `type = "Dprime"` was selected in `ldfast()`. Now we just return `NA`'s for LD with monomorphic SNPs.
 - Uses the complete reference of Gerard (2021) [doi:10.1111/1755-0998.13349](https://www.doi.org/10.1111/1755-0998.13349).
 
+# ldsep 2.2.0
+
+- Adds `ldfast_unif()`, a method to estimate LD using a uniform genotype prior.
+- Significantly modifies `gl_to_gp()` to accept prior distributions.
+- Adds `est_prior_mat()`, which can be used to estimate prior genotype 
+  distributions using maximum marginal likelihood.
+
 # ldsep 2.0.2
 
 - Removes `ldfast_old()` and `ldfast_calc()`, which were not used in any 
