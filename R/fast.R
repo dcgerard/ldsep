@@ -80,9 +80,6 @@
 #'     }
 #'     Note that these are all \emph{composite} measures of LD (see
 #'     the description in \code{\link{ldest}()}).
-#' @param prior_type What type of prior did you use to get \code{gp}?
-#'     An adaptive prior (\code{"adaptive"}) or a uniform prior
-#'     (\code{"unif"})?
 #' @param se Should we also return a matrix of standard errors (\code{TRUE})
 #'     or not (\code{FALSE})? It is faster to not return standard errors.
 #'     Defaults to \code{TRUE}.
@@ -156,7 +153,6 @@
 #' @export
 ldfast <- function(gp,
                    type = c("r", "r2", "z", "D", "Dprime"),
-                   prior_type = c("adaptive", "unif"),
                    shrinkrr = TRUE,
                    se = TRUE,
                    thresh = TRUE,
@@ -178,7 +174,6 @@ ldfast <- function(gp,
     stopifnot(length(win) == 1, win > 0, win <= dim(gp)[[1]])
   }
   type <- match.arg(type)
-  prior_type <- match.arg(prior_type)
   mode <- match.arg(mode)
 
   nsnp <- dim(gp)[[1]]
@@ -195,17 +190,12 @@ ldfast <- function(gp,
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
 
   ## Calculate reliability ratios for covariance ------------------------------
-  if (prior_type == "adaptive") {
-    rr_raw <- (muy + varx) / varx
-    rr_raw[is.nan(rr_raw)] <- NA_real_
-  } else if (prior_type == "unif") {
-    rr_raw <- varx / (varx - muy)
-    rr_raw[is.nan(rr_raw)] <- NA_real_
-  }
+  rr_raw <- (muy + varx) / varx
+  rr_raw[is.nan(rr_raw)] <- NA_real_
 
   ## Possible shrinkage and get final reliability ratios ----------------------
   ## After this step rr should be for correlation, *not* for covariance
-  if (shrinkrr & prior_type == "adaptive") {
+  if (shrinkrr) {
     amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
     mbar <- apply(X = amom, MARGIN = 3, FUN = rowMeans, na.rm = TRUE)
     covarray <- apply(X = amom, MARGIN = 1, FUN = stats::cov, use = "pairwise.complete.obs")
@@ -240,20 +230,11 @@ ldfast <- function(gp,
                         mixcompdist = "uniform",
                         mode = modest)
     rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
-  } else if (shrinkrr & prior_type == "unif") {
-    stop("shrinkrr = TRUE and prior_type = \"unif\" is not supported yet")
-  } else if (prior_type == "adaptive") {
+  } else {
     rr <- rr_raw
     if (thresh) {
       rr[rr > upper] <- stats::median(rr)
     }
-    rr <- sqrt(rr)
-  } else if (prior_type == "unif") {
-    rr <- rr_raw
-    if (thresh) {
-      rr[rr > upper] <- stats::median(rr)
-    }
-    rr[rr < 0] <- stats::median(rr)
     rr <- sqrt(rr)
   }
 
@@ -332,6 +313,94 @@ ldfast <- function(gp,
 
     semat[which_truncate] <- NA_real_
     retlist$semat <- semat
+  }
+
+  return(retlist)
+}
+
+
+#' Scalable LD calculations assuming uniform prior
+#'
+#' @inheritParams ldfast
+#'
+#' @author David Gerard
+#'
+#' @noRd
+ldfast_unif <- function(gp,
+                        type = c("r", "r2", "z", "D", "Dprime"),
+                        shrinkrr = TRUE,
+                        se = TRUE,
+                        thresh = TRUE,
+                        upper = 10,
+                        mode = c("zero", "estimate")) {
+  ## Check input --------------------------------------------------------------
+  type <- match.arg(type)
+  mode <- match.arg(mode)
+
+  nsnp <- dim(gp)[[1]]
+  nind <- dim(gp)[[2]]
+  ploidy <- dim(gp)[[3]] - 1
+
+  ## Calculate posterior moments ----------------------------------------------
+  pm_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  pv_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  fill_pm(pm = pm_mat, gp = gp)
+  fill_pv(pv = pv_mat, pm = pm_mat, gp = gp)
+
+  varx <- matrixStats::rowVars(x = pm_mat, na.rm = TRUE)
+  muy <- rowMeans(x = pv_mat, na.rm = TRUE)
+
+  ## Calculate reliability ratios for covariance ------------------------------
+  if (type %in% c("r", "r2", "z")) {
+    rr_raw <- varx / (varx - muy)
+    rr_raw[is.nan(rr_raw)] <- NA_real_
+  } else if (type %in% c("D", "Dprime")) {
+    rr_raw <- rep(1.0, nsnp)
+  }
+
+  if (shrinkrr & type %in% c("r", "r2", "z")) {
+    stop("shrinkrr not supported for uniform method yet")
+  } else {
+    rr <- rr_raw
+    if (thresh) {
+      rr[rr > upper] <- stats::median(rr)
+    }
+    rr[rr < 0] <- stats::median(rr)
+    rr <- sqrt(rr)
+  }
+
+  if (type %in% c("r", "r2", "z")) {
+    ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
+    if (type == "r2") {
+      rr <- rr ^ 2
+      ldmat <- ldmat ^ 2
+    } else if (type == "z") {
+      ldmat <- atanh(ldmat)
+    }
+  } else if (type == "D") {
+    ldmat <- stats::cov(t(pm_mat), use = "pairwise.complete.obs") / ploidy
+  } else if (type == "Dprime") {
+    ldmat <- stats::cov(t(pm_mat), use = "pairwise.complete.obs") / ploidy
+    mux <- rowMeans(pm_mat, na.rm = TRUE)
+    deltam_neg <- pmin(outer(X = mux, Y = mux, FUN = `*`),
+                       outer(X = ploidy - mux, Y = ploidy - mux, FUN = `*`)) / ploidy ^ 2
+    deltam_pos <- pmin(outer(X = mux, Y = ploidy - mux, FUN = `*`),
+                       outer(X = ploidy - mux, Y = mux, FUN = `*`)) / ploidy ^ 2
+    ldmat[ldmat < 0 & !is.na(ldmat)] <- ldmat[ldmat < 0 & !is.na(ldmat)] / deltam_neg[ldmat < 0 & !is.na(ldmat)]
+    ldmat[ldmat > 0 & !is.na(ldmat)] <- ldmat[ldmat > 0 & !is.na(ldmat)] / deltam_pos[ldmat > 0 & !is.na(ldmat)]
+    ldmat[ldmat > ploidy] <- ploidy
+    ldmat[ldmat < -ploidy] <- -ploidy
+    diag(ldmat) <- ploidy
+  } else {
+    stop("ldfast_unif: type not found")
+  }
+
+  ## Return list --------------------------------------------------------------
+  retlist <- list(ldmat = ldmat, rr = rr)
+
+  ## Add se's if user wants ---------------------------------------------------
+  if (se) {
+    stop("lfast_unif: se not supported yet")
   }
 
   return(retlist)
