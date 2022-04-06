@@ -316,19 +316,23 @@ ldfast <- function(gp,
   return(retlist)
 }
 
-#' Normalize genotype likelihoods to posterior probabilities.
+#' Normalize genotype log-likelihoods to posterior probabilities.
 #'
-#' This will take genotype log-likelihoods and normalize them to
-#' sum to one. This corresponds to using a naive discrete uniform prior
-#' over the genotypes. It is not generally recommended that you use this
-#' function.
+#' This will take genotype log-likelihoods and a log-prior vector
+#' and return genotype posteriors. The default corresponds to using a
+#' naive discrete uniform prior over the genotypes.
+#' It is not generally recommended to use a uniform prior.
 #'
 #' @param gl A three dimensional array of genotype \emph{log}-likelihoods.
 #'     Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
 #'     \code{k} for individual \code{j} at SNP \code{i}.
+#' @param prior A vector of log-prior probabilities for each genotype. Element
+#'     \code{k} is the log-prior probability of genotype \code{k}. Default
+#'     is a uniform prior.
 #'
 #' @return A three-dimensional array, of the same dimensions as \code{gl},
-#'     containing the posterior probabilities of each dosage.
+#'     containing the posterior probabilities of each dosage. This is not
+#'     on the log-scale.
 #'
 #' @author David Gerard
 #'
@@ -339,10 +343,14 @@ ldfast <- function(gp,
 #' gl_to_gp(glike)
 #'
 #' @export
-gl_to_gp <- function(gl) {
+gl_to_gp <- function(gl, prior = log(rep(1 / dim(gl)[[3]], dim(gl)[[3]]))) {
   stopifnot(inherits(gl, "array"))
   stopifnot(length(dim(gl)) == 3)
-  gp <- apply(X = gl, MARGIN = c(1, 2), FUN = function(x) exp(x - log_sum_exp(x)))
+  stopifnot(length(prior) == dim(gl)[[3]],
+            exp(prior) <= 1,
+            abs(log_sum_exp(prior)) < sqrt(.Machine$double.eps))
+
+  gp <- apply(X = gl, MARGIN = c(1, 2), FUN = function(x) exp(x + prior - log_sum_exp(x + prior)))
   gp <- aperm(gp, c(2, 3, 1))
   return(gp)
 }

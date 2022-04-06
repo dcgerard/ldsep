@@ -2,24 +2,29 @@
 % Please edit documentation in R/fast.R
 \name{gl_to_gp}
 \alias{gl_to_gp}
-\title{Normalize genotype likelihoods to posterior probabilities.}
+\title{Normalize genotype log-likelihoods to posterior probabilities.}
 \usage{
-gl_to_gp(gl)
+gl_to_gp(gl, prior = log(rep(1/dim(gl)[[3]], dim(gl)[[3]])))
 }
 \arguments{
 \item{gl}{A three dimensional array of genotype \emph{log}-likelihoods.
 Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
 \code{k} for individual \code{j} at SNP \code{i}.}
+
+\item{prior}{A vector of log-prior probabilities for each genotype. Element
+\code{k} is the log-prior probability of genotype \code{k}. Default
+is a uniform prior.}
 }
 \value{
 A three-dimensional array, of the same dimensions as \code{gl},
-containing the posterior probabilities of each dosage.
+containing the posterior probabilities of each dosage. This is not
+on the log-scale.
 }
 \description{
-This will take genotype log-likelihoods and normalize them to
-sum to one. This corresponds to using a naive discrete uniform prior
-over the genotypes. It is not generally recommended that you use this
-function.
+This will take genotype log-likelihoods and a log-prior vector
+and return genotype posteriors. The default corresponds to using a
+naive discrete uniform prior over the genotypes.
+It is not generally recommended to use a uniform prior.
 }
 \examples{
 data("glike")
