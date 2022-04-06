@@ -103,6 +103,12 @@
 #'
 #' @seealso
 #' \describe{
+#'   \item{\code{\link{ldfast}()}}{For an approach when the genotype posteriors
+#'       used adaptive priors.}
+#'   \item{\code{\link{gl_to_gp}()}}{Convert genotype likelihoods to
+#'       genotype posteriors, optionally using an adaptive approach.}
+#'   \item{\code{\link{est_prior_mat}()}}{Function that adaptively estimates
+#'       priors using genotype likelihoods.}
 #'   \item{\code{\link[ashr]{ash}()}}{Function used to perform hierarchical
 #'       shrinkage on the log of the reliability ratios.}
 #'   \item{\code{\link{ldest}()}, \code{\link{mldest}()}, \code{\link{sldest}()}}{Maximum likelihood estimation of linkage disequilibrium.}
@@ -319,20 +325,38 @@ ldfast <- function(gp,
 }
 
 
-#' Scalable LD calculations assuming uniform prior
+#' Scalable LD Calculations Assuming a Uniform Prior
+#'
+#' Here, we assume that \code{gp} was calculated assuming a discrete uniform
+#' prior over the genotypes. This is different from \code{\link{ldfast}()}
+#' where we assumed an adaptive prior had been used.
 #'
 #' @inheritParams ldfast
 #'
+#' @return A list with some or all of the following elements:
+#' \describe{
+#'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
+#'   \item{\code{rr}}{The estimated reliability ratio for each SNP. This
+#'       is the multiplicative factor applied to the naive LD estimate
+#'       for each SNP.}
+#' }
+#'
 #' @author David Gerard
 #'
-#' @noRd
+#' @export
+#'
+#' @seealso
+#' \describe{
+#'   \item{\code{\link{ldfast}()}}{For an approach when the genotype posteriors
+#'       used adaptive priors.}
+#'   \item{\code{\link{gl_to_gp}()}}{Convert genotype likelihoods to
+#'       genotype posteriors, optionally using uniform priors.}
+#' }
 #'
 #' @examples
 #' data("glike")
-#'
-#' ## use uniform prior
 #' gp <- gl_to_gp(gl = glike)
-#' ldfast_unif(gp = gp, shrinkrr = FALSE, se = FALSE)
+#' ldfast_unif(gp = gp, se = FALSE)
 ldfast_unif <- function(gp,
                         type = c("r", "r2", "z", "D", "Dprime"),
                         shrinkrr = TRUE,
@@ -365,8 +389,47 @@ ldfast_unif <- function(gp,
     rr_raw <- rep(1.0, nsnp)
   }
 
+  ## Shrink id necessary ------------------------------------------------------
   if (shrinkrr & type %in% c("r", "r2", "z")) {
-    stop("shrinkrr not supported for uniform method yet")
+    amom <- abind::abind(pm_mat, pm_mat^2, pv_mat, along = 3)
+    mbar <- apply(X = amom, MARGIN = 3, FUN = rowMeans, na.rm = TRUE)
+    covarray <- apply(X = amom, MARGIN = 1, FUN = stats::cov, use = "pairwise.complete.obs")
+    dim(covarray) <- c(3, 3, nsnp)
+    gradmat <- matrix(NA_real_, nrow = nsnp, ncol = 3)
+    gradmat[, 1] <-
+      -2 * mbar[, 1] / (mbar[, 2] - mbar[, 1]^2) +
+      2 * mbar[, 1] / (mbar[, 2] - mbar[, 1]^2 - mbar[, 3])
+    gradmat[, 2] <-
+      1 / (mbar[, 2] - mbar[, 1]^2) -
+      1 / (mbar[, 2] - mbar[, 1]^2 - mbar[, 3])
+    gradmat[, 3] <-
+      1 / (mbar[, 2] - mbar[, 1]^2 - mbar[, 3])
+    svec <- rep(NA_real_, nsnp) # Variances for log rr_raw
+    nvec <- rowSums(!is.na(pm_mat)) # missing values
+    for (i in seq_len(nsnp)) {
+      svec[[i]] <- gradmat[i, , drop = FALSE] %*% covarray[, , i, drop = TRUE] %*% t(gradmat[i, , drop = FALSE])
+    }
+    svec <- svec / nvec
+    svec[svec < 0] <- 0
+    if (thresh) {
+      svec[rr_raw > upper] <- Inf
+    }
+
+    ## completely uncertain when less than 0
+    svec[rr_raw < 0] <- Inf
+    rr_raw[rr_raw < 0] <- stats::median(rr_raw)
+
+    lvec <- log(rr_raw)
+    if (mode == "estimate") {
+      modest <- modeest::hsm(x = lvec)
+    } else if (mode == "zero") {
+      modest <- 0
+    }
+    ashout <- ashr::ash(betahat = lvec,
+                        sebetahat = sqrt(svec),
+                        mixcompdist = "uniform",
+                        mode = modest)
+    rr <- exp(ashr::get_pm(a = ashout) / 2) ## divide by 2 for square root
   } else {
     rr <- rr_raw
     if (thresh) {

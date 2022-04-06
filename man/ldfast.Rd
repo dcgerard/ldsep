@@ -169,6 +169,12 @@ ldout$semat
 }
 \seealso{
 \describe{
+\item{\code{\link{ldfast}()}}{For an approach when the genotype posteriors
+used adaptive priors.}
+\item{\code{\link{gl_to_gp}()}}{Convert genotype likelihoods to
+genotype posteriors, optionally using an adaptive approach.}
+\item{\code{\link{est_prior_mat}()}}{Function that adaptively estimates
+priors using genotype likelihoods.}
 \item{\code{\link[ashr]{ash}()}}{Function used to perform hierarchical
 shrinkage on the log of the reliability ratios.}
 \item{\code{\link{ldest}()}, \code{\link{mldest}()}, \code{\link{sldest}()}}{Maximum likelihood estimation of linkage disequilibrium.}
