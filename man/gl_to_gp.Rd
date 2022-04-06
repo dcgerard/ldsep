@@ -4,7 +4,7 @@
 \alias{gl_to_gp}
 \title{Normalize genotype log-likelihoods to posterior probabilities.}
 \usage{
-gl_to_gp(gl, prior_mat = NULL)
+gl_to_gp(gl, prior_mat = "uniform")
 }
 \arguments{
 \item{gl}{A three dimensional array of genotype \emph{log}-likelihoods.
@@ -13,7 +13,10 @@ Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
 
 \item{prior_mat}{A matrix of log-prior probabilities for each genotype.
 \code{prior_mat[i, k]} is the log-prior probability of genotype \code{k}
-at locus \code{j}. Default is a uniform prior at all loci.}
+at locus \code{j}. Can also be either \code{"uniform"} for a uniform
+prior for all loci, or \code{"estimate"} to adaptively estimate the
+prior using \code{\link{est_prior_mat}()}. Default is a uniform
+prior.}
 }
 \value{
 A three-dimensional array, of the same dimensions as \code{gl},
@@ -30,8 +33,15 @@ It is not generally recommended to use a uniform prior.
 data("glike")
 class(glike)
 dim(glike)
-gl_to_gp(glike)
+gp1 <- gl_to_gp(glike, prior_mat = "uniform")
+gp2 <- gl_to_gp(glike, prior_mat = "estimate")
 
+}
+\seealso{
+\describe{
+\item{\code{\link{est_prior_mat}()}}{For adaptively estimate the matrix
+of prior probabilities from genotype likelihoods.}
+}
 }
 \author{
 David Gerard

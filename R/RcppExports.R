@@ -612,6 +612,77 @@ secalc <- function(gp, pm_mat, pv_mat, type) {
     .Call(`_ldsep_secalc`, gp, pm_mat, pv_mat, type)
 }
 
+#' Objective function for \code{\link{em_li}()}
+#'
+#' @inheritParams em_li
+#' @param pivec The current prior probability vector.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+llike_li <- function(A, pivec) {
+    .Call(`_ldsep_llike_li`, A, pivec)
+}
+
+#' Same as \code{\link{llike_li}()} but using genotype log likelihoods
+#'
+#' @param B The log-likelihood matrix. Rows are individuals columns are
+#'     genotypes.
+#' @param lpivec The log prior vector.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+llike_li_log <- function(B, lpivec) {
+    .Call(`_ldsep_llike_li_log`, B, lpivec)
+}
+
+#' EM algorithm from Li (2011)
+#'
+#' EM algorithm to estimate prior genotype probabilities from genotype
+#' likelihoods.
+#'
+#' @param A The genotype likelihood (not log-likelihood) matrix. The rows
+#'     index the individuals and the columns index the genotypes. So
+#'     \code{A[i, k]} is the genotype likelihood for genotype \code{k} and
+#'     individual \code{i}.
+#' @param itermax The maximum number of iterations.
+#' @param eps The stopping criteria.
+#'
+#' @return A vector of prior probabilities for each genotype.
+#'
+#' @references
+#' \itemize{
+#'   \item{Li, H. (2011). A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. \emph{Bioinformatics}, 27(21), 2987-2993. \doi{10.1093/bioinformatics/btr509}}
+#' }
+#'
+#' @author David Gerard
+#'
+#' @noRd
+em_li <- function(A, itermax = 100L, eps = 1e-5) {
+    .Call(`_ldsep_em_li`, A, itermax, eps)
+}
+
+#' Same as \code{\link{em_li}()} but using genotype log-likelihoods
+#'
+#' @param B Matrix of genotype log-likelihoods. The rows index the individuals
+#'     and the columsn index the genotypes.
+#' @inheritParams em_li
+#'
+#' @return A vector of log prior probabilities for each genotype.
+#'
+#' @author David Gerard
+#'
+#' @references
+#' \itemize{
+#'   \item{Li, H. (2011). A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. \emph{Bioinformatics}, 27(21), 2987-2993. \doi{10.1093/bioinformatics/btr509}}
+#' }
+#'
+#' @noRd
+em_li_log <- function(B, itermax = 100L, eps = 1e-5) {
+    .Call(`_ldsep_em_li_log`, B, itermax, eps)
+}
+
 #' Prior probability for haplotype frequencies.
 #'
 #' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).

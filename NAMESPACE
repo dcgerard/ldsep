@@ -2,6 +2,7 @@
 
 S3method(plot,lddf)
 export(Dprime)
+export(est_prior_mat)
 export(format_lddf)
 export(get_prob_array)
 export(gl_to_gp)

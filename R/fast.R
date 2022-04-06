@@ -326,6 +326,13 @@ ldfast <- function(gp,
 #' @author David Gerard
 #'
 #' @noRd
+#'
+#' @examples
+#' data("glike")
+#'
+#' ## use uniform prior
+#' gp <- gl_to_gp(gl = glike)
+#' ldfast_unif(gp = gp, shrinkrr = FALSE, se = FALSE)
 ldfast_unif <- function(gp,
                         type = c("r", "r2", "z", "D", "Dprime"),
                         shrinkrr = TRUE,
@@ -371,6 +378,8 @@ ldfast_unif <- function(gp,
 
   if (type %in% c("r", "r2", "z")) {
     ldmat <- rr * stats::cor(t(pm_mat), use = "pairwise.complete.obs") * rep(rr, each = nsnp)
+    ldmat[ldmat > 1] <- 1
+    ldmat[ldmat < -1] <- -1
     if (type == "r2") {
       rr <- rr ^ 2
       ldmat <- ldmat ^ 2
@@ -418,7 +427,10 @@ ldfast_unif <- function(gp,
 #'     \code{k} for individual \code{j} at SNP \code{i}.
 #' @param prior_mat A matrix of log-prior probabilities for each genotype.
 #'     \code{prior_mat[i, k]} is the log-prior probability of genotype \code{k}
-#'     at locus \code{j}. Default is a uniform prior at all loci.
+#'     at locus \code{j}. Can also be either \code{"uniform"} for a uniform
+#'     prior for all loci, or \code{"estimate"} to adaptively estimate the
+#'     prior using \code{\link{est_prior_mat}()}. Default is a uniform
+#'     prior.
 #'
 #' @return A three-dimensional array, of the same dimensions as \code{gl},
 #'     containing the posterior probabilities of each dosage. This is not
@@ -426,17 +438,33 @@ ldfast_unif <- function(gp,
 #'
 #' @author David Gerard
 #'
+#' @seealso
+#' \describe{
+#'   \item{\code{\link{est_prior_mat}()}}{For adaptively estimate the matrix
+#'       of prior probabilities from genotype likelihoods.}
+#' }
+#'
 #' @examples
 #' data("glike")
 #' class(glike)
 #' dim(glike)
-#' gl_to_gp(glike)
+#' gp1 <- gl_to_gp(glike, prior_mat = "uniform")
+#' gp2 <- gl_to_gp(glike, prior_mat = "estimate")
 #'
 #' @export
-gl_to_gp <- function(gl, prior_mat = NULL) {
-  if (is.null(prior_mat)) {
-    prior_mat <- log(matrix(1 / dim(gl)[[3]], nrow = dim(gl)[[1]], ncol = dim(gl)[[3]]))
+gl_to_gp <- function(gl, prior_mat = "uniform") {
+
+  if (is.character(prior_mat)) {
+    stopifnot(length(prior_mat) == 1)
+    if (prior_mat == "uniform") {
+      prior_mat <- log(matrix(1 / dim(gl)[[3]], nrow = dim(gl)[[1]], ncol = dim(gl)[[3]]))
+    } else if (prior_mat == "estimate") {
+      prior_mat <- est_prior_mat(gl = gl, log = TRUE)
+    } else {
+      stop(paste(prior_mat, "is not a valid option"))
+    }
   }
+
   stopifnot(inherits(gl, "array"))
   stopifnot(length(dim(gl)) == 3)
   stopifnot(dim(prior_mat) == dim(gl)[c(1, 3)],
@@ -479,3 +507,128 @@ pvcalc <- function(priormat) {
   rowSums(sweep(x = priormat, MARGIN = 2, STATS = (0:ploidy)^2, FUN = `*`)) -
     rowSums(sweep(x = priormat, MARGIN = 2, STATS = 0:ploidy, FUN = `*`))^2
 }
+
+
+#' Proportional Normal Distribution
+#'
+#' Returns distribution of genotypes under proportional normal.
+#'
+#' @param ploidy The ploidy of the species.
+#' @param mu The mean
+#' @param sigma The standard devaition
+#'
+#' @author David Gerard
+#'
+#' @noRd
+prop_norm_dist <- function(ploidy, mu, sigma, log = TRUE) {
+  pivec <- stats::dnorm(x = 0:ploidy, mean = mu, sd = sigma, log = TRUE)
+  pivec <- pivec - log_sum_exp(pivec)
+  if (!log) {
+    pivec <- exp(pivec)
+  }
+  return(pivec)
+}
+
+#' Proportional normal objective function
+#'
+#' @param par A vector of length 2. The first is mu and second is sigma,
+#'     from proportional normal distribution.
+#' @param B the matrix of genotype log likelihoods. The rows index the
+#'     individuals and the columns index the genotypes.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+prop_norm_obj <- function(par, B) {
+  ploidy <- ncol(B) - 1
+  lpivec <- prop_norm_dist(ploidy = ploidy,
+                           mu = par[[1]],
+                           sigma = par[[2]],
+                           log = TRUE)
+  return(llike_li_log(B = B, lpivec = lpivec))
+}
+
+#' Estimate prior assuming proportional normal distribution
+#'
+#' @inheritParams prop_norm_obj
+#'
+#' @author David Gerard
+#'
+#' @noRd
+prop_norm_est <- function(B) {
+  ploidy <- ncol(B) - 1
+  par <- c(ploidy / 2, ploidy / 4)
+  oout <- stats::optim(par = par,
+                       fn = prop_norm_obj,
+                       method = "L-BFGS-B",
+                       lower = c(-Inf, sqrt(.Machine$double.eps)),
+                       upper = c(Inf, Inf),
+                       control = list(fnscale = -1),
+                       B = B)
+  lpivec <- prop_norm_dist(ploidy = ploidy,
+                           mu = oout$par[[1]],
+                           sigma = oout$par[[2]],
+                           log = TRUE)
+  return(lpivec)
+}
+
+#' Estimate prior genotype probabilities by maximum likelihood
+#'
+#' We maximize the marginal likelihood to obtain estimates of the prior
+#' probabilities of each genotype at each locus. The general categorical
+#' class uses the method of Li (2011). The proportional normal class uses
+#' the method of Gerard and Ferrão (2020).
+#'
+#' @inheritParams gl_to_gp
+#' @param method Should we assume the class of general categorical prior
+#'     distributions (\code{"general"}) or the class of proportional
+#'     normal distributions (\code{"pnorm"})?
+#' @param log A logical. Should we log the results or not?
+#'
+#' @return A matrix of prior genotype probabilities. Element \code{(i, k)}
+#'     is the prior probability of genotype \code{k} at locus \code{i}.
+#'
+#' @author David Gerard
+#'
+#' @references
+#' \itemize{
+#'   \item{Gerard, D., & Ferrão, L. F. V. (2020). Priors for genotyping polyploids. Bioinformatics, 36(6), 1795-1800. \doi{10.1093/bioinformatics/btz852}}
+#'   \item{Li, H. (2011). A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. \emph{Bioinformatics}, 27(21), 2987-2993. \doi{10.1093/bioinformatics/btr509}}
+#' }
+#'
+#' @seealso
+#' \describe{
+#'   \item{\code{\link{gl_to_gp}()}}{For converting genotype likelihoods to
+#'       genotype posteriors using prior matrices.}
+#' }
+#'
+#' @export
+#'
+#' @examples
+#' data("glike")
+#' est_prior_mat(glike)
+#'
+est_prior_mat <- function(gl, method = c("pnorm", "general"), log = TRUE) {
+  method <- match.arg(method)
+  nsnp <- dim(gl)[[1]]
+  nind <- dim(gl)[[2]]
+  ploidy <- dim(gl)[[3]] - 1
+
+  prior_mat <- matrix(NA_real_, nrow = nsnp, ncol = ploidy + 1)
+
+  for (i in seq_len(nsnp)) {
+    if (method == "general") {
+      prior_mat[i, ] <- c(em_li_log(B = gl[i, , ]))
+    } else if (method == "pnorm") {
+      prior_mat[i, ] <- prop_norm_est(B = gl[i, , ])
+    }
+  }
+
+  if (!log) {
+    prior_mat <- exp(prior_mat)
+  }
+
+  return(prior_mat)
+}
+
+

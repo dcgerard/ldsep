@@ -574,6 +574,56 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// llike_li
+double llike_li(const arma::mat& A, const arma::vec& pivec);
+RcppExport SEXP _ldsep_llike_li(SEXP ASEXP, SEXP pivecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type pivec(pivecSEXP);
+    rcpp_result_gen = Rcpp::wrap(llike_li(A, pivec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// llike_li_log
+double llike_li_log(const arma::mat& B, const arma::vec& lpivec);
+RcppExport SEXP _ldsep_llike_li_log(SEXP BSEXP, SEXP lpivecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type lpivec(lpivecSEXP);
+    rcpp_result_gen = Rcpp::wrap(llike_li_log(B, lpivec));
+    return rcpp_result_gen;
+END_RCPP
+}
+// em_li
+arma::vec em_li(const arma::mat& A, int itermax, double eps);
+RcppExport SEXP _ldsep_em_li(SEXP ASEXP, SEXP itermaxSEXP, SEXP epsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< int >::type itermax(itermaxSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    rcpp_result_gen = Rcpp::wrap(em_li(A, itermax, eps));
+    return rcpp_result_gen;
+END_RCPP
+}
+// em_li_log
+arma::vec em_li_log(const arma::mat& B, int itermax, double eps);
+RcppExport SEXP _ldsep_em_li_log(SEXP BSEXP, SEXP itermaxSEXP, SEXP epsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< int >::type itermax(itermaxSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    rcpp_result_gen = Rcpp::wrap(em_li_log(B, itermax, eps));
+    return rcpp_result_gen;
+END_RCPP
+}
 // lprior
 double lprior(const arma::vec prob, const arma::vec alpha);
 RcppExport SEXP _ldsep_lprior(SEXP probSEXP, SEXP alphaSEXP) {
@@ -793,6 +843,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_grad_deltaprime_m", (DL_FUNC) &_ldsep_grad_deltaprime_m, 3},
     {"_ldsep_grad_rho_m", (DL_FUNC) &_ldsep_grad_rho_m, 2},
     {"_ldsep_secalc", (DL_FUNC) &_ldsep_secalc, 4},
+    {"_ldsep_llike_li", (DL_FUNC) &_ldsep_llike_li, 2},
+    {"_ldsep_llike_li_log", (DL_FUNC) &_ldsep_llike_li_log, 2},
+    {"_ldsep_em_li", (DL_FUNC) &_ldsep_em_li, 3},
+    {"_ldsep_em_li_log", (DL_FUNC) &_ldsep_em_li_log, 3},
     {"_ldsep_lprior", (DL_FUNC) &_ldsep_lprior, 2},
     {"_ldsep_dlprior_dprob", (DL_FUNC) &_ldsep_dlprior_dprob, 2},
     {"_ldsep_lprior_par", (DL_FUNC) &_ldsep_lprior_par, 2},
