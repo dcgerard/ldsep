@@ -44,5 +44,5 @@ of prior probabilities from genotype likelihoods.}
 }
 }
 \author{
-David Gerard
+David Gerard, Hanwei Hu, and D. Thomas Scartz
 }

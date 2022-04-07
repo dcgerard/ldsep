@@ -341,7 +341,7 @@ ldfast <- function(gp,
 #'       for each SNP.}
 #' }
 #'
-#' @author David Gerard
+#' @author David Gerard and Hanwei Hu
 #'
 #' @export
 #'
@@ -499,7 +499,7 @@ ldfast_unif <- function(gp,
 #'     containing the posterior probabilities of each dosage. This is not
 #'     on the log-scale.
 #'
-#' @author David Gerard
+#' @author David Gerard, Hanwei Hu, and D. Thomas Scartz
 #'
 #' @seealso
 #' \describe{
@@ -580,7 +580,7 @@ pvcalc <- function(priormat) {
 #' @param mu The mean
 #' @param sigma The standard devaition
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @noRd
 prop_norm_dist <- function(ploidy, mu, sigma, log = TRUE) {
@@ -599,7 +599,7 @@ prop_norm_dist <- function(ploidy, mu, sigma, log = TRUE) {
 #' @param B the matrix of genotype log likelihoods. The rows index the
 #'     individuals and the columns index the genotypes.
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @noRd
 prop_norm_obj <- function(par, B) {
@@ -615,7 +615,7 @@ prop_norm_obj <- function(par, B) {
 #'
 #' @inheritParams prop_norm_obj
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @noRd
 prop_norm_est <- function(B) {
@@ -651,7 +651,7 @@ prop_norm_est <- function(B) {
 #' @return A matrix of prior genotype probabilities. Element \code{(i, k)}
 #'     is the prior probability of genotype \code{k} at locus \code{i}.
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @references
 #' \itemize{

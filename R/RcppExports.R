@@ -617,7 +617,7 @@ secalc <- function(gp, pm_mat, pv_mat, type) {
 #' @inheritParams em_li
 #' @param pivec The current prior probability vector.
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @noRd
 llike_li <- function(A, pivec) {
@@ -630,7 +630,7 @@ llike_li <- function(A, pivec) {
 #'     genotypes.
 #' @param lpivec The log prior vector.
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @noRd
 llike_li_log <- function(B, lpivec) {
@@ -656,7 +656,7 @@ llike_li_log <- function(B, lpivec) {
 #'   \item{Li, H. (2011). A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. \emph{Bioinformatics}, 27(21), 2987-2993. \doi{10.1093/bioinformatics/btr509}}
 #' }
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @noRd
 em_li <- function(A, itermax = 100L, eps = 1e-5) {
@@ -671,7 +671,7 @@ em_li <- function(A, itermax = 100L, eps = 1e-5) {
 #'
 #' @return A vector of log prior probabilities for each genotype.
 #'
-#' @author David Gerard
+#' @author David Gerard and D. Thomas Scartz
 #'
 #' @references
 #' \itemize{

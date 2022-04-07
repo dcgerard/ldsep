@@ -11,7 +11,7 @@ double log_sum_exp(const arma::vec &x);
 //' @inheritParams em_li
 //' @param pivec The current prior probability vector.
 //'
-//' @author David Gerard
+//' @author David Gerard and D. Thomas Scartz
 //'
 //' @noRd
 // [[Rcpp::export]]
@@ -37,7 +37,7 @@ double llike_li(const arma::mat &A, const arma::vec &pivec) {
 //'     genotypes.
 //' @param lpivec The log prior vector.
 //'
-//' @author David Gerard
+//' @author David Gerard and D. Thomas Scartz
 //'
 //' @noRd
 // [[Rcpp::export]]
@@ -80,7 +80,7 @@ double llike_li_log(const arma::mat &B, const arma::vec &lpivec) {
 //'   \item{Li, H. (2011). A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. \emph{Bioinformatics}, 27(21), 2987-2993. \doi{10.1093/bioinformatics/btr509}}
 //' }
 //'
-//' @author David Gerard
+//' @author David Gerard and D. Thomas Scartz
 //'
 //' @noRd
 // [[Rcpp::export]]
@@ -132,7 +132,7 @@ arma::vec em_li(const arma::mat &A, int itermax = 100, double eps = 1e-5) {
 //'
 //' @return A vector of log prior probabilities for each genotype.
 //'
-//' @author David Gerard
+//' @author David Gerard and D. Thomas Scartz
 //'
 //' @references
 //' \itemize{

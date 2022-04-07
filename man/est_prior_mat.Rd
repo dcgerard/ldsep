@@ -45,5 +45,5 @@ genotype posteriors using prior matrices.}
 }
 }
 \author{
-David Gerard
+David Gerard and D. Thomas Scartz
 }

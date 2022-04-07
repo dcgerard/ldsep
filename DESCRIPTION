@@ -2,11 +2,25 @@ Package: ldsep
 Title: Linkage Disequilibrium Shrinkage Estimation for Polyploids
 Version: 2.2.0
 Authors@R: 
-    person(given = "David",
-           family = "Gerard",
-           role = c("aut", "cre"),
-           email = "gerard.1787@gmail.com",
-           comment = c(ORCID = "0000-0001-9450-5023"))
+    c(person(given = "David",
+             family = "Gerard",
+             role = c("aut", "cre"),
+             email = "gerard.1787@gmail.com",
+             comment = c(ORCID = "0000-0001-9450-5023")),
+      person(given = "Hanwei", 
+             family = "Hu",
+             role = c("aut"),
+             email = "hh2182a@student.american.edu",
+             comment = c(ORCID = "0000-0002-2173-3700")),
+      person(given = "D. Thomas", 
+             family = "Scartz",
+             role = c("aut"),
+             email = "ds7557a@student.american.edu",
+             comment = c(ORCID = "0000-0002-4929-1983")),
+      person(given = "NSF DBI 2132247",
+             role = "fnd",
+             comment = "https://www.nsf.gov/awardsearch/showAward?AWD_ID=2132247")
+     )
 Description: Estimate haplotypic or composite pairwise linkage disequilibrium
     (LD) in polyploids, using either genotypes or genotype likelihoods. 
     Support is provided to estimate the popular measures of LD: the LD 
@@ -18,6 +32,7 @@ Description: Estimate haplotypic or composite pairwise linkage disequilibrium
     are available in Gerard (2021a) <doi:10.1111/1755-0998.13349>
     and Gerard (2021b) <doi:10.1038/s41437-021-00462-5>.
 License: GPL-3
+URL: https://github.com/dcgerard/ldsep
 BugReports: https://github.com/dcgerard/ldsep/issues
 Encoding: UTF-8
 LazyData: true
@@ -35,13 +50,13 @@ Imports:
     lpSolve,
     abind,
     modeest,
-    matrixStats
+    matrixStats,
+    updog (>= 2.0.2)
 Suggests: 
     testthat,
     covr,
     knitr,
     rmarkdown,
-    updog (>= 2.0.2),
     VariantAnnotation
 Depends: 
     R (>= 2.10)

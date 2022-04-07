@@ -79,5 +79,5 @@ genotype posteriors, optionally using uniform priors.}
 }
 }
 \author{
-David Gerard
+David Gerard and Hanwei Hu
 }
