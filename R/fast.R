@@ -490,10 +490,12 @@ ldfast_unif <- function(gp,
 #'     \code{k} for individual \code{j} at SNP \code{i}.
 #' @param prior_mat A matrix of log-prior probabilities for each genotype.
 #'     \code{prior_mat[i, k]} is the log-prior probability of genotype \code{k}
-#'     at locus \code{j}. Can also be either \code{"uniform"} for a uniform
-#'     prior for all loci, or \code{"estimate"} to adaptively estimate the
-#'     prior using \code{\link{est_prior_mat}()}. Default is a uniform
-#'     prior.
+#'     at SNP \code{i}. Can also be either \code{"uniform"} for a uniform
+#'     prior for all loci, \code{"estimate_pnorm"} to adaptively estimate the
+#'     prior using \code{\link{est_prior_mat}(method = "pnorm")}, or
+#'     \code{"estimate_general"} to adaptively estimate the prior using
+#'     \code{\link{est_prior_mat}(method = "general")}. Default is a
+#'     uniform prior.
 #'
 #' @return A three-dimensional array, of the same dimensions as \code{gl},
 #'     containing the posterior probabilities of each dosage. This is not
@@ -512,7 +514,8 @@ ldfast_unif <- function(gp,
 #' class(glike)
 #' dim(glike)
 #' gp1 <- gl_to_gp(glike, prior_mat = "uniform")
-#' gp2 <- gl_to_gp(glike, prior_mat = "estimate")
+#' gp2 <- gl_to_gp(glike, prior_mat = "estimate_pnorm")
+#' gp3 <- gl_to_gp(glike, prior_mat = "estimate_general")
 #'
 #' @export
 gl_to_gp <- function(gl, prior_mat = "uniform") {
@@ -521,8 +524,10 @@ gl_to_gp <- function(gl, prior_mat = "uniform") {
     stopifnot(length(prior_mat) == 1)
     if (prior_mat == "uniform") {
       prior_mat <- log(matrix(1 / dim(gl)[[3]], nrow = dim(gl)[[1]], ncol = dim(gl)[[3]]))
-    } else if (prior_mat == "estimate") {
-      prior_mat <- est_prior_mat(gl = gl, log = TRUE)
+    } else if (prior_mat == "estimate_pnorm") {
+      prior_mat <- est_prior_mat(gl = gl, log = TRUE, method = "pnorm")
+    } else if (prior_mat == "estimate_general") {
+      prior_mat <- est_prior_mat(gl = gl, log = TRUE, method = "general")
     } else {
       stop(paste(prior_mat, "is not a valid option"))
     }

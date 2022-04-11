@@ -13,10 +13,12 @@ Element \code{gl[i, j, k]} is the genotype log-likelihood of dosage
 
 \item{prior_mat}{A matrix of log-prior probabilities for each genotype.
 \code{prior_mat[i, k]} is the log-prior probability of genotype \code{k}
-at locus \code{j}. Can also be either \code{"uniform"} for a uniform
-prior for all loci, or \code{"estimate"} to adaptively estimate the
-prior using \code{\link{est_prior_mat}()}. Default is a uniform
-prior.}
+at SNP \code{i}. Can also be either \code{"uniform"} for a uniform
+prior for all loci, \code{"estimate_pnorm"} to adaptively estimate the
+prior using \code{\link{est_prior_mat}(method = "pnorm")}, or
+\code{"estimate_general"} to adaptively estimate the prior using
+\code{\link{est_prior_mat}(method = "general")}. Default is a
+uniform prior.}
 }
 \value{
 A three-dimensional array, of the same dimensions as \code{gl},
@@ -34,7 +36,8 @@ data("glike")
 class(glike)
 dim(glike)
 gp1 <- gl_to_gp(glike, prior_mat = "uniform")
-gp2 <- gl_to_gp(glike, prior_mat = "estimate")
+gp2 <- gl_to_gp(glike, prior_mat = "estimate_pnorm")
+gp3 <- gl_to_gp(glike, prior_mat = "estimate_general")
 
 }
 \seealso{
