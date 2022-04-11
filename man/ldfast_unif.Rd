@@ -11,7 +11,8 @@ ldfast_unif(
   se = TRUE,
   thresh = TRUE,
   upper = 10,
-  mode = c("zero", "estimate")
+  mode = c("zero", "estimate"),
+  tnorm_adjust = FALSE
 )
 }
 \arguments{
@@ -50,6 +51,10 @@ hierarchical shrinkage on the log of the reliability ratios, should
 we use zero as the mode (\code{mode = "zero"}) or estimate it using
 the procedure of Robertson and Cryer (1974)
 (\code{mode = "estimate"})?}
+
+\item{tnorm_adjust}{A logical. Should we make the adjustment of the
+posterior moments based on the truncated normal distribution
+(\code{TRUE}) or not (\code{FALSE})?}
 }
 \value{
 A list with some or all of the following elements:

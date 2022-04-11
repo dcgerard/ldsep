@@ -883,3 +883,18 @@ slcor <- function(x, win = 1L) {
     .Call(`_ldsep_slcor`, x, win)
 }
 
+#' Find closest two numbers, above and below a given number, from a sorted list.
+#'
+#' This is a O(log(n)) time algorithm, where we assume that x is presorted.
+#'
+#' @param y The number to locate.
+#' @param x The list of candidate numbers. Assumed to be sorted in
+#'     ascending order.
+#'
+#' @author David Gerard
+#'
+#' @noRd
+find_bounds_cpp <- function(y, x) {
+    .Call(`_ldsep_find_bounds_cpp`, y, x)
+}
+

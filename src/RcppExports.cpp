@@ -798,6 +798,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// find_bounds_cpp
+arma::vec find_bounds_cpp(const double y, const arma::vec& x);
+RcppExport SEXP _ldsep_find_bounds_cpp(SEXP ySEXP, SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const double >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_bounds_cpp(y, x));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_dmulti_dprob", (DL_FUNC) &_ldsep_dmulti_dprob, 3},
@@ -862,6 +874,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ldsep_simplex_to_real", (DL_FUNC) &_ldsep_simplex_to_real, 1},
     {"_ldsep_mycor", (DL_FUNC) &_ldsep_mycor, 2},
     {"_ldsep_slcor", (DL_FUNC) &_ldsep_slcor, 2},
+    {"_ldsep_find_bounds_cpp", (DL_FUNC) &_ldsep_find_bounds_cpp, 2},
     {NULL, NULL, 0}
 };
 

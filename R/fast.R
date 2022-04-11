@@ -332,6 +332,9 @@ ldfast <- function(gp,
 #' where we assumed an adaptive prior had been used.
 #'
 #' @inheritParams ldfast
+#' @param tnorm_adjust A logical. Should we make the adjustment of the
+#'     posterior moments based on the truncated normal distribution
+#'     (\code{TRUE}) or not (\code{FALSE})?
 #'
 #' @return A list with some or all of the following elements:
 #' \describe{
@@ -363,7 +366,8 @@ ldfast_unif <- function(gp,
                         se = TRUE,
                         thresh = TRUE,
                         upper = 10,
-                        mode = c("zero", "estimate")) {
+                        mode = c("zero", "estimate"),
+                        tnorm_adjust = FALSE) {
   ## Check input --------------------------------------------------------------
   type <- match.arg(type)
   mode <- match.arg(mode)
@@ -378,6 +382,19 @@ ldfast_unif <- function(gp,
   fill_pm(pm = pm_mat, gp = gp)
   fill_pv(pv = pv_mat, pm = pm_mat, gp = gp)
 
+  ## Truncated normal adjustment ----------------------------------------------
+  if (tnorm_adjust) {
+    for (i in seq_len(nind)) {
+      for (j in seq_len(nsnp)) {
+        par <- tnorm_est(xbar = pm_mat[j, i], s = sqrt(pv_mat[j, i]), ploidy = ploidy)
+        # par <- tnorm_solve(mu_obs = pm_mat[j, i], sigma_obs = sqrt(pv_mat[j, i]), ploidy = ploidy)
+        pm_mat[j, i] <- par[[1]]
+        pv_mat[j, i] <- par[[2]]^2
+      }
+    }
+  }
+
+  ## Get moments of posterior moments -----------------------------------------
   varx <- matrixStats::rowVars(x = pm_mat, na.rm = TRUE)
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
 
@@ -693,5 +710,3 @@ est_prior_mat <- function(gl, method = c("pnorm", "general"), log = TRUE) {
 
   return(prior_mat)
 }
-
-

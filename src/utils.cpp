@@ -309,3 +309,49 @@ arma::mat slcor(const arma::mat &x, int win = 1) {
 
   return cormat;
 }
+
+
+//' Find closest two numbers, above and below a given number, from a sorted list.
+//'
+//' This is a O(log(n)) time algorithm, where we assume that x is presorted.
+//'
+//' @param y The number to locate.
+//' @param x The list of candidate numbers. Assumed to be sorted in
+//'     ascending order.
+//'
+//' @author David Gerard
+//'
+//' @noRd
+// [[Rcpp::export]]
+arma::vec find_bounds_cpp(const double y, const arma::vec &x) {
+  int n = x.n_elem;
+  if ((y <= x(0)) || (y >= x(n - 1))) {
+    Rcpp::stop("y is outside range of x");
+  }
+
+  arma::vec ret(2);
+  if (n <= 4) {
+    for (int i = 0; i < n; i++) {
+      if (x(i) <= y) {
+        ret(0) = x(i);
+      } else {
+        ret(1) = x(i);
+        break;
+      }
+    }
+  } else {
+    int m = n / 2;
+    if (x(m - 1) > y) {
+      ret = find_bounds_cpp(y, x.head(m + 1));
+    } else {
+      ret = find_bounds_cpp(y, x.tail(n - m + 1));
+    }
+  }
+
+  return ret;
+}
+
+
+
+
+
