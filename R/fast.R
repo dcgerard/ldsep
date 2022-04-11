@@ -478,6 +478,67 @@ ldfast_unif <- function(gp,
   return(retlist)
 }
 
+#' Naive approach to estimate LD using posterior moments.
+#'
+#' Here, we just use posterior means as a proxy for the genotypes, and calculate
+#' these LD estimates as if the genotypes were known. This is not a good way
+#' to do things if there is any genotype uncertainty (which is almost always
+#' the case in polyploids).
+#'
+#' @inheritParams ldfast
+#'
+#' @return A list with the following elements.
+#' \describe{
+#'   \item{\code{ldmat}}{The bias-corrected LD matrix.}
+#' }
+#'
+#' @author David Gerard
+#'
+#' @examples
+#' data("glike")
+#' gp <- gl_to_gp(gl = glike, prior_mat = "estimate_pnorm")
+#' ldfast_naive(gp = gp)
+#'
+#' @export
+ldfast_naive <- function(gp, type = c("r", "r2", "z", "D", "Dprime")) {
+  type <- match.arg(type)
+  nsnp <- dim(gp)[[1]]
+  nind <- dim(gp)[[2]]
+  ploidy <- dim(gp)[[3]] - 1
+
+  ## Calculate posterior moments ----------------------------------------------
+  pm_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  fill_pm(pm = pm_mat, gp = gp)
+
+  ## LD estimate --------------------------------------------------------------
+  if (type %in% c("r", "r2", "z")) {
+    ldmat <- stats::cor(t(pm_mat), use = "pairwise.complete.obs")
+    if (type == "r2") {
+      ldmat <- ldmat ^ 2
+    } else if (type == "z") {
+      ldmat <- atanh(ldmat)
+    }
+  } else if (type == "D") {
+    ldmat <- stats::cov(t(pm_mat), use = "pairwise.complete.obs") / ploidy
+  } else if (type == "Dprime") {
+    ldmat <- stats::cov(t(pm_mat), use = "pairwise.complete.obs") / ploidy
+    mux <- rowMeans(pm_mat, na.rm = TRUE)
+    deltam_neg <- pmin(outer(X = mux, Y = mux, FUN = `*`),
+                       outer(X = ploidy - mux, Y = ploidy - mux, FUN = `*`)) / ploidy ^ 2
+    deltam_pos <- pmin(outer(X = mux, Y = ploidy - mux, FUN = `*`),
+                       outer(X = ploidy - mux, Y = mux, FUN = `*`)) / ploidy ^ 2
+    ldmat[ldmat < 0 & !is.na(ldmat)] <- ldmat[ldmat < 0 & !is.na(ldmat)] / deltam_neg[ldmat < 0 & !is.na(ldmat)]
+    ldmat[ldmat > 0 & !is.na(ldmat)] <- ldmat[ldmat > 0 & !is.na(ldmat)] / deltam_pos[ldmat > 0 & !is.na(ldmat)]
+    ldmat[ldmat > ploidy] <- ploidy
+    ldmat[ldmat < -ploidy] <- -ploidy
+    diag(ldmat) <- ploidy
+  }
+
+  ## return -------------------------------------------------------------------
+  retlist <- list(ldmat = ldmat)
+  return(retlist)
+}
+
 #' Normalize genotype log-likelihoods to posterior probabilities.
 #'
 #' This will take genotype log-likelihoods and a log-prior vector
