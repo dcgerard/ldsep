@@ -46,6 +46,8 @@ is the genotype log-likelihood for individual \code{i} at genotype \code{k - 1}.
 \item{delta}{The corresponding LD coefficient.}
 \item{gA}{The vector of true genotypes for locus A}
 \item{gB}{The vector of true genotypes for locus B}
+\item{pA}{The matrix of posterior genotype probabilities for locus A}
+\item{pB}{The matrix of posterior genotype probabilities for locus B}
 }
 }
 \description{

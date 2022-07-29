@@ -26,6 +26,8 @@
 #'   \item{delta}{The corresponding LD coefficient.}
 #'   \item{gA}{The vector of true genotypes for locus A}
 #'   \item{gB}{The vector of true genotypes for locus B}
+#'   \item{pA}{The matrix of posterior genotype probabilities for locus A}
+#'   \item{pB}{The matrix of posterior genotype probabilities for locus B}
 #' }
 #'
 #' @examples
@@ -111,6 +113,8 @@ glsim_pairwise <- function(rho, nind, ploidy, pA, pB, rdepth = 10,
   ## Extract genotype likelihoods from that output ----
   retlist <- list(lA = foutA$genologlike,
                   lB = foutB$genologlike,
+                  pA = foutA$postmat,
+                  pB = foutB$postmat,
                   rho = rho,
                   delta = delta,
                   gA = gA,
