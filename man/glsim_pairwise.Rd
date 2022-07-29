@@ -44,6 +44,8 @@ is the genotype log-likelihood for individual \code{i} at genotype \code{k - 1}.
 is the genotype log-likelihood for individual \code{i} at genotype \code{k - 1}.}
 \item{rho}{The true Pearson correlation that the user provided.}
 \item{delta}{The corresponding LD coefficient.}
+\item{gA}{The vector of true genotypes for locus A}
+\item{gB}{The vector of true genotypes for locus B}
 }
 }
 \description{
@@ -54,7 +56,9 @@ to being more sure of the genotypes) (\code{rdepth}). Then this
 function will  simulate some genotype log-likelihoods.
 }
 \examples{
-glsim_pairwise(rho = 0.1, nind = 100, ploidy = 6, pA = 0.5, pB = 0.5)
+glout <- glsim_pairwise(rho = 0.9, nind = 10000, ploidy = 6, pA = 0.5, pB = 0.5)
+
+cor(glout$gA, glout$gB)
 
 }
 \author{

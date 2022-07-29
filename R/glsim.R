@@ -24,10 +24,14 @@
 #'       is the genotype log-likelihood for individual \code{i} at genotype \code{k - 1}.}
 #'   \item{rho}{The true Pearson correlation that the user provided.}
 #'   \item{delta}{The corresponding LD coefficient.}
+#'   \item{gA}{The vector of true genotypes for locus A}
+#'   \item{gB}{The vector of true genotypes for locus B}
 #' }
 #'
 #' @examples
-#' glsim_pairwise(rho = 0.1, nind = 100, ploidy = 6, pA = 0.5, pB = 0.5)
+#' glout <- glsim_pairwise(rho = 0.9, nind = 10000, ploidy = 6, pA = 0.5, pB = 0.5)
+#'
+#' cor(glout$gA, glout$gB)
 #'
 #' @export
 #'
@@ -85,22 +89,22 @@ glsim_pairwise <- function(rho, nind, ploidy, pA, pB, rdepth = 10,
                           sizevec     = sizevec,
                           ploidy      = ploidy,
                           verbose     = FALSE,
-                          bias_init   = 1,
+                          bias_init   = bias,
                           update_bias = FALSE,
-                          seq         = 0.01,
+                          seq         = seq,
                           update_seq  = FALSE,
-                          od          = 0.01,
+                          od          = od,
                           update_od   = FALSE,
                           model       = "hw")
   foutB <- updog::flexdog(refvec      = refB,
                           sizevec     = sizevec,
                           ploidy      = ploidy,
                           verbose     = FALSE,
-                          bias_init   = 1,
+                          bias_init   = bias,
                           update_bias = FALSE,
-                          seq         = 0.01,
+                          seq         = seq,
                           update_seq  = FALSE,
-                          od          = 0.01,
+                          od          = od,
                           update_od   = FALSE,
                           model       = "hw")
 
@@ -108,7 +112,9 @@ glsim_pairwise <- function(rho, nind, ploidy, pA, pB, rdepth = 10,
   retlist <- list(lA = foutA$genologlike,
                   lB = foutB$genologlike,
                   rho = rho,
-                  delta = delta)
+                  delta = delta,
+                  gA = gA,
+                  gB = gB)
   return(retlist)
 }
 
