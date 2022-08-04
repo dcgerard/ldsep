@@ -18,7 +18,7 @@ this function will calculate the prior variance of genotypes."><meta property="o
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ this function will calculate the prior variance of genotypes."><meta property="o
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -68,7 +68,7 @@ this function will calculate the prior variance of genotypes.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pvcalc</span><span class="op">(</span><span class="va">priormat</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pvcalc</span><span class="op">(</span><span class="va">priormat</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -77,10 +77,13 @@ this function will calculate the prior variance of genotypes.</p>
 <dd><p>A matrix of prior genotype probabilities. Element
 <code>priormat[i, j]</code> is the prior probability of dosage <code>j</code>
 at SNP <code>i</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector of prior variances.</p>
+    
+
+<p>A vector of prior variances.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -89,14 +92,14 @@ at SNP <code>i</code>.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"uit"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">priormat</span> <span class="op">&lt;-</span> <span class="va">uit</span><span class="op">$</span><span class="va">snpdf</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
-<span class="r-in"><span class="fu">pvcalc</span><span class="op">(</span><span class="va">priormat</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"uit"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">priormat</span> <span class="op">&lt;-</span> <span class="va">uit</span><span class="op">$</span><span class="va">snpdf</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">pvcalc</span><span class="op">(</span><span class="va">priormat</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       248       249       251       252       253       254       257       258 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.9612945 0.9612945 1.0763415 0.8411998 0.9008180 0.9008180 1.0941723 1.0941723 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       262       266 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.2012746 0.7882709 </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -107,11 +110,11 @@ at SNP <code>i</code>.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by David Gerard.</p>
+  <p></p><p>Developed by David Gerard, Hanwei Hu, D. Thomas Scartz, NSF DBI 2132247.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

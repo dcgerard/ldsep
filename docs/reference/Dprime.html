@@ -19,7 +19,7 @@ maximum covariance conditional on the marginal allele frequencies."><meta proper
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -28,7 +28,7 @@ maximum covariance conditional on the marginal allele frequencies."><meta proper
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -70,26 +70,33 @@ maximum covariance conditional on the marginal allele frequencies.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">Dprime</span><span class="op">(</span><span class="va">qmat</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"allele"</span>, <span class="st">"geno"</span><span class="op">)</span>, constrain <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">Dprime</span><span class="op">(</span><span class="va">qmat</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"allele"</span>, <span class="st">"geno"</span><span class="op">)</span>, constrain <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>qmat</dt>
 <dd><p>The observed joint genotype distribution.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Should we condition on the marginal genotype distribution
 (<code>type = "geno"</code>), or should we condition on the allele frequency
 (<code>type = "allele"</code>)?</p></dd>
+
+
 <dt>constrain</dt>
 <dd><p>A logical. This option is only applicable when
 <code>type = "allele"</code>. Should return an value that is equal
 to D' under HWE (<code>FALSE</code>) or a value that is constrained
 to lie between -1 and 1 (<code>TRUE</code>)? Defaults to <code>FALSE</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A vector of length 2. The first element is the estimated
+    
+
+<p>A vector of length 2. The first element is the estimated
 D'. The second element is the normalization used.</p>
     </div>
     <div id="details">
@@ -111,16 +118,16 @@ the <code>constrain</code> parameter has no effect.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">K</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
-<span class="r-in"><span class="va">qmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="op">(</span><span class="va">K</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">K</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">qmat</span> <span class="op">&lt;-</span> <span class="va">qmat</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">qmat</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">Dprime</span><span class="op">(</span><span class="va">qmat</span>, type <span class="op">=</span> <span class="st">"geno"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fl">6</span></span></span>
+<span class="r-in"><span><span class="va">qmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="op">(</span><span class="va">K</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">K</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">qmat</span> <span class="op">&lt;-</span> <span class="va">qmat</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">qmat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">Dprime</span><span class="op">(</span><span class="va">qmat</span>, type <span class="op">=</span> <span class="st">"geno"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Dprime        Dmax </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -0.06609473 -0.69869468 </span>
-<span class="r-in"><span class="fu">Dprime</span><span class="op">(</span><span class="va">qmat</span>, type <span class="op">=</span> <span class="st">"allele"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Dprime       Dmax </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -0.1926648  0.2396911 </span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.003918503 0.689484087 </span>
+<span class="r-in"><span><span class="fu">Dprime</span><span class="op">(</span><span class="va">qmat</span>, type <span class="op">=</span> <span class="st">"allele"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Dprime      Dmax </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.0109978 0.2456623 </span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -131,11 +138,11 @@ the <code>constrain</code> parameter has no effect.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by David Gerard.</p>
+  <p></p><p>Developed by David Gerard, Hanwei Hu, D. Thomas Scartz, NSF DBI 2132247.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

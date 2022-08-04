@@ -22,7 +22,7 @@ to suit my visualization preferences."><meta property="og:image" content="https:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -31,7 +31,7 @@ to suit my visualization preferences."><meta property="og:image" content="https:
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -75,19 +75,19 @@ to suit my visualization preferences.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for lddf</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  element <span class="op">=</span> <span class="st">"r2"</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"upper"</span>, <span class="st">"full"</span>, <span class="st">"lower"</span><span class="op">)</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"color"</span>, <span class="st">"circle"</span>, <span class="st">"square"</span>, <span class="st">"ellipse"</span>, <span class="st">"number"</span>, <span class="st">"shade"</span>, <span class="st">"pie"</span><span class="op">)</span>,
-  diag <span class="op">=</span> <span class="cn">FALSE</span>,
-  is.corr <span class="op">=</span> <span class="cn">NULL</span>,
-  tl.pos <span class="op">=</span> <span class="st">"n"</span>,
-  title <span class="op">=</span> <span class="cn">NULL</span>,
-  na.label <span class="op">=</span> <span class="st">"square"</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for lddf</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  element <span class="op">=</span> <span class="st">"r2"</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"upper"</span>, <span class="st">"full"</span>, <span class="st">"lower"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"color"</span>, <span class="st">"circle"</span>, <span class="st">"square"</span>, <span class="st">"ellipse"</span>, <span class="st">"number"</span>, <span class="st">"shade"</span>, <span class="st">"pie"</span><span class="op">)</span>,</span>
+<span>  diag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  is.corr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tl.pos <span class="op">=</span> <span class="st">"n"</span>,</span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  na.label <span class="op">=</span> <span class="st">"square"</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -95,39 +95,60 @@ to suit my visualization preferences.</p>
     <dl><dt>x</dt>
 <dd><p>An object of class <code>lddf</code>, usually created using
 either <code><a href="mldest.html">mldest</a>()</code> or <code><a href="sldest.html">sldest</a>()</code>.</p></dd>
+
+
 <dt>element</dt>
 <dd><p>Which element of <code>x</code> should we plot?</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Character, <code>"full"</code>,
 <code>"upper"</code> (default) or <code>"lower"</code>, display
 full matrix, lower triangular or upper
 triangular matrix.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>See <code><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a>()</code> for available options.
 Default value is <code>"color"</code>.</p></dd>
+
+
 <dt>diag</dt>
 <dd><p>Logical, whether display the correlation coefficients
 on the principal diagonal.</p></dd>
+
+
 <dt>is.corr</dt>
 <dd><p>See <code><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a>()</code>. Default behavior
 is <code>TRUE</code> if an element is constrained
 between -1 and 1 and <code>FALSE</code> otherwise.</p></dd>
+
+
 <dt>tl.pos</dt>
 <dd><p>See <code><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a>()</code>. Default value
 is <code>"n"</code>.</p></dd>
+
+
 <dt>title</dt>
 <dd><p>What should the title be? Defaults to the element name.</p></dd>
+
+
 <dt>na.label</dt>
 <dd><p>See <code><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a>()</code>. Default value
 is <code>"square"</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional arguments to pass to
 <code><a href="https://rdrr.io/pkg/corrplot/man/corrplot.html" class="external-link">corrplot</a>()</code>. See the documentation of that
 function for options.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>(Invisibly) returns a matrix of the selected elements.</p>
+    
+
+<p>(Invisibly) returns a matrix of the selected elements.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -141,25 +162,25 @@ for the parameter options.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Simulate genotypes when true correlation is 0</span></span>
-<span class="r-in"><span class="va">nloci</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span class="r-in"><span class="va">nind</span>  <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span class="r-in"><span class="va">K</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
-<span class="r-in"><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="va">genomat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="va">K</span>, <span class="va">nind</span> <span class="op">*</span> <span class="va">nloci</span>, <span class="cn">TRUE</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">nloci</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Haplotypic LD estimates</span></span>
-<span class="r-in"><span class="va">lddf</span> <span class="op">&lt;-</span> <span class="fu"><a href="mldest.html">mldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">genomat</span>,</span>
-<span class="r-in">               K <span class="op">=</span> <span class="va">K</span>,</span>
-<span class="r-in">               nc <span class="op">=</span> <span class="va">nc</span>,</span>
-<span class="r-in">               type <span class="op">=</span> <span class="st">"hap"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Plot estimates of z</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lddf</span>, element <span class="op">=</span> <span class="st">"z"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Simulate genotypes when true correlation is 0</span></span></span>
+<span class="r-in"><span><span class="va">nloci</span> <span class="op">&lt;-</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">nind</span>  <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fl">6</span></span></span>
+<span class="r-in"><span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="va">genomat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="va">K</span>, <span class="va">nind</span> <span class="op">*</span> <span class="va">nloci</span>, <span class="cn">TRUE</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">nloci</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Haplotypic LD estimates</span></span></span>
+<span class="r-in"><span><span class="va">lddf</span> <span class="op">&lt;-</span> <span class="fu"><a href="mldest.html">mldest</a></span><span class="op">(</span>geno <span class="op">=</span> <span class="va">genomat</span>,</span></span>
+<span class="r-in"><span>               K <span class="op">=</span> <span class="va">K</span>,</span></span>
+<span class="r-in"><span>               nc <span class="op">=</span> <span class="va">nc</span>,</span></span>
+<span class="r-in"><span>               type <span class="op">=</span> <span class="st">"hap"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Plot estimates of z</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lddf</span>, element <span class="op">=</span> <span class="st">"z"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.lddf-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -170,11 +191,11 @@ for the parameter options.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by David Gerard.</p>
+  <p></p><p>Developed by David Gerard, Hanwei Hu, D. Thomas Scartz, NSF DBI 2132247.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

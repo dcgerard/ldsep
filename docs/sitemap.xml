@@ -31,7 +31,13 @@
     <loc>https://dcgerard.github.io/ldsep/reference/Dprime.html</loc>
   </url>
   <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/est_prior_mat.html</loc>
+  </url>
+  <url>
     <loc>https://dcgerard.github.io/ldsep/reference/format_lddf.html</loc>
+  </url>
+  <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/geno_sim.html</loc>
   </url>
   <url>
     <loc>https://dcgerard.github.io/ldsep/reference/get_prob_array.html</loc>
@@ -43,7 +49,19 @@
     <loc>https://dcgerard.github.io/ldsep/reference/glike.html</loc>
   </url>
   <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/glsim.html</loc>
+  </url>
+  <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/glsim_pairwise.html</loc>
+  </url>
+  <url>
     <loc>https://dcgerard.github.io/ldsep/reference/gp.html</loc>
+  </url>
+  <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/hap_sim.html</loc>
+  </url>
+  <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/hap_truecor.html</loc>
   </url>
   <url>
     <loc>https://dcgerard.github.io/ldsep/reference/index.html</loc>
@@ -62,6 +80,12 @@
   </url>
   <url>
     <loc>https://dcgerard.github.io/ldsep/reference/ldfast.html</loc>
+  </url>
+  <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/ldfast_naive.html</loc>
+  </url>
+  <url>
+    <loc>https://dcgerard.github.io/ldsep/reference/ldfast_unif.html</loc>
   </url>
   <url>
     <loc>https://dcgerard.github.io/ldsep/reference/ldsep-package.html</loc>

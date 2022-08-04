@@ -23,7 +23,7 @@ packages. See Gerard (2021) for details."><meta property="og:image" content="htt
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ldsep</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@ packages. See Gerard (2021) for details."><meta property="og:image" content="htt
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -77,15 +77,15 @@ packages. See Gerard (2021) for details.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mldest</span><span class="op">(</span>
-  <span class="va">geno</span>,
-  <span class="va">K</span>,
-  nc <span class="op">=</span> <span class="fl">1</span>,
-  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hap"</span>, <span class="st">"comp"</span><span class="op">)</span>,
-  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"norm"</span>, <span class="st">"flex"</span><span class="op">)</span>,
-  pen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">"hap"</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>,
-  se <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mldest</span><span class="op">(</span></span>
+<span>  <span class="va">geno</span>,</span>
+<span>  <span class="va">K</span>,</span>
+<span>  nc <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hap"</span>, <span class="st">"comp"</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"norm"</span>, <span class="st">"flex"</span><span class="op">)</span>,</span>
+<span>  pen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">"hap"</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  se <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -104,9 +104,13 @@ the genotypes. That is, <code>genolike_array[i, j, k]</code>
 is the genotype log-likelihood at SNP <code>i</code> for
 individual <code>j</code> and dosage <code>k - 1</code>.</p></li>
 </ul></dd>
+
+
 <dt>K</dt>
 <dd><p>The ploidy of the species. Assumed to be the same for all
 individuals.</p></dd>
+
+
 <dt>nc</dt>
 <dd><p>The number of computing cores to use. This should never be
 more than the number of cores available in your computing environment.
@@ -114,6 +118,8 @@ You can determine the maximum number of available cores by running
 <code><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">parallel::detectCores()</a></code> in R. This is probably fine for a
 personal computer, but some environments are only
 able to use fewer. Ask your admins if you are unsure.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>The type of LD to calculate. The available types are
 haplotypic LD (<code>type = "hap"</code>) or composite LD
@@ -124,28 +130,40 @@ measures of LD are always applicable, and consistently estimate the
 usual measures of LD when HWE is fulfilled in autopolyploids.
 However, when HWE is not fulfilled, interpreting the
 composite measures of LD could be a little tricky.</p></dd>
+
+
 <dt>model</dt>
 <dd><p>When <code>type = "comp"</code> and using genotype likelihoods,
 should we use the proportional
 bivariate normal model to estimate the genotype distribution
 (<code>model = "norm"</code>), or the general categorical distribution
 (<code>model = "flex"</code>)? Defaults to <code>"norm"</code>.</p></dd>
+
+
 <dt>pen</dt>
 <dd><p>The penalty to be applied to the likelihood. You can think about
 this as the prior sample size. Should be greater than 1. Does not
 apply if <code>model = "norm"</code>, <code>type = "comp"</code>, and using
 genotype likelihoods. Also does not apply when <code>type = "comp"</code>
 and using genotypes.</p></dd>
+
+
 <dt>se</dt>
 <dd><p>A logical. Should we calculate standard errors (<code>TRUE</code>) or
 not (<code>FALSE</code>). Calculating standard errors can be really slow
 when <code>type = "comp"</code>, <code>model = "flex"</code>, and when using
 genotype likelihoods. Otherwise, standard error calculations
 should be pretty fast.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame of class <code>c("lddf", "data.frame")</code>with some or all of the following elements:</p><dl><dt><code>i</code></dt>
+    
+
+<p>A data frame of class <code>c("lddf", "data.frame")</code></p>
+
+
+<p>with some or all of the following elements:</p><dl><dt><code>i</code></dt>
 <dd><p>The index of the first SNP.</p></dd>
 
 <dt><code>j</code></dt>
@@ -239,7 +257,7 @@ estimators supported.</p>
     
 <ul><li><p>Gerard, David. "Pairwise Linkage Disequilibrium Estimation
 for Polyploids." <em>Molecular Ecology Resources</em> 21,
-no. 4 (2021): 1230-1242. doi: <a href="https://doi.org/10.1111/1755-0998.13349" class="external-link">10.1111/1755-0998.13349</a></p></li>
+no. 4 (2021): 1230-1242. <a href="https://doi.org/10.1111/1755-0998.13349" class="external-link">doi:10.1111/1755-0998.13349</a></p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -274,21 +292,21 @@ sliding window.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Simulate genotypes when true correlation is 0</span></span>
-<span class="r-in"><span class="va">nloci</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span class="r-in"><span class="va">nind</span>  <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span class="r-in"><span class="va">K</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
-<span class="r-in"><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="va">genomat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="va">K</span>, <span class="va">nind</span> <span class="op">*</span> <span class="va">nloci</span>, <span class="cn">TRUE</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">nloci</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Composite LD estimates</span></span>
-<span class="r-in"><span class="va">lddf</span> <span class="op">&lt;-</span> <span class="fu">mldest</span><span class="op">(</span>geno <span class="op">=</span> <span class="va">genomat</span>,</span>
-<span class="r-in">               K <span class="op">=</span> <span class="va">K</span>,</span>
-<span class="r-in">               nc <span class="op">=</span> <span class="va">nc</span>,</span>
-<span class="r-in">               type <span class="op">=</span> <span class="st">"comp"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">lddf</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Simulate genotypes when true correlation is 0</span></span></span>
+<span class="r-in"><span><span class="va">nloci</span> <span class="op">&lt;-</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">nind</span>  <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="va">K</span> <span class="op">&lt;-</span> <span class="fl">6</span></span></span>
+<span class="r-in"><span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="va">genomat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="va">K</span>, <span class="va">nind</span> <span class="op">*</span> <span class="va">nloci</span>, <span class="cn">TRUE</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">nloci</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Composite LD estimates</span></span></span>
+<span class="r-in"><span><span class="va">lddf</span> <span class="op">&lt;-</span> <span class="fu">mldest</span><span class="op">(</span>geno <span class="op">=</span> <span class="va">genomat</span>,</span></span>
+<span class="r-in"><span>               K <span class="op">=</span> <span class="va">K</span>,</span></span>
+<span class="r-in"><span>               nc <span class="op">=</span> <span class="va">nc</span>,</span></span>
+<span class="r-in"><span>               type <span class="op">=</span> <span class="st">"comp"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">lddf</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   i j snpi snpj           D       D_se</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 2   NA   NA -0.05574074 0.06524343</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 1 3   NA   NA  0.04799663 0.07253549</span>
@@ -296,8 +314,8 @@ sliding window.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 1 5   NA   NA -0.08323232 0.06259828</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 2 3   NA   NA  0.01718855 0.06978495</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 2 4   NA   NA  0.03599327 0.06858949</span>
-<span class="r-in"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -308,11 +326,11 @@ sliding window.</p></dd>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by David Gerard.</p>
+  <p></p><p>Developed by David Gerard, Hanwei Hu, D. Thomas Scartz, NSF DBI 2132247.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

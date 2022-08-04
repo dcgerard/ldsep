@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ldsep: Linkage Disequilibrium Shrinkage Estimation for Polyploids <a href='https://dcgerard.github.io/ldsep/'><img src='man/figures/logo.png' align="right" height="138" /></a>
+# ldsep <a href="https://dcgerard.github.io/ldsep/"><img src="man/figures/logo.png" align="right" height="138" /></a>
 
 <!-- badges: start -->
 
@@ -18,12 +18,15 @@ v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org
 
 Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in
 polyploids, using either genotypes or genotype likelihoods. Support is
-provided to estimate the popular measures of LD: the LD coefficient *D*,
-the standardized LD coefficient *D*′, and the Pearson correlation
-coefficient *r*. All estimates are returned with corresponding standard
-errors. These estimates and standard errors can then be used for
-shrinkage estimation. The methods are described in Gerard (2021a) and
-Gerard (2021b).
+provided to estimate the popular measures of LD: the LD coefficient
+![D](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;D "D"),
+the standardized LD coefficient
+![D'](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;D%27 "D'"),
+and the Pearson correlation coefficient
+![r](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;r "r").
+All estimates are returned with corresponding standard errors. These
+estimates and standard errors can then be used for shrinkage estimation.
+The methods are described in Gerard (2021a) and Gerard (2021b).
 
 The main functions are:
 
@@ -110,6 +113,12 @@ Please note that the ldsep project is released with a [Contributor Code
 of
 Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
+
+## About the Logo
+
+The logo is a cartoon image of [Larry
+David’s](https://en.wikipedia.org/wiki/Larry_David) head, separated from
+its body (hence, `{ldsep}`).
 
 ## References
 
