@@ -332,6 +332,8 @@ ldfast <- function(gp,
 #' where we assumed an adaptive prior had been used.
 #'
 #' @inheritParams ldfast
+#' @param adjust A logical, should we adjust the posterior moments using the
+#'     truncated normal (\code{TRUE}) or not (\code{FALSE})?
 #'
 #' @return A list with some or all of the following elements:
 #' \describe{
@@ -356,14 +358,21 @@ ldfast <- function(gp,
 #' @examples
 #' data("glike")
 #' gp <- gl_to_gp(gl = glike)
-#' ldfast_unif(gp = gp, se = FALSE)
+#' ul <- ldfast_unif(gp = gp, se = FALSE, shrinkrr = FALSE)
+#'
+#' gp <- gl_to_gp(gl = glike, prior_mat = "estimate_pnorm")
+#' nl <- ldfast(gp = gp, se = FALSE, shrinkrr = FALSE)
+#'
+#' plot(ul$ldmat, nl$ldmat)
+#' abline(0, 1)
 ldfast_unif <- function(gp,
                         type = c("r", "r2", "z", "D", "Dprime"),
                         shrinkrr = TRUE,
                         se = TRUE,
                         thresh = TRUE,
                         upper = 10,
-                        mode = c("zero", "estimate")) {
+                        mode = c("zero", "estimate"),
+                        adjust = TRUE) {
   ## Check input --------------------------------------------------------------
   type <- match.arg(type)
   mode <- match.arg(mode)
@@ -380,6 +389,13 @@ ldfast_unif <- function(gp,
 
   varx <- matrixStats::rowVars(x = pm_mat, na.rm = TRUE)
   muy <- rowMeans(x = pv_mat, na.rm = TRUE)
+
+  ## Truncated normal adjustment ----------------------------------------------
+  if (adjust) {
+    lout <- mom_adjust(varx = varx, muy = muy, K = ploidy)
+    varx <- lout$varx
+    muy <- lout$muy
+  }
 
   ## Calculate reliability ratios for covariance ------------------------------
   if (type %in% c("r", "r2", "z")) {

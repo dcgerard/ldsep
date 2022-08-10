@@ -11,7 +11,8 @@ ldfast_unif(
   se = TRUE,
   thresh = TRUE,
   upper = 10,
-  mode = c("zero", "estimate")
+  mode = c("zero", "estimate"),
+  adjust = TRUE
 )
 }
 \arguments{
@@ -50,6 +51,9 @@ hierarchical shrinkage on the log of the reliability ratios, should
 we use zero as the mode (\code{mode = "zero"}) or estimate it using
 the procedure of Robertson and Cryer (1974)
 (\code{mode = "estimate"})?}
+
+\item{adjust}{A logical, should we adjust the posterior moments using the
+truncated normal (\code{TRUE}) or not (\code{FALSE})?}
 }
 \value{
 A list with some or all of the following elements:
@@ -68,7 +72,13 @@ where we assumed an adaptive prior had been used.
 \examples{
 data("glike")
 gp <- gl_to_gp(gl = glike)
-ldfast_unif(gp = gp, se = FALSE)
+ul <- ldfast_unif(gp = gp, se = FALSE, shrinkrr = FALSE)
+
+gp <- gl_to_gp(gl = glike, prior_mat = "estimate_pnorm")
+nl <- ldfast(gp = gp, se = FALSE, shrinkrr = FALSE)
+
+plot(ul$ldmat, nl$ldmat)
+abline(0, 1)
 }
 \seealso{
 \describe{
