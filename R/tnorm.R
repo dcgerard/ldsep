@@ -48,5 +48,5 @@ mom_adjust <- function(varx, muy, K) {
     varx_new[[i]] <- varx[[i]] / (1 + afun(s = sqrt(muy_new[[i]]), K = K))^2
   }
 
-  return(list(muy = muy, varx = varx))
+  return(list(muy = muy_new, varx = varx_new))
 }
