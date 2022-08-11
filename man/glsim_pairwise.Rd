@@ -13,7 +13,8 @@ glsim_pairwise(
   rdepth = 10,
   seq = 0.001,
   bias = 1,
-  od = 0.001
+  od = 0.001,
+  est = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ glsim_pairwise(
 \item{bias}{The allele bias.}
 
 \item{od}{The overdispersion parameter.}
+
+\item{est}{A logical. Should updog estimate the hyperparameters (\code{TRUE})
+or use the true hyperparameter values (\code{FALSE})?}
 }
 \value{
 A list with some or all of the following elements

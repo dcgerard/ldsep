@@ -15,6 +15,8 @@
 #' @param seq The sequencing error rate.
 #' @param bias The allele bias.
 #' @param od The overdispersion parameter.
+#' @param est A logical. Should updog estimate the hyperparameters (\code{TRUE})
+#'     or use the true hyperparameter values (\code{FALSE})?
 #'
 #' @return A list with some or all of the following elements
 #' \describe{
@@ -31,27 +33,37 @@
 #' }
 #'
 #' @examples
-#' glout <- glsim_pairwise(rho = 0.9, nind = 10000, ploidy = 6, pA = 0.5, pB = 0.5)
+#' glout <- glsim_pairwise(rho = 0.9, nind = 100, ploidy = 6, pA = 0.5, pB = 0.5)
 #'
 #' cor(glout$gA, glout$gB)
 #'
 #' @export
 #'
 #' @author David Gerard
-glsim_pairwise <- function(rho, nind, ploidy, pA, pB, rdepth = 10,
-                           seq = 0.001, bias = 1, od = 0.001) {
+glsim_pairwise <- function(rho,
+                           nind,
+                           ploidy,
+                           pA,
+                           pB,
+                           rdepth = 10,
+                           seq = 0.001,
+                           bias = 1,
+                           od = 0.001,
+                           est = FALSE) {
   stopifnot(rho >= 0, rho <= 1)
   stopifnot(nind > 0)
   stopifnot(rdepth > 0)
   stopifnot(ploidy > 0, ploidy %% 2 == 0)
   stopifnot(pA > 0, pA < 1)
   stopifnot(pB > 0, pB < 1)
+  stopifnot(is.logical(est))
   stopifnot(length(rho) == 1,
             length(nind) == 1,
             length(rdepth) == 1,
             length(ploidy) == 1,
             length(pA) == 1,
-            length(pB) == 1)
+            length(pB) == 1,
+            length(est) == 1)
 
   ## Get haplotype probabilities ----
   pAB = rho * sqrt(pA * (1 - pA) * pB * (1 - pB)) + pA * pB
@@ -87,28 +99,39 @@ glsim_pairwise <- function(rho, nind, ploidy, pA, pB, rdepth = 10,
                           od      = od)
 
   ## Get genotype likelihoods give read-depths ----
-  foutA <- updog::flexdog(refvec      = refA,
-                          sizevec     = sizevec,
-                          ploidy      = ploidy,
-                          verbose     = FALSE,
-                          bias_init   = bias,
-                          update_bias = FALSE,
-                          seq         = seq,
-                          update_seq  = FALSE,
-                          od          = od,
-                          update_od   = FALSE,
-                          model       = "hw")
-  foutB <- updog::flexdog(refvec      = refB,
-                          sizevec     = sizevec,
-                          ploidy      = ploidy,
-                          verbose     = FALSE,
-                          bias_init   = bias,
-                          update_bias = FALSE,
-                          seq         = seq,
-                          update_seq  = FALSE,
-                          od          = od,
-                          update_od   = FALSE,
-                          model       = "hw")
+  if (est) {
+    foutA <- updog::flexdog(refvec      = refA,
+                            sizevec     = sizevec,
+                            ploidy      = ploidy,
+                            verbose     = FALSE)
+    foutB <- updog::flexdog(refvec      = refB,
+                            sizevec     = sizevec,
+                            ploidy      = ploidy,
+                            verbose     = FALSE)
+  } else {
+    foutA <- updog::flexdog(refvec      = refA,
+                            sizevec     = sizevec,
+                            ploidy      = ploidy,
+                            verbose     = FALSE,
+                            bias_init   = bias,
+                            update_bias = FALSE,
+                            seq         = seq,
+                            update_seq  = FALSE,
+                            od          = od,
+                            update_od   = FALSE,
+                            model       = "hw")
+    foutB <- updog::flexdog(refvec      = refB,
+                            sizevec     = sizevec,
+                            ploidy      = ploidy,
+                            verbose     = FALSE,
+                            bias_init   = bias,
+                            update_bias = FALSE,
+                            seq         = seq,
+                            update_seq  = FALSE,
+                            od          = od,
+                            update_od   = FALSE,
+                            model       = "hw")
+  }
 
   ## Extract genotype likelihoods from that output ----
   retlist <- list(lA = foutA$genologlike,
