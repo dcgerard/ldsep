@@ -164,7 +164,9 @@ ldfast <- function(gp,
                    thresh = TRUE,
                    upper = 10,
                    mode = c("zero", "estimate"),
-                   win = NULL) {
+                   win = NULL,
+                   loc = NULL,
+                   chrom = NULL) {
   ## Check input -------------------------------------------------------------
   stopifnot(inherits(gp, "array"))
   stopifnot(length(dim(gp)) == 3)
@@ -187,8 +189,13 @@ ldfast <- function(gp,
   ploidy <- dim(gp)[[3]] - 1
 
   ## Calculate posterior moments ----------------------------------------------
-  pm_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
-  pv_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  
+##  pm_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+##  pv_mat <- matrix(NA_real_, nrow = nsnp, ncol = nind)
+  pm_mat <- gp[,,1]
+  pv_mat <- gp[,,1]
+  
+  
   fill_pm(pm = pm_mat, gp = gp)
   fill_pv(pv = pv_mat, pm = pm_mat, gp = gp)
 
@@ -320,7 +327,17 @@ ldfast <- function(gp,
     semat[which_truncate] <- NA_real_
     retlist$semat <- semat
   }
-
+  
+  ## Add loc if loc is not NULL
+  if (!is.null(loc)) {
+    retlist$loc = loc
+  }
+    
+  ## Add chrom if chrom is not NULL
+  if (!is.null(loc)) {
+    retlist$chrom = chrom
+  }
+  
   return(retlist)
 }
 
@@ -616,7 +633,8 @@ gl_to_gp <- function(gl, prior_mat = "uniform") {
             exp(prior_mat) <= 1,
             apply(prior_mat, 1, function(x) abs(log_sum_exp(x))) < sqrt(.Machine$double.eps))
 
-  gp <- array(NA_real_, dim = dim(gl))
+  ## preserve row/col labels
+  gp <- gl 
 
   for (i in seq_len(dim(gl)[[1]])) {
     for (j in seq_len(dim(gl)[[2]])) {
