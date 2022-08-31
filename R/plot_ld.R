@@ -52,15 +52,23 @@ readinss <- function(mat, loci, chrom) { ## this is solid to read in wanted info
 chromLoop <- function(obj) {
   stopifnot(!is.null(obj$ldmat), !is.null(obj$loc))
   allchrom = rep(1)
-  if (!is.null(obj$chrom)) {
+  nullchrom = !is.null(obj$chrom)
+  if (nullchrom) {
     allchrom = base::unique(obj$chrom)
   }
   
   opframe = data.frame(chrom = c(), distance = c(), meanr2 = c())
   
-  for (i in allchrom) {
-    bChrom = (obj$chrom == i)
-    opframe = rbind(opframe, readinss(mat = obj$ldmat[bChrom, bChrom], loci = obj$loc[bChrom], chrom = i))
+  ## if chromosome argument is supplied
+  if (nullchrom) {
+    for (i in allchrom) {
+      bChrom = (obj$chrom == i)
+      opframe = rbind(opframe, readinss(mat = obj$ldmat[bChrom, bChrom], loci = obj$loc[bChrom], chrom = i))
+    }
+  }
+  ## if no chrom arg is supplied
+  else {
+    opframe = rbind(opframe, readinss(mat = obj$ldmat, loci = obj$loc, chrom = NA))
   }
   opframe
 }
