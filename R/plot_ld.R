@@ -3,9 +3,27 @@
 #' @param obj Output of ldfast function.
 #'
 #' @export
-plot_ld <- function(obj) {
-  fulldf = chromLoop(obj)
-
+plot_ld <- function(chromLoopDF, distinctChromPlot = FALSE) {
+  p <- list()
+  
+  if (!distinctChromPlot) {
+    # we have to combine
+    
+  p[[1]] = ggplot2::qplot(x = chromLoopDF$distance, y = chromLoopDF$meanr2, data = chromLoopDF$rtg) +
+    ggplot2::theme_bw() + ggplot2::labs(title = paste("LDdecay Plot"))
+  }
+  else {
+    for (i in unique(chromLoopDF$chrom)) {
+      buffDF = chromLoopDF[chromLoopDF$obs == i,]
+      scamp <- scam::scam(formula = meanr2~s(distance, bs = "mdcx"), data = buffDF)
+      buffDF$spline <- scam::predict.scam(scamp)
+      
+      p[[i]] = ggplot2::qplot(x = buffDF$distance, y = buffDF$meanr2) +
+        ggplot2::geom_line(ggplot2::aes(x = buffDF$distance, y = buffDF$spline)) +
+        ggplot2::theme_bw() + ggplot2::labs(title = paste("LDdecay Plot for Chrom", i))
+    }
+  }
+  return(p)
 }
 
 
@@ -34,13 +52,15 @@ readinss <- function(mat, loci, chrom) { ## this is solid to read in wanted info
   ovn2 <- ov2[!nao]
   
   uniqueDist <- base::unique(ovn2)
+  obs <- rep(NA, length(uniqueDist))
   meanr2 <- rep(NA, length(uniqueDist))
   # medianr2 <- rep(NA, length(uniqueDist))
   
   for (i in seq(1, length(uniqueDist))) {
     meanr2[i] = mean(ovn[ovn2 == uniqueDist[i]])
+    obs[i] = length(ovn[ovn2 == uniqueDist[i]])
   }
-  data.frame(chrom, distance = uniqueDist, meanr2)
+  data.frame(chrom, distance = uniqueDist, meanr2, obs)
 }
 
 
@@ -57,7 +77,7 @@ chromLoop <- function(obj) {
     allchrom = base::unique(obj$chrom)
   }
   
-  opframe = data.frame(chrom = c(), distance = c(), meanr2 = c())
+  opframe = data.frame(chrom = c(), distance = c(), meanr2 = c(), obs = c())
   
   ## if chromosome argument is supplied
   if (nullchrom) {
