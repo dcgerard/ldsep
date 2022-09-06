@@ -1,3 +1,19 @@
+
+#' findDistT
+#'
+#' This function uses indices of an ldmat along with indices of a loci vector
+#' to calculate the distance between two markers and returns the distance along
+#' with the corresponding LD value.
+#' 
+#' @param ldmat LD matrix output from ldfast function.
+#' 
+#' @param loci Vector of marker positions corresponding with ldmat. For example 
+#' the ith element of loci (loci[i]) corresponds to the element at ldmat[i,] and
+#' ldmat[,i].
+#' 
+#' @param chrom The chromosome the current data is from.
+#' 
+#' @export
 findDistT <- function(ldmat, loci, chrom, poolChrom = TRUE) {
   nr <- nrow(ldmat)
   nc <- ncol(ldmat)
@@ -31,7 +47,17 @@ findDistT <- function(ldmat, loci, chrom, poolChrom = TRUE) {
   opdf
 }
 
-
+#' chromLoopN
+#' 
+#' This function iterates over chromosomes and runs helper functions to find 
+#' distances between markers.
+#' 
+#'
+#' @param ldout Output of ldfast function.
+#' 
+#' @param poolChrom Boolean to choose either combining chromosomes or not.
+#'
+#' @export
 chromLoopN <- function(ldout, poolChrom = TRUE) {
   stopifnot(!is.null(ldout$ldmat), !is.null(ldout$loc))
   allchrom = rep(1)
@@ -69,7 +95,11 @@ chromLoopN <- function(ldout, poolChrom = TRUE) {
 }
 
 
-
+#' ldDecPrepN
+#' 
+#' @param cldf Dataframe containing good data.
+#' 
+#' @export
 ldDecPrepN <- function(cldf, combineChrom = TRUE, method = c("mean", "median")) {
   dfnrow = nrow(cldf)
   if (combineChrom) {
@@ -92,6 +122,19 @@ ldDecPrepN <- function(cldf, combineChrom = TRUE, method = c("mean", "median")) 
 }
 
 
+#' ldPlotN
+#' 
+#' This function returns ld plots for the specified chromosome.
+#' 
+#' @param ldout ldfast function output.
+#' 
+#' @param combineChrom Boolean for selecting if you want to combine chromosomes 
+#' in the final LD decay plot. If FALSE will return distinct plots for each 
+#' chromosome.
+#' 
+#' @param ldThresh Linkage disequilibrium threashold to be displayed on the plot.
+#' 
+#' @export
 ldPlotN <- function(ldout, combineChrom = TRUE, ldThresh = 0.2) {
   p <- list()
   
