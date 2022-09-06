@@ -1,9 +1,9 @@
 ---
-Title: LD Decay Vigniette
+Title: LD Decay Vignette
 ---
 
 ```{r}
-# devtools::load_all(path = "~/Genomics/ldsep/") ## FOR LOCAL
+# devtools::load_all(path = "~/Genomics/ldsep/") ## FOR MY LOCAL
 library(updog)
 library(VariantAnnotation)
 ```
