@@ -28,11 +28,14 @@ varnames <- paste0("logL_", 0:ploidy)
 glarray <- format_multidog(x = mout, varname = varnames)
 
 gparray <- gl_to_gp(glarray)
-ldout <- ldfast(gp = gparray, loc = posFrame$pos, type = "r2", chrom = rep(c(1, 2, 1), 7))
+
+ldout1 <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", chrom = rep(c(1, 2, 1), 7))
+ldout2 <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", chrom = rep(1, 21))
 ```
 
 ```{r plotFunction}
-LD.plot()
+ldPlotN(ldout = ldout2, combineChrom = FALSE)
+
 ```
 
 
