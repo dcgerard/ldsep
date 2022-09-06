@@ -1,4 +1,3 @@
-
 #' findDistT
 #'
 #' This function uses indices of an ldmat along with indices of a loci vector
