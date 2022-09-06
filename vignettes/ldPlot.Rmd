@@ -3,6 +3,7 @@ Title: LD Decay Vigniette
 ---
 
 ```{r}
+# devtools::load_all(path = "~/Genomics/ldsep/") ## FOR LOCAL
 library(updog)
 library(VariantAnnotation)
 ```
@@ -34,8 +35,9 @@ ldout2 <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", chrom = rep
 ```
 
 ```{r plotFunction}
-ldPlotN(ldout = ldout2, combineChrom = FALSE)
-
+ldPlotN(ldout = ldout2, poolChrom = TRUE, allData = TRUE) ## ALL DATA FITTED
+ldPlotN(ldout = ldout2, poolChrom = TRUE, allData = FALSE) ## ALL DATA MEANED AT DISTANCE THEN FITTED
+ldPlotN(ldout = ldout2, poolChrom = TRUE) ## ALL DATA SEPARATED BY CHROMOSOME THEN FITTED
 ```
 
 
