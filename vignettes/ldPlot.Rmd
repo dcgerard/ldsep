@@ -3,18 +3,24 @@ Title: LD Decay Vignette
 ---
 
 ```{r}
-# devtools::load_all(path = "~/Genomics/ldsep/") ## FOR MY LOCAL
+devtools::load_all(path = "~/Genomics/ldsep/") ## FOR MY LOCAL
 library(updog)
 library(VariantAnnotation)
 ```
 
 ```{r gettingStarted, message=FALSE, warning=FALSE}
 
+## you will need to make sure there is a reference genome
+
+## argument for the number of df in the spline
+
+## come up with a set of 1000 snps evenly spaced apart, maybe add this dataset
+
 uit_file <- system.file("extdata", "subuit.vcf",
                         package = "ldsep",
                         mustWork = TRUE)
 subuit <- readVcf(file = uit_file)
-
+## subuit <- uit
 position <- ranges(subuit)
 posFrame <- data.frame(row.names = names(position), pos = start(position))
 sizemat <- geno(subuit)$DP

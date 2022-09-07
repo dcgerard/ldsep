@@ -1,4 +1,8 @@
 
+## THIS FILE IS NO LONGER REQUIRED
+
+
+
 #' findDistT
 #'
 #' This function uses indices of an ldmat along with indices of a loci vector
@@ -169,12 +173,88 @@ ldPlotN <- function(ldout, poolChrom = TRUE, ldThresh = 0.2, allData = TRUE) {
       df1$spline <- scam::predict.scam(scamp)
     }
     
-    p[[1]] = ggplot2::qplot(x = dist, y = r2, data = df1) +
-      ggplot2::geom_line(ggplot2::aes(x = dist, y = spline), colour = "black") +
-      ggplot2::geom_hline(yintercept = ldThresh, colour = "blue", alpha = 0.5) +
-      ggplot2::theme_bw() + ggplot2::labs(title = "LDdecay Plot") 
+#    p[[1]] = ggplot2::qplot(x = dist, y = r2, data = df1) +
+#      ggplot2::geom_line(ggplot2::aes(x = dist, y = spline), colour = "black") +
+#      ggplot2::geom_hline(yintercept = ldThresh, colour = "blue", alpha = 0.5) +
+#      ggplot2::theme_bw() + ggplot2::labs(title = "LDdecay Plot") 
+    print(max(df1[['spline']]) / 2)
+    p[[1]] = ggplot2::ggplot(data = df1) + ggplot2::geom_line(ggplot2::aes(x = dist, y =spline))
+ ##     ggplot2::geom_hline(yintercept = ldThreshN)
     
   }
   
   return(p)
 }
+
+#' dataMaster
+#' 
+#' This function returns ld plots for the specified chromosome.
+#' 
+#' @param ldout ldfast function output.
+#' 
+
+
+
+
+
+
+## this function takes an ldout from {ldfast} and pairs distance to ldest values to graph ldDecay (ss stands for summary stat)
+dataMaster <- function(ldout, combineDist = TRUE, combineSS = c('mean', 'median', 'quantile'), quantile = 0.9) {
+  ldim <- dim(ldout$ldmat)[1] # will be square
+  pm <- matrix(rep(NA, (ldim^2)), nrow = ldim)
+  ## calculate distances and put them in adjacent matricies
+  for (r in seq(1, ldim - 1)) {
+    for (c in seq(1 + r, ldim)) {
+      pm[r, c] = abs(ldout[['loc']][r] - ldout[['loc']][c])
+    }
+  }
+  opp <- list(ld = matCorn(ldout$ldmat),d =  matCorn(pm))
+  
+  if (combineDist) {
+    if (length(combineSS) > 1) combineSS = 'mean' ## this is sort of sketchy but works for now
+    opp <- combineLoc(dMout = opp, ss = combineSS, quantile = quantile)
+    if (combineSS == 'quantile') combineSS = paste(combineSS, quantile)
+    opp[['ss']] = combineSS
+  }
+  opp
+}
+
+## this function extracts the corner elements of a matrix
+matCorn <- function(sqMat) {
+  ldim <- dim(sqMat)[1]
+  opv <- rep(NA, sum(seq(1, ldim - 1)))
+  h = 1
+  for (r in seq(1, ldim - 1)) {
+    for (c in seq(1 + r, ldim)) {
+      opv[h] = sqMat[r, c]
+      h = h + 1
+    }
+  }
+  opv
+}
+
+## this function takes vec of d and ldest and combines distances with summary stats
+combineLoc <- function(dMout, ss = c('mean', 'median', 'quantile'), quantile) {
+  o <- unique(dMout[['d']])
+  v <- o
+  for (i in seq(1, length(o))) {
+    ## this is just creating a vector of ldests of the same dist and averaging
+    if (ss == 'mean') v[i] = mean(dMout[['ld']][dMout[['d']] == dMout[['d']][i]])
+    else if (ss == 'median') v[i] = median(dMout[['ld']][dMout[['d']] == dMout[['d']][i]])
+    else if (ss == 'quantile') v[i] = quantile(dMout[['ld']][dMout[['d']] == dMout[['d']][i]], quantile)
+  }
+  list(ld = v, d = o)
+}
+
+
+plotLD <- function(dMout, dof = 8) {
+  df <- data.frame(d = dMout[['d']], ld = dMout[['ld']])
+
+  ## fit a spline here
+  scamD <- scam::scam(formula = ld~s(d, bs = "mdcx", k = dof), data = df)
+  df$s <- scam::predict.scam(scamD)
+  
+  ggplot2::ggplot(data = df) + ggplot2::geom_point(ggplot2::aes(x = d, y = ld)) +
+    ggplot2::geom_line(ggplot2::aes(x = d, y = s))
+}
+
