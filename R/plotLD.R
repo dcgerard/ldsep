@@ -4,20 +4,27 @@
 #' another consisting of the length (bp) between the two markers used to 
 #' calculate the corresponding ld estimate.
 #'
-#' @param dMout list output from dataMaster function
+#' @param dMout List output from dataMaster function
 #' 
-#' @param dof number of degrees freedom for spline
+#' @param dof Number of degrees freedom for spline
+#' 
+#' @param points Boolean if you wish to see scatter plot as well as spline.
 #' 
 #' @export
-plotLD <- function(dMout, dof = 8) {
+plotLD <- function(dMout, dof = 8, points = FALSE) {
   df <- data.frame(d = dMout[['d']], ld = dMout[['ld']])
   
   ## fit a spline here
   scamD <- scam::scam(formula = ld~s(d, bs = "mdcx", k = dof), data = df)
   df$s <- scam::predict.scam(scamD)
   
-  ggplot2::ggplot(data = df) + ggplot2::geom_point(ggplot2::aes(x = d, y = ld)) +
-    ggplot2::geom_line(ggplot2::aes(x = d, y = s))
+  opp <- ggplot2::ggplot(data = df) +
+    ggplot2::geom_line(ggplot2::aes(x = d, y = s), colour = "blue")
+  
+  if (points) {
+    opp <- opp + ggplot2::geom_point(ggplot2::aes(x = d, y = ld))
+  }
+  opp
 }
 
 
