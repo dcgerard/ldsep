@@ -100,7 +100,7 @@ arma::vec em_fix(const arma::vec &p,
       }
     }
   }
-  if ((alpha(0) > 1.0) && (alpha(1) > 1.0) &
+  if ((alpha(0) > 1.0) && (alpha(1) > 1.0) &&
       (alpha(2) > 1.0) && (alpha(3) > 1.0)) {
     pnew = plog_sum_exp(pnew, arma::log(alpha - 1.0));
     pnew = arma::exp(pnew - log_sum_exp(pnew));
