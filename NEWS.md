@@ -16,7 +16,7 @@
 
 - Includes a `win` argument in `ldfast()`, which implements the moment-based LD correction along a sliding window.
 - Fixes a bug where monomorphic SNPs were causing errors when `type = "Dprime"` was selected in `ldfast()`. Now we just return `NA`'s for LD with monomorphic SNPs.
-- Uses the complete reference of Gerard (2021) [doi:10.1111/1755-0998.13349](https://www.doi.org/10.1111/1755-0998.13349).
+- Uses the complete reference of Gerard (2021) (doi:10.1111/1755-0998.13349)
 
 # ldsep 2.0.2
 
