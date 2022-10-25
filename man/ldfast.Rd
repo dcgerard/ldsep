@@ -12,7 +12,9 @@ ldfast(
   thresh = TRUE,
   upper = 10,
   mode = c("zero", "estimate"),
-  win = NULL
+  win = NULL,
+  loc = NULL,
+  chrom = NULL
 )
 }
 \arguments{
@@ -56,6 +58,10 @@ the procedure of Robertson and Cryer (1974)
 correlations calculated to those +/- the window size. This will
 only improve speed if the window size is \emph{much} less than the
 number of SNPs.}
+
+\item{loc}{A vector of corresponding SNP locations on the assembly.}
+
+\item{chrom}{A vector of corresponding SNP chromosomes.}
 }
 \value{
 A list with some or all of the following elements:

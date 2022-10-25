@@ -62,7 +62,7 @@ to being more sure of the genotypes) (\code{rdepth}). Then this
 function will  simulate some genotype log-likelihoods.
 }
 \examples{
-glout <- glsim_pairwise(rho = 0.9, nind = 10000, ploidy = 6, pA = 0.5, pB = 0.5)
+glout <- glsim_pairwise(rho = 0.9, nind = 100, ploidy = 6, pA = 0.5, pB = 0.5)
 
 cor(glout$gA, glout$gB)
 

@@ -100,6 +100,8 @@
 #'     correlations calculated to those +/- the window size. This will
 #'     only improve speed if the window size is \emph{much} less than the
 #'     number of SNPs.
+#' @param loc A vector of corresponding SNP locations on the assembly.
+#' @param chrom A vector of corresponding SNP chromosomes.
 #'
 #' @seealso
 #' \describe{
@@ -165,7 +167,7 @@ ldfast <- function(gp,
                    upper = 10,
                    mode = c("zero", "estimate"),
                    win = NULL,
-                   loc = NULL,
+                   loc = NULL, 
                    chrom = NULL) {
   ## Check input -------------------------------------------------------------
   stopifnot(inherits(gp, "array"))
@@ -338,6 +340,7 @@ ldfast <- function(gp,
     retlist$chrom = chrom
   }
   
+  class(retlist) <- "ldfast"
   return(retlist)
 }
 
@@ -793,5 +796,53 @@ est_prior_mat <- function(gl, method = c("pnorm", "general"), log = TRUE) {
 
   return(prior_mat)
 }
+
+
+#' Plot ldfast output method
+#' 
+#' @param x ldfast output object.
+#' 
+#' @param groupPoints Number of groups to use.
+#' 
+#' @export
+plot.ldfast <- function(x, groupPoints = 20) {
+  opPlot <- plotLD(ldout = x, groupPoints = groupPoints)
+  return(opPlot)
+}
+
+#' Shrink LD Estimates based on LD decay
+#' 
+#' @param ldout ldfast output object.
+#' 
+#' @param dof Degrees of freedom for fitting spline.
+#' 
+#' @param backTo value to convert adjusted z to.
+#' 
+#' @export
+shrink_ldfast <- function(ldout, dof = 8, backTo = c('r2')) {
+  dMout <- dataMaster(ldout)
+  dMout <- data.frame(z = abs(dMout$ld), dist = dMout$d)
+  dMout$z[is.infinite(dMout[['z']])] <- NA
+  dMout$adj <- seq.int(nrow(dMout))
+  pos <- dMout$adj[!is.na(dMout$z)]
+  scamD <- scam::scam(formula = z~s(dist, bs = "mdcx", k = dof), data = dMout)
+  scamPoint <- scam::predict.scam(scamD)
+  resids = dMout[['z']][!is.na(dMout[['z']])] - scamPoint
+  se <- ldout$semat[upper.tri(ldout$semat)][!is.na(dMout[['z']])]
+  ashOp <- ashr::ash(betahat = resids, sebetahat = se, mixcompdist = 'normal')
+  resid_shrink <- ashr::get_pm(ashOp)
+  finalVal <- scamPoint + resid_shrink
+  dMout$adj <- NA
+  for (i in 1:length(pos)) {
+    dMout$adj[pos[i]] = finalVal[i]
+  }
+  if (backTo == 'r2') {
+    dMout[['z']] <- tanh(dMout[['z']])
+    dMout[['adj']] <- tanh(dMout[['adj']])
+    dMout$adj[is.na(dMout[['adj']])] <- 1
+  }
+  return(dMout)
+}
+
 
 

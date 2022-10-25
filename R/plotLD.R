@@ -1,113 +1,100 @@
+
 #' plotLD
-#'
-#' This function takes a list containing two vectors one with ld estimates and 
-#' another consisting of the length (bp) between the two markers used to 
-#' calculate the corresponding ld estimate.
-#'
-#' @param dMout List output from dataMaster function
 #' 
-#' @param dof Number of degrees freedom for spline
+#' This function takes an ldout from `ldfast` and a vector of genetic distances 
+#' and plots LD at various distances.
 #' 
-#' @param points Boolean if you wish to see scatter plot as well as spline.
+#' @param ldout Output from code{ldest::ldfast()} function.
+#' 
+#' @param groupPoints the number of discrete distance groupings.
+#' 
 #' 
 #' @export
-plotLD <- function(dMout, dof = 8, points = FALSE) {
-  df <- data.frame(d = dMout[['d']], ld = dMout[['ld']])
-  
-  ## fit a spline here
-  scamD <- scam::scam(formula = ld~s(d, bs = "mdcx", k = dof), data = df)
-  df$s <- scam::predict.scam(scamD)
-  
-  opp <- ggplot2::ggplot(data = df) +
-    ggplot2::geom_line(ggplot2::aes(x = d, y = s), colour = "blue")
-  
-  if (points) {
-    opp <- opp + ggplot2::geom_point(ggplot2::aes(x = d, y = ld))
-  }
-  opp
+plotLD <- function(ldout, groupPoints = 20) {
+  dMout <- dataMaster(ldout)
+  dfone <- data.frame(r2 = dMout$ld, dist = dMout$d)
+  bpdata <- sumDf(dfone, ngroup = groupPoints)
+  pldata <- sumStat(bpdata)
+
+  opPlot <- ggplot2::ggplot(pldata) +
+    ggplot2::geom_line(ggplot2::aes(x = md, y = tens), color = "red", linetype = 2) +
+    ggplot2::geom_line(ggplot2::aes(x = md, y = tf), color = "black", linetype = 2) +
+    ggplot2::geom_line(ggplot2::aes(x = md, y = med), color = "black") +
+    ggplot2::geom_line(ggplot2::aes(x = md, y = sf), color = "black", linetype = 2) +
+    ggplot2::geom_line(ggplot2::aes(x = md, y = nine), color = "red", linetype = 2) +
+    ggplot2::labs(x = "dist (bp)", y = "quantile")
+
+  return(opPlot)
 }
 
 
 #' dataMaster
 #' 
-#' This function takes an ld output from code{ldfast} and pairs distance between
-#' markers to ld estimates producing a list with an ld estimate component, a 
-#' distance component and an optional summary statistic used component (if 
-#' combineDist == TRUE).
+#' This function takes an ld output from code{ldfast} and converts the data into
+#' a dataframe.
 #' 
 #' @param ldout Output from code{ldest::ldfast()} function.
 #' 
-#' @param combineDist Boolean argument to combine ld estimates by distance.
-#' 
-#' @param combineSS Summary statistic to be used if combineDist == TRUE (default
-#' is mean).
-#' 
-#' @param quantile Quantile to be used if combineSS == "quantile".
 #' 
 #' @export
-dataMaster <- function(ldout, combineDist = TRUE, combineSS = c('mean', 'median', 'quantile'), quantile = 0.9) {
+dataMaster <- function(ldout) {
   ldim <- dim(ldout$ldmat)[1] # will be square
   pm <- matrix(rep(NA, (ldim^2)), nrow = ldim)
   ## calculate distances and put them in adjacent matricies
-  for (r in seq(1, ldim - 1)) {
-    for (c in seq(1 + r, ldim)) {
+  for (r in seq.int(1, ldim - 1)) {
+    for (c in seq.int(1 + r, ldim)) {
       pm[r, c] = abs(ldout[['loc']][r] - ldout[['loc']][c])
     }
   }
-  opp <- list(ld = matCorn(ldout$ldmat),d =  matCorn(pm))
-  
-  if (combineDist) {
-    if (length(combineSS) > 1) combineSS = 'mean' ## this is sort of sketchy but works for now
-    opp <- combineLoc(dMout = opp, ss = combineSS, quantile = quantile)
-    if (combineSS == 'quantile') combineSS = paste(combineSS, quantile)
-    opp[['ss']] = combineSS
-  }
+  opp <- list(ld = ldout[['ldmat']][upper.tri(ldout[['ldmat']])],d = pm[upper.tri(pm)])
   opp
 }
 
 
-#' combineLoc
+#' sumStat
 #' 
-#' This function takes a vector of distances between loci and a ld estimate 
-#' vector and will calculate a summary statistic grouping by distance.
+#' This function calculates quantiles based on data from sumDF.
 #' 
-#' @param dMout list output from dataMaster function
+#' @param DFncomb a sumDF output
 #' 
-#' @param ss Summary statistic to be calculated for each distance.
-#' 
-#' @param quantile Quantile to be used if ss == 'quantile'.
-#' 
-#' @export
-combineLoc <- function(dMout, ss = c('mean', 'median', 'quantile'), quantile) {
-  o <- unique(dMout[['d']])
-  v <- o
-  for (i in seq(1, length(o))) {
-    ## this is just creating a vector of ldests of the same dist and averaging
-    if (ss == 'mean') v[i] = mean(dMout[['ld']][dMout[['d']] == dMout[['d']][i]])
-    else if (ss == 'median') v[i] = median(dMout[['ld']][dMout[['d']] == dMout[['d']][i]])
-    else if (ss == 'quantile') v[i] = quantile(dMout[['ld']][dMout[['d']] == dMout[['d']][i]], quantile)
+sumStat <- function(DFncomb) {
+  group <- unique(DFncomb[['val']])
+  lgroup <- length(group)
+  opdf <- data.frame(group, 
+                     md = rep(NA, lgroup),
+                     tens = rep(NA, lgroup),
+                     tf = rep(NA, lgroup),
+                     med = rep(NA, lgroup),
+                     sf = rep(NA, lgroup),
+                     nine = rep(NA, lgroup))
+  
+  for (i in group) {
+    opdf[['md']][i] = mean(DFncomb[DFncomb[['val']] == i,][['dist']])
+    opdf[['tens']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .10)
+    opdf[['tf']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .25)
+    opdf[['med']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .50)
+    opdf[['sf']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .75)
+    opdf[['nine']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .90)
   }
-  list(ld = v, d = o)
+  return(opdf)
 }
 
 
-#' matCorn
+#' sumDF
 #' 
-#' This function extracts the corner elements of a matrix
+#' This function groups the data according to genetic distance into n groups.
 #' 
-#' @param sqMat A square Matrix.
+#' @param DFncomb Datamaster output.
 #' 
-#' @export
-matCorn <- function(sqMat) {
-  ldim <- dim(sqMat)[1]
-  opv <- rep(NA, sum(seq(1, ldim - 1)))
-  h = 1
-  for (r in seq(1, ldim - 1)) {
-    for (c in seq(1 + r, ldim)) {
-      opv[h] = sqMat[r, c]
-      h = h + 1
-    }
+#' @param ngroup Number of groups.
+#' 
+sumDf <- function(DFncomb, ngroup = 4) {
+  ## scaffold for this function
+  DFncomb[['val']] = NA
+  rb <- seq.int(from = 0, to = 1, by = 1/ngroup)
+  lenrb <- length(rb)
+  for (i in seq.int(1, lenrb - 1)) {
+    DFncomb[['val']][DFncomb[['dist']] >= quantile(DFncomb[['dist']], rb[i])] = i
   }
-  opv
+  return(DFncomb)
 }
-
