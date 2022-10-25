@@ -1,0 +1,49 @@
+---
+Title: LD Decay Vignette
+---
+
+```{r}
+devtools::load_all(path = "~/Genomics/ldsep/") ## FOR MY LOCAL
+library(updog)
+library(VariantAnnotation)
+```
+
+```{r gettingStarted, message=FALSE, warning=FALSE}
+
+## you will need to make sure there is a reference genome
+
+## argument for the number of df in the spline
+
+## come up with a set of 1000 snps evenly spaced apart, maybe add this dataset
+
+uit_file <- system.file("extdata", "subuit.vcf",
+                        package = "ldsep",
+                        mustWork = TRUE)
+subuit <- readVcf(file = uit_file)
+## subuit <- uit
+position <- ranges(subuit)
+posFrame <- data.frame(row.names = names(position), pos = start(position))
+sizemat <- geno(subuit)$DP
+refmat <- geno(subuit)$RA
+ploidy <- 4
+mout <- multidog(refmat = refmat,
+                 sizemat = sizemat,
+                 ploidy = ploidy,
+                 model = "norm")
+## msub <- filter_snp(x = mout, pmax(Pr_0, Pr_1, Pr_2, Pr_3, Pr_4) < 0.95)
+varnames <- paste0("logL_", 0:ploidy)
+glarray <- format_multidog(x = mout, varname = varnames)
+
+gparray <- gl_to_gp(glarray)
+
+ldout1 <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", chrom = rep(c(1, 2, 1), 7))
+ldout2 <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", chrom = rep(1, 21))
+```
+
+```{r plotFunction}
+ldPlotN(ldout = ldout2, poolChrom = TRUE, allData = TRUE) ## ALL DATA FITTED
+ldPlotN(ldout = ldout2, poolChrom = TRUE, allData = FALSE) ## ALL DATA MEANED AT DISTANCE THEN FITTED
+ldPlotN(ldout = ldout2, poolChrom = TRUE) ## ALL DATA SEPARATED BY CHROMOSOME THEN FITTED
+```
+
+

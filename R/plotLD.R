@@ -1,4 +1,3 @@
-
 #' plotLD
 #' 
 #' This function takes an ldout from `ldfast` and a vector of genetic distances 
@@ -49,7 +48,6 @@ dataMaster <- function(ldout) {
   opp <- list(ld = ldout[['ldmat']][upper.tri(ldout[['ldmat']])],d = pm[upper.tri(pm)])
   opp
 }
-
 
 #' sumStat
 #' 
