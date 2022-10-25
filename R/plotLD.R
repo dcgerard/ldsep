@@ -22,7 +22,7 @@ plotLD <- function(ldout, groupPoints = 20) {
     ggplot2::geom_line(ggplot2::aes(x = md, y = med), color = "black") +
     ggplot2::geom_line(ggplot2::aes(x = md, y = sf), color = "black", linetype = 2) +
     ggplot2::geom_line(ggplot2::aes(x = md, y = nine), color = "red", linetype = 2) +
-    ggplot2::labs(x = "dist (bp)", y = "quantile")
+    ggplot2::labs(x = "dist (bp)", y = "STAT")
 
   return(opPlot)
 }

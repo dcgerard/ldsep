@@ -1,0 +1,49 @@
+---
+title: "ldplot_example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ldplot_example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(VariantAnnotation)
+library(updog)
+#library(ldsep)
+devtools::load_all(path = "~/Genomics/ldsep/")
+#   uit_file <- system.file("extdata", "subuit.vcf", 
+#                           package = "ldsep",
+#                           mustWork = TRUE)
+uit_file <- "~/Documents/DavidSimulation/data/bluberry/alfalfa184/sm_4_chr4.vcf"
+uit <- readVcf(file = uit_file)
+subuit <- uit[seq.int(11, 103),]
+position <- ranges(subuit)
+posFrame <- data.frame(row.names = names(position), pos = start(position))
+sizemat <- geno(subuit)$DP
+refmat <- geno(subuit)$AD[,,1]
+ploidy <- 4
+mout <- multidog(refmat = refmat, 
+                 sizemat = sizemat, 
+                 ploidy = ploidy, 
+                 model = "norm")
+varnames <- paste0("logL_", 0:ploidy)
+glarray <- format_multidog(x = mout, varname = varnames)
+gparray <- gl_to_gp(glarray)
+ldout <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", shrinkrr = FALSE)
+```
+
+```{r plotwork}
+ldPlot <- plot.ldfast(ldout, groupPoints = 10)
+ldPlot + ggplot2::theme_minimal() + ggplot2::labs(y = "r2")
+```
+
+
+
