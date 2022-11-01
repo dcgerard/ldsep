@@ -68,11 +68,11 @@ sumStat <- function(DFncomb) {
   
   for (i in group) {
     opdf[['md']][i] = mean(DFncomb[DFncomb[['val']] == i,][['dist']])
-    opdf[['tens']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .10)
-    opdf[['tf']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .25)
-    opdf[['med']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .50)
-    opdf[['sf']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .75)
-    opdf[['nine']][i] = quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .90)
+    opdf[['tens']][i] = stats::quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .10)
+    opdf[['tf']][i] = stats::quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .25)
+    opdf[['med']][i] = stats::quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .50)
+    opdf[['sf']][i] = stats::quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .75)
+    opdf[['nine']][i] = stats::quantile(DFncomb[DFncomb[['val']] == i,][['r2']], .90)
   }
   return(opdf)
 }
@@ -92,7 +92,7 @@ sumDf <- function(DFncomb, ngroup = 4) {
   rb <- seq.int(from = 0, to = 1, by = 1/ngroup)
   lenrb <- length(rb)
   for (i in seq.int(1, lenrb - 1)) {
-    DFncomb[['val']][DFncomb[['dist']] >= quantile(DFncomb[['dist']], rb[i])] = i
+    DFncomb[['val']][DFncomb[['dist']] >= stats::quantile(DFncomb[['dist']], rb[i])] = i
   }
   return(DFncomb)
 }

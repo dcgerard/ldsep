@@ -4,12 +4,14 @@
 \alias{plot.ldfast}
 \title{Plot ldfast output method}
 \usage{
-\method{plot}{ldfast}(x, groupPoints = 20)
+\method{plot}{ldfast}(x, groupPoints = 20, ...)
 }
 \arguments{
 \item{x}{ldfast output object.}
 
 \item{groupPoints}{Number of groups to use.}
+
+\item{...}{Further arguments.}
 }
 \description{
 Plot ldfast output method

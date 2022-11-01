@@ -804,8 +804,10 @@ est_prior_mat <- function(gl, method = c("pnorm", "general"), log = TRUE) {
 #' 
 #' @param groupPoints Number of groups to use.
 #' 
+#' @param ... Further arguments.
+#' 
 #' @export
-plot.ldfast <- function(x, groupPoints = 20) {
+plot.ldfast <- function(x, groupPoints = 20, ...) {
   opPlot <- plotLD(ldout = x, groupPoints = groupPoints)
   return(opPlot)
 }

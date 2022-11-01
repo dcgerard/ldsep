@@ -7,14 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, eval = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r setup}
+```{r setup, eval = FALSE}
 library(VariantAnnotation)
 library(updog)
 #library(ldsep)
@@ -22,9 +22,9 @@ devtools::load_all(path = "~/Genomics/ldsep/")
 #   uit_file <- system.file("extdata", "subuit.vcf", 
 #                           package = "ldsep",
 #                           mustWork = TRUE)
-uit_file <- "~/Documents/DavidSimulation/data/bluberry/alfalfa184/sm_4_chr4.vcf"
+uit_file <- "~/Documents/DavidSimulation/data/bluberry/alfalfa184/sm_4_chr9.vcf"
 uit <- readVcf(file = uit_file)
-subuit <- uit[seq.int(11, 103),]
+subuit <- uit[seq.int(1, 100),] ## THIS NEEDS TO BE CHANGED FREQUENTLY
 position <- ranges(subuit)
 posFrame <- data.frame(row.names = names(position), pos = start(position))
 sizemat <- geno(subuit)$DP
@@ -38,11 +38,24 @@ varnames <- paste0("logL_", 0:ploidy)
 glarray <- format_multidog(x = mout, varname = varnames)
 gparray <- gl_to_gp(glarray)
 ldout <- ldfast(gp = gparray, loc = posFrame[['pos']], type = "r2", shrinkrr = FALSE)
+ldout_shrink <- ldfast(gp = gparray, type = "z", loc = posFrame[['pos']], shrinkrr = FALSE)
+
+
+## simple as this for data within the package!
+my_pkg_data <- sample(1000)
+usethis::use_data(my_pkg_data)
+## simple as this
 ```
 
-```{r plotwork}
-ldPlot <- plot.ldfast(ldout, groupPoints = 10)
+```{r plotwork, eval = FALSE}
+ldPlot <- plot.ldfast(ldout, groupPoints = 20)
 ldPlot + ggplot2::theme_minimal() + ggplot2::labs(y = "r2")
+
+## we need to run on the entire ninth chromosome and then see the results::
+
+shrink_data <- shrink_ldfast(ldout_shrink, backTo = "r2")
+
+ggplot2::qplot(x = shrink_data$dist, y = shrink_data$z) + ggplot2::geom_point(ggplot2::aes(x = shrink_data$dist, y = shrink_data$adj), color = "red")
 ```
 
 

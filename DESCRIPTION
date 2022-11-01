@@ -51,7 +51,9 @@ Imports:
     abind,
     modeest,
     matrixStats,
-    updog (>= 2.0.2)
+    updog (>= 2.0.2),
+    ggplot2,
+    scam
 Suggests: 
     testthat,
     covr,
