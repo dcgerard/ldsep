@@ -100,7 +100,7 @@ mout <- multidog(refmat = refmat,
 ```
 
 We can plot some of the SNPs in a genotype plot (Gerard et. al., 2018) to evaluate the accuracy of the genotyping:
-```{r, warning=FALSE, fig.show="hold", out.width="25%", results='hide'}
+```{r, warning=FALSE, fig.show="hold", out.width="25%", results='hide', fig.alt="Genotype plot of a SNP"}
 plot(mout, indices = c(1, 14, 19))
 ```
 
@@ -207,7 +207,7 @@ like_ld <- mldest(geno = larray, K = ploidy, type = "comp")
 ```
 
 We can visualize the LD estimates using `plot()`
-```{r, out.width="50%"}
+```{r, out.width="50%", fig.alt="Heat map of r-squared"}
 plot(like_ld)
 ```
 
@@ -218,12 +218,12 @@ mom_ld <- mldest(geno = pmmat, K = ploidy, type = "comp")
 ```
 
 The larger naive LD estimates are noticeably attenuated toward zero (due to the influence of genotype uncertainty).
-```{r, out.width="50%"}
+```{r, out.width="50%", fig.alt="Heat map of r-squared"}
 plot(mom_ld)
 ```
 
 It is easier to see this attenuation in a scatterplot. The red, dashed line is the y=x line and any points above this line are pairs of SNPs where the LD was estimated to be larger by the MLE method compared to the naive method. The larger LD values are much more attenuated using the naive approach.
-```{r}
+```{r, fig.alt="Scatterplot of naive r-squared versus MLE r-squared"}
 par(mar = c(2.4, 2.8, 0, 0) + 0.5, mgp = c(1.8, 0.6, 0))
 plot(mom_ld$r2, like_ld$r2, 
      xlab = expression(paste(textstyle(Naive), ~~hat(r)^2)), 

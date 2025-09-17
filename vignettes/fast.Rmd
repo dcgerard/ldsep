@@ -60,7 +60,7 @@ ldout <- ldfast(gp = gp, type = "r2")
 
 - `ldmat`: The estimated squared correlation coefficients, adjusted for genotype uncertainty.
 
-    ```{r}
+    ```{r, fig.alt="Heat map of r-squared"}
     corrplot(corr = ldout$ldmat, 
              method = "color", 
              type = "upper",
@@ -70,7 +70,7 @@ ldout <- ldfast(gp = gp, type = "r2")
     
 - `semat`: The estimated standard errors for the squared correlation coefficient estimates.
 
-    ```{r}
+    ```{r, fig.alt="Heat map of standard errors of r-squared"}
     corrplot(corr = ldout$semat, 
              method = "color", 
              type = "upper",
@@ -81,7 +81,7 @@ ldout <- ldfast(gp = gp, type = "r2")
     
 - `rr`: The estimated "reliability ratios", the multiplicative effects applied to the naive LD estimates using just the posterior mean genotypes.
 
-    ```{r}
+    ```{r, fig.alt="Histogram of reliability ratios"}
     graphics::hist(x = ldout$rr, 
                    main = "Reliability Ratios", 
                    xlab = "Reliability Ratios")

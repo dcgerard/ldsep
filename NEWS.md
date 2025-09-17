@@ -1,3 +1,7 @@
+# ldsep 2.1.6
+
+- Remove dependency on C++11.
+
 # ldsep 2.1.5
 
 - Bug fix: Use `&&` instead of `&` in C++ source.
