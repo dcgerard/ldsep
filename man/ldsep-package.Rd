@@ -2,45 +2,23 @@
 % Please edit documentation in R/ldsep-package.R
 \docType{package}
 \name{ldsep-package}
-\alias{ldsep-package}
 \alias{ldsep}
-\title{Linkage Disequilibrium Shrinkage Estimation for Polyploids}
+\alias{ldsep-package}
+\title{ldsep: Linkage Disequilibrium Shrinkage Estimation for Polyploids}
 \description{
-Estimate haplotypic or composite pairwise linkage disequilibrium
-(LD) in polyploids, using either genotypes or genotype likelihoods. Support is
-provided to estimate the popular measures of LD: the LD coefficient D,
-the standardized LD coefficient D', and the Pearson correlation
-coefficient r. All estimates are returned with corresponding
-standard errors. These estimates and standard errors can then be used
-for shrinkage estimation.
-}
-\section{Functions}{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-
-The main functions are:
-\describe{
-\item{\code{\link{ldfast}()}}{Fast, moment-based, bias-corrected LD
-LD estimates from marginal posterior distributions.}
-\item{\code{\link{ldest}()}}{Estimates pairwise LD.}
-\item{\code{\link{mldest}()}}{Iteratively apply \code{\link{ldest}()}
-across many pairs of SNPs.}
-\item{\code{\link{sldest}()}}{Iteratively apply \code{\link{ldest}()}
-along a sliding window of fixed length.}
-\item{\code{\link{plot.lddf}()}}{Plot method for the output of
-\code{\link{mldest}()} and \code{\link{sldest}()}.}
-\item{\code{\link{format_lddf}()}}{Format the output of
-\code{\link{mldest}()} and \code{\link{sldest}()} into a matrix.}
-\item{\code{\link{ldshrink}()}}{Shrink correlation estimates
-using adaptive shrinkage (Stephens, 2017; Dey and Stephens, 2018).}
+Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in polyploids, using either genotypes or genotype likelihoods. Support is provided to estimate the popular measures of LD: the LD coefficient D, the standardized LD coefficient D', and the Pearson correlation coefficient r. All estimates are returned with corresponding standard errors. These estimates and standard errors can then be used for shrinkage estimation. The main functions are ldfast(), ldest(), mldest(), sldest(), plot.lddf(), format_lddf(), and ldshrink(). Details of the methods are available in Gerard (2021a) \doi{10.1111/1755-0998.13349} and Gerard (2021b) \doi{10.1038/s41437-021-00462-5}.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item Report bugs at \url{https://github.com/dcgerard/ldsep/issues}
 }
 
-\section{Citation}{
-
-If you find the methods in this package useful, please run the following
-in R for citation information: \code{citation("ldsep")}
 }
-
 \author{
-David Gerard
+\strong{Maintainer}: David Gerard \email{gerard.1787@gmail.com} (\href{https://orcid.org/0000-0001-9450-5023}{ORCID})
+
 }
+\keyword{internal}

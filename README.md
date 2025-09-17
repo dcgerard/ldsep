@@ -7,7 +7,7 @@
 
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![R-CMD-check](https://github.com/dcgerard/ldsep/workflows/R-CMD-check/badge.svg)](https://github.com/dcgerard/ldsep/actions)
+[![R-CMD-check](https://github.com/dcgerard/ldsep/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dcgerard/ldsep/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/dcgerard/ldsep/branch/master/graph/badge.svg?token=J3ZRB8PAHY)](https://app.codecov.io/gh/dcgerard/ldsep)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ldsep)](https://CRAN.R-project.org/package=ldsep)
@@ -18,27 +18,27 @@ v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org
 
 Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in
 polyploids, using either genotypes or genotype likelihoods. Support is
-provided to estimate the popular measures of LD: the LD coefficient *D*,
-the standardized LD coefficient *D*′, and the Pearson correlation
-coefficient *r*. All estimates are returned with corresponding standard
+provided to estimate the popular measures of LD: the LD coefficient $D$,
+the standardized LD coefficient $D'$, and the Pearson correlation
+coefficient $r$. All estimates are returned with corresponding standard
 errors. These estimates and standard errors can then be used for
 shrinkage estimation. The methods are described in Gerard (2021a) and
 Gerard (2021b).
 
 The main functions are:
 
--   `ldfast()`: Fast, moment-based approach to estimate pairwise LD in
-    the presence of genotype uncertainty.
--   `ldest()`: Estimates pairwise LD via maximum likelihood.
--   `mldest()`: Iteratively apply `ldest()` across many pairs of SNPs.
--   `sldest()`: Iteratively apply `ldest()` along a sliding window of
-    fixed length.
--   `plot.lddf()`: Plot method for the output of `mldest()` and
-    `sldest()`.
--   `format_lddf()`: Format the output of `mldest()` and `sldest()` into
-    a matrix.
--   `ldshrink()`: Shrink correlation estimates using adaptive shrinkage
-    (Stephens, 2017; Dey and Stephens, 2018).
+- `ldfast()`: Fast, moment-based approach to estimate pairwise LD in the
+  presence of genotype uncertainty.
+- `ldest()`: Estimates pairwise LD via maximum likelihood.
+- `mldest()`: Iteratively apply `ldest()` across many pairs of SNPs.
+- `sldest()`: Iteratively apply `ldest()` along a sliding window of
+  fixed length.
+- `plot.lddf()`: Plot method for the output of `mldest()` and
+  `sldest()`.
+- `format_lddf()`: Format the output of `mldest()` and `sldest()` into a
+  matrix.
+- `ldshrink()`: Shrink correlation estimates using adaptive shrinkage
+  (Stephens, 2017; Dey and Stephens, 2018).
 
 ## Installation
 
@@ -110,19 +110,18 @@ By contributing to this project, you agree to abide by its terms.
 
 ## References
 
--   Dey, Kushal K., and Matthew Stephens (2018). “CorShrink: Empirical
-    Bayes shrinkage estimation of correlations, with applications.”
-    *bioRxiv*. [doi:10.1101/368316](https://doi.org/10.1101/368316)
+- Dey, Kushal K., and Matthew Stephens (2018). “CorShrink: Empirical
+  Bayes shrinkage estimation of correlations, with applications.”
+  *bioRxiv*. [doi:10.1101/368316](https://doi.org/10.1101/368316)
 
--   Gerard, David (2021a). “Pairwise Linkage Disequilibrium Estimation
-    for Polyploids.” *Molecular Ecology Resources*, *21*(4), 1230–1242.
-    [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
+- Gerard, David (2021a). “Pairwise Linkage Disequilibrium Estimation for
+  Polyploids.” *Molecular Ecology Resources*, *21*(4), 1230–1242.
+  [doi:10.1111/1755-0998.13349](https://doi.org/10.1111/1755-0998.13349).
 
--   Gerard, David (2021b). “Scalable Bias-corrected Linkage
-    Disequilibrium Estimation Under Genotype Uncertainty.” *Heredity*,
-    *127*(4), 357–362.
-    [doi:10.1038/s41437-021-00462-5](https://doi.org/10.1038/s41437-021-00462-5).
+- Gerard, David (2021b). “Scalable Bias-corrected Linkage Disequilibrium
+  Estimation Under Genotype Uncertainty.” *Heredity*, *127*(4), 357–362.
+  [doi:10.1038/s41437-021-00462-5](https://doi.org/10.1038/s41437-021-00462-5).
 
--   Stephens, Matthew (2017). “False discovery rates: a new deal.”
-    *Biostatistics* 18(2), 275–294.
-    [doi:10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041)
+- Stephens, Matthew (2017). “False discovery rates: a new deal.”
+  *Biostatistics* 18(2), 275–294.
+  [doi:10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041)

@@ -79,12 +79,12 @@ dllike_geno_dpar <- function(par, gA, gB, K, alpha) {
     .Call(`_ldsep_dllike_geno_dpar`, par, gA, gB, K, alpha)
 }
 
-#' Derivative of prob[[4]] - (prob[[2]] + prob[[4]]) * (prob[[3]] + prob[[4]])
+#' Derivative of \code{prob[[4]] - (prob[[2]] + prob[[4]]) * (prob[[3]] + prob[[4]])}
 #' with respect to prob.
 #'
-#' These derivatives are with repsect to prob[1], prob[2], and prob[3].
-#' prob[4] is defined in terms of those other three values as
-#' prob[4] = 1 - sum(prob[1:3]).
+#' These derivatives are with repsect to \code{prob[1]}, \code{prob[2]}, and \code{prob[3]}.
+#' \code{prob[4]} is defined in terms of those other three values as
+#' \code{prob[4] = 1 - sum(prob[1:3])}.
 #'
 #' @param prob Probability vector in order of (ab, Ab, aB, AB)
 #'
@@ -97,9 +97,9 @@ dD_dprob <- function(prob) {
 
 #' Derivative of squared correlation with respect to prob.
 #'
-#' These derivatives are with repsect to prob[1], prob[2], and prob[3].
-#' prob[4] is defined in terms of those other three values as
-#' prob[4] = 1 - sum(prob[1:3]).
+#' These derivatives are with repsect to \code{prob[1]}, \code{prob[2]}, and \code{prob[3]}.
+#' \code{prob[4]} is defined in terms of those other three values as
+#' \code{prob[4] = 1 - sum(prob[1:3])}.
 #'
 #' @param prob Probability vector in order of (ab, Ab, aB, AB)
 #'
@@ -112,9 +112,9 @@ dr2_dprob <- function(prob) {
 
 #' Derivative of D'with respect to prob.
 #'
-#' These derivatives are with repsect to prob[1], prob[2], and prob[3].
-#' prob[4] is defined in terms of those other three values as
-#' prob[4] = 1 - sum(prob[1:3]).
+#' These derivatives are with repsect to \code{prob[1]}, \code{prob[2]}, and \code{prob[3]}.
+#' \code{prob[4]} is defined in terms of those other three values as
+#' \code{prob[4] = 1 - sum(prob[1:3])}.
 #'
 #' @param prob Probability vector in order of (ab, Ab, aB, AB)
 #'
@@ -289,9 +289,9 @@ ddprime_dqlm <- function(p, dgrad, D, Dm) {
 #' The ploidy of the species is assumed to be one less the length of
 #' \code{pgA} and \code{pgB} (which must be the same length).
 #'
-#' @param pgA The genotype log-likelihoods at locus 1. pgA[i] is the
+#' @param pgA The genotype log-likelihoods at locus 1. \code{pgA[i]} is the
 #'     log probability of the data given the genotype at locus 1 is i.
-#' @param pgB The genotype log-likelihoods at locus 2. pgA[i] is the
+#' @param pgB The genotype log-likelihoods at locus 2. \code{pgA[i]} is the
 #'     log probability of the data given the genotype at locus 2 is i.
 #' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
 #' @param log_p A logical. Should we return the log probability or not?
@@ -361,7 +361,7 @@ llike_genolike <- function(par, pgA, pgB, alpha) {
 #' @param prob Haplotype frequencies in order (ab, Ab, aB, AB).
 #'
 #' @return Element (i,j,k) is the derivative of \code{\link{probgeno}()}
-#'     when gA = i, gB = j with respect to prob[k]
+#'     when gA = i, gB = j with respect to \code{prob[k]}
 #'
 #' @author David Gerard
 #'

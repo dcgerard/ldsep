@@ -31,9 +31,9 @@ arma::vec dlprior_dprob(const arma::vec prob, const arma::vec alpha);
 //' The ploidy of the species is assumed to be one less the length of
 //' \code{pgA} and \code{pgB} (which must be the same length).
 //'
-//' @param pgA The genotype log-likelihoods at locus 1. pgA[i] is the
+//' @param pgA The genotype log-likelihoods at locus 1. \code{pgA[i]} is the
 //'     log probability of the data given the genotype at locus 1 is i.
-//' @param pgB The genotype log-likelihoods at locus 2. pgA[i] is the
+//' @param pgB The genotype log-likelihoods at locus 2. \code{pgA[i]} is the
 //'     log probability of the data given the genotype at locus 2 is i.
 //' @param prob The vector of probabilities for haplotypes (ab, Ab, aB, AB).
 //' @param log_p A logical. Should we return the log probability or not?
@@ -209,7 +209,7 @@ double llike_genolike(const arma::vec par,
 //' @param prob Haplotype frequencies in order (ab, Ab, aB, AB).
 //'
 //' @return Element (i,j,k) is the derivative of \code{\link{probgeno}()}
-//'     when gA = i, gB = j with respect to prob[k]
+//'     when gA = i, gB = j with respect to \code{prob[k]}
 //'
 //' @author David Gerard
 //'

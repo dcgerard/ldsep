@@ -235,7 +235,7 @@ double mycor(const arma::vec &x, const arma::vec &y) {
   }
 
   for (int i = 0; i < p; i++) {
-    if (arma::is_finite(x(i)) && arma::is_finite(y(i))) {
+    if (std::isfinite(x(i)) && std::isfinite(y(i))) {
       xysum += x(i) * y(i);
       x2 += std::pow(x(i), 2.0);
       y2 += std::pow(y(i), 2.0);

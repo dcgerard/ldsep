@@ -227,12 +227,12 @@ arma::vec dllike_geno_dpar(const arma::vec par,
 }
 
 
-//' Derivative of prob[[4]] - (prob[[2]] + prob[[4]]) * (prob[[3]] + prob[[4]])
+//' Derivative of \code{prob[[4]] - (prob[[2]] + prob[[4]]) * (prob[[3]] + prob[[4]])}
 //' with respect to prob.
 //'
-//' These derivatives are with repsect to prob[1], prob[2], and prob[3].
-//' prob[4] is defined in terms of those other three values as
-//' prob[4] = 1 - sum(prob[1:3]).
+//' These derivatives are with repsect to \code{prob[1]}, \code{prob[2]}, and \code{prob[3]}.
+//' \code{prob[4]} is defined in terms of those other three values as
+//' \code{prob[4] = 1 - sum(prob[1:3])}.
 //'
 //' @param prob Probability vector in order of (ab, Ab, aB, AB)
 //'
@@ -260,9 +260,9 @@ arma::vec dD_dprob(const arma::vec prob) {
 
 //' Derivative of squared correlation with respect to prob.
 //'
-//' These derivatives are with repsect to prob[1], prob[2], and prob[3].
-//' prob[4] is defined in terms of those other three values as
-//' prob[4] = 1 - sum(prob[1:3]).
+//' These derivatives are with repsect to \code{prob[1]}, \code{prob[2]}, and \code{prob[3]}.
+//' \code{prob[4]} is defined in terms of those other three values as
+//' \code{prob[4] = 1 - sum(prob[1:3])}.
 //'
 //' @param prob Probability vector in order of (ab, Ab, aB, AB)
 //'
@@ -305,9 +305,9 @@ arma::vec dr2_dprob(const arma::vec prob) {
 
 //' Derivative of D'with respect to prob.
 //'
-//' These derivatives are with repsect to prob[1], prob[2], and prob[3].
-//' prob[4] is defined in terms of those other three values as
-//' prob[4] = 1 - sum(prob[1:3]).
+//' These derivatives are with repsect to \code{prob[1]}, \code{prob[2]}, and \code{prob[3]}.
+//' \code{prob[4]} is defined in terms of those other three values as
+//' \code{prob[4] = 1 - sum(prob[1:3])}.
 //'
 //' @param prob Probability vector in order of (ab, Ab, aB, AB)
 //'
@@ -363,11 +363,3 @@ arma::vec dDprime_dprob(const arma::vec prob) {
 
   return deriv;
 }
-
-
-
-
-
-
-
-
