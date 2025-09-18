@@ -13,8 +13,6 @@ coverage](https://codecov.io/gh/dcgerard/ldsep/graph/badge.svg)](https://app.cod
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ldsep)](https://CRAN.R-project.org/package=ldsep)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/ldsep)](https://cran.r-project.org/package=ldsep)
-[![License: GPL
-v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
 Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in
