@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ldsep: Linkage Disequilibrium Shrinkage Estimation for Polyploids <a href='https://dcgerard.github.io/ldsep/'><img src='man/figures/logo.png' align="right" height="138" /></a>
+# ldsep: Linkage Disequilibrium Shrinkage Estimation for Polyploids <a href='https://dcgerard.github.io/ldsep/'><img src='man/figures/logo.png' align="right" height="138" alt="ldsep logo"/></a>
 
 <!-- badges: start -->
 

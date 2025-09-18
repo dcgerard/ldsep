@@ -19,6 +19,7 @@ Description: Estimate haplotypic or composite pairwise linkage disequilibrium
     and Gerard (2021b) <doi:10.1038/s41437-021-00462-5>.
 License: GPL (>= 3)
 BugReports: https://github.com/dcgerard/ldsep/issues
+URL: https://dcgerard.github.io/ldsep/
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

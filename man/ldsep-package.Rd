@@ -13,6 +13,7 @@ Estimate haplotypic or composite pairwise linkage disequilibrium (LD) in polyplo
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://dcgerard.github.io/ldsep/}
   \item Report bugs at \url{https://github.com/dcgerard/ldsep/issues}
 }
 

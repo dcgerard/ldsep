@@ -1,1 +1,3 @@
 url: https://dcgerard.github.io/ldsep/
+template:
+  bootstrap: 5
