@@ -64,7 +64,7 @@ uit_file <- system.file("extdata", "subuit.vcf",
                         mustWork = TRUE)
 ```
 
-We will use the excellent `VariantAnnotation` package (Obenchain et. al., 2014) to load these data into R. You can read more about `VariantAnnotation` in its vignette: <https://bioconductor.org/packages/release/bioc/vignettes/VariantAnnotation/inst/doc/VariantAnnotation.pdf>
+We will use the excellent `VariantAnnotation` package (Obenchain et. al., 2014) to load these data into R. You can read more about `VariantAnnotation` in its vignette: <https://doi.org/doi:10.18129/B9.bioc.VariantAnnotation>
 ```{r}
 subuit <- readVcf(file = uit_file)
 class(subuit)

@@ -17,7 +17,7 @@ Description: Estimate haplotypic or composite pairwise linkage disequilibrium
     sldest(), plot.lddf(), format_lddf(), and ldshrink(). Details of the methods
     are available in Gerard (2021a) <doi:10.1111/1755-0998.13349>
     and Gerard (2021b) <doi:10.1038/s41437-021-00462-5>.
-License: GPL-3
+License: GPL (>= 3)
 BugReports: https://github.com/dcgerard/ldsep/issues
 Encoding: UTF-8
 LazyData: true
