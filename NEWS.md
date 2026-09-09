@@ -1,3 +1,7 @@
+# ldsep 2.1.7
+
+- Remove dependency on `{modeest}` by implementing my own version of `hsm()`.
+
 # ldsep 2.1.6
 
 - Remove dependency on C++11.

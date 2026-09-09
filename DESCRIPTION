@@ -1,6 +1,6 @@
 Package: ldsep
 Title: Linkage Disequilibrium Shrinkage Estimation for Polyploids
-Version: 2.1.6
+Version: 2.1.7
 Authors@R: 
     person(given = "David",
            family = "Gerard",
@@ -23,7 +23,6 @@ URL: https://dcgerard.github.io/ldsep/
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 LinkingTo: 
     Rcpp,
     RcppArmadillo
@@ -35,7 +34,6 @@ Imports:
     corrplot,
     lpSolve,
     abind,
-    modeest,
     matrixStats
 Suggests: 
     testthat,
@@ -47,3 +45,4 @@ Suggests:
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.0

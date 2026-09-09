@@ -219,7 +219,7 @@ ldfast <- function(gp,
     }
     lvec <- log(rr_raw)
     if (mode == "estimate") {
-      modest <- modeest::hsm(x = lvec)
+      modest <- hsm(x = lvec)
     } else if (mode == "zero") {
       modest <- 0
     }
@@ -372,3 +372,65 @@ pvcalc <- function(priormat) {
   rowSums(sweep(x = priormat, MARGIN = 2, STATS = (0:ploidy)^2, FUN = `*`)) -
     rowSums(sweep(x = priormat, MARGIN = 2, STATS = 0:ploidy, FUN = `*`))^2
 }
+
+
+#' Half-sample mode estimator
+#'
+#' Implementation of the half-sample mode estimator of
+#' Robertson & Cryer (1974).
+#'
+#' Notes that in the case of ties, this version automatically chooses the
+#' smallest of the ties. So, don't use this with ties.
+#'
+#' @param x A vector of values
+#' @param k Fraction to discard each iteration.
+#'
+#' @return The mode estimate.
+#'
+#' @author David Gerard
+#'
+#' @references
+#' \itemize{
+#'   \item{Robertson, T., & Cryer, J. D. (1974). An iterative procedure for estimating the mode. Journal of the American Statistical Association, 69(348), 1012-1016. \doi{10.1080/01621459.1974.10480246}}
+#' }
+#'
+#' @examples
+#' set.seed(1)
+#' x <- stats::rnorm(100)
+#' hsm(x)
+#'
+#' @export
+hsm <- function(x, k = 0.5) {
+  stopifnot(is.numeric(x), k > 0, k < 1)
+  x <- sort(x)
+  n <- length(x)
+  if (n == 0L) {
+    return(NA_real_)
+  } else if (n == 1L) {
+    return(x)
+  } else if (n == 2L) {
+    return(mean(x))
+  } else if (n == 3L) {
+    d <- diff(x)
+    if (d[1L] < d[2L]) {
+      return(mean(x[1:2]))
+    } else if (d[1L] > d[2L]) {
+      return(mean(x[2:3]))
+    } else {
+      return(x[2L])
+    }
+  } else {
+    ndiff <- min(max(2L, ceiling(k * n)), n - 1L)
+    ntry  <- n - ndiff + 1L
+    dvec  <- x[ndiff:n] - x[1:ntry]
+    iwin  <- which.min(dvec)
+    hsm(x[iwin:(iwin + ndiff - 1L)], k = k)
+  }
+}
+
+
+
+
+
+
+

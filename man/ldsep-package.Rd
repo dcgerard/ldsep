@@ -21,5 +21,10 @@ Useful links:
 \author{
 \strong{Maintainer}: David Gerard \email{gerard.1787@gmail.com} (\href{https://orcid.org/0000-0001-9450-5023}{ORCID})
 
+Authors:
+\itemize{
+  \item David Gerard \email{gerard.1787@gmail.com} (\href{https://orcid.org/0000-0001-9450-5023}{ORCID})
+}
+
 }
 \keyword{internal}
