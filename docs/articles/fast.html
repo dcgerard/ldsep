@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Fast LD Estimation">
 </head>
@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ldsep</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@ Gerard</h4>
 <p>We demonstrate our new moment-based linkage disequilibrium (LD)
 estimators, as implemented in the <code><a href="../reference/ldfast.html">ldfast()</a></code> function. These
 methods are described in detail in Gerard (2021). The following code
-chunks are only evaluated if <a href="https://github.com/dcgerard/updog/" class="external-link">updog</a> is installed with a
+chunks are only evaluated if <a href="https://dcgerard.github.io/updog/" class="external-link">updog</a> is installed with a
 version of at least 2.0.2.</p>
 </div>
 <div class="section level2">
@@ -86,7 +86,7 @@ version of at least 2.0.2.</p>
 </h2>
 <p>We will load the packages and data that we will need</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dcgerard/updog/" class="external-link">updog</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dcgerard.github.io/updog/" class="external-link">updog</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dcgerard.github.io/ldsep/">ldsep</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/taiyun/corrplot" class="external-link">corrplot</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; corrplot 0.95 loaded</span></span>
@@ -94,13 +94,13 @@ version of at least 2.0.2.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">uit</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "multidog"</span></span></code></pre></div>
 <p>We need the posterior probabilities for each genotype for each
-individual at each SNP. In <a href="https://github.com/dcgerard/updog/" class="external-link">updog</a>, this corresponds to the
+individual at each SNP. In <a href="https://dcgerard.github.io/updog/" class="external-link">updog</a>, this corresponds to the
 <code>Pr_n</code> variables in its output, where <code>n</code> varies
-from 0 to the ploidy. We can use <code><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">updog::format_multidog()</a></code>
+from 0 to the ploidy. We can use <code><a href="https://dcgerard.github.io/updog/reference/format_multidog.html" class="external-link">updog::format_multidog()</a></code>
 to extract these values into an array with the proper dimensions.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ploidy</span> <span class="op">&lt;-</span> <span class="fl">4</span></span>
-<span><span class="va">gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/updog/man/format_multidog.html" class="external-link">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">gp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dcgerard.github.io/updog/reference/format_multidog.html" class="external-link">format_multidog</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">uit</span>, varname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Pr_"</span>, <span class="fl">0</span><span class="op">:</span><span class="va">ploidy</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "array"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">gp</span><span class="op">)</span></span>
@@ -137,7 +137,7 @@ coefficients, adjusted for genotype uncertainty.</p>
 <span>         type <span class="op">=</span> <span class="st">"upper"</span>,</span>
 <span>         diag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>         tl.pos <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="fast_files/figure-html/unnamed-chunk-4-1.png" alt="Heat map of r-squared" width="700"></p>
+<p><img src="fast_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="Heat map of r-squared" width="700"></p>
 </li>
 <li>
 <p><code>semat</code>: The estimated standard errors for the squared
@@ -149,7 +149,7 @@ correlation coefficient estimates.</p>
 <span>         diag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>         tl.pos <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>         is.corr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="fast_files/figure-html/unnamed-chunk-5-1.png" alt="Heat map of standard errors of r-squared" width="700"></p>
+<p><img src="fast_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="Heat map of standard errors of r-squared" width="700"></p>
 </li>
 <li>
 <p><code>rr</code>: The estimated “reliability ratios”, the
@@ -159,7 +159,7 @@ posterior mean genotypes.</p>
 <code class="sourceCode R"><span><span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">ldout</span><span class="op">$</span><span class="va">rr</span>, </span>
 <span>               main <span class="op">=</span> <span class="st">"Reliability Ratios"</span>, </span>
 <span>               xlab <span class="op">=</span> <span class="st">"Reliability Ratios"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="fast_files/figure-html/unnamed-chunk-6-1.png" alt="Histogram of reliability ratios" width="700"></p>
+<p><img src="fast_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="Histogram of reliability ratios" width="700"></p>
 </li>
 </ul>
 <p>The slowest part of <code><a href="../reference/ldfast.html">ldfast()</a></code> is using hierarchical
@@ -191,7 +191,7 @@ Disequilibrium Estimation Under Genotype Uncertainty.”
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
